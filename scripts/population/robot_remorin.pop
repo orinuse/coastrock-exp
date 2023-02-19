@@ -1,0 +1,748 @@
+// Good morin
+
+WaveSchedule
+{
+	// Orin:
+	// Most of what was here is dated, but I like the standards that it
+	// wants to establish, but sadly I cannot use them without being wasteful:
+	//
+	// 1. Items bot will opportunistiscally use need a 34% increase in deploy time .
+	// - "deploy time increased" 1.34
+	// 
+	// 2. Non-stock robots use the "UPGRADEABLE" version of their weapon, if reading their stats is interesting and brief for the reader.
+	//
+	// ++ ROBOTS ++
+	// ------------
+	// 1. Pyros
+	// - "airblast_pushback_no_viewpunch" 1
+	//
+	// 2. Sandman
+	// - "max health additive penalty" -0
+	//
+	// 3. Airblast resistances
+	// - Go to the "gCHAR_" templates.
+	//
+	// 4. Jumping Bots
+	// - "increased air control" 3.0
+	// - "cancel falling damage" 1
+	//
+	// 5. Giant Heater Heavy
+	// - "ring of fire while aiming" 18
+	//
+	// 6. Head scales for Gate Giants
+	// - GPyro: "head scale" 0.85
+	// - GDemo: "head scale" 0.88
+	// - GHeavy: "head scale" 0.7
+	//
+	// 7. Giant Bots
+	// - See templates
+	//
+	// 8. Rapid-firing bots
+	// - "mod no reload DISPLAY ONLY" 1
+	// - "reload time increased hidden" -0.1
+	// 
+	// 9. Super Scout
+	// - "move speed bonus"	1.3  // actual speed is only 1.3 in-game due to speed limit
+	//
+	// >> CUSTOM <<
+	//
+	// 1. Deflector Heavy (small)
+	// - A 20% damage penalty.
+	//
+	// 2. Dragon's Fury Pyros
+	// - MaxVisionRange 800
+	//
+	// 3. Ignite Bots
+	// - A damage penalty with a max of 30%
+	// - Wep: "attach particle effect" 2
+	//
+	// 4. Throwable Bots
+	// - Jar: "fire rate penalty" 2.5
+	// - Gas: "mult_item_meter_charge_rate" 0.1
+	//
+	// 5. Slow reloading bots
+	// - Use "reload time increased"
+	
+
+	Templates
+	{	
+		////////////////////
+		// ++ Commons ++
+		// Sorted by class
+		////////////////////
+		Remorin_Scout
+		{
+			Class Scout
+			MaxVisionRange 1200
+		}
+		Remorin_Scout_Sandman
+		{
+			Class Scout
+			Name "Minor League Scout"
+			Skill Hard
+			Health 110
+			ClassIcon scout_stun
+			WeaponRestrictions MeleeOnly
+			Item "The Sandman"
+			Item "Batter's Helmet"
+			ItemAttributes
+			{
+				ItemName "The Sandman"
+				"max health additive penalty" -0
+			}
+		}
+		Remorin_Pyro
+		{
+			Class Pyro
+			Skill Easy
+			ItemAttributes
+			{
+				ItemName "TF_WEAPON_FLAMETHROWER"
+				"airblast_pushback_no_viewpunch" 1
+			}
+		}
+		Remorin_Demo_Burst
+		{
+			Class Demoman
+			Name "Burst-fire Demoman"
+			ClassIcon demo_burst
+			Skill Expert
+			WeaponRestrictions PrimaryOnly
+			Attributes HoldFireUntilFullReload
+			Item "Tartan Tyrolean"
+			ItemAttributes
+			{
+				ItemName "TF_WEAPON_GRENADELAUNCHER"
+				"reload time increased" 1.211
+				"fire rate bonus" 0.05
+				"damage penalty" 0.5
+				"projectile spread angle penalty" 3
+				
+				// Orin:
+				// These are for when the clip changes, and the demos don't hold fire until full reload.
+			//	"auto fires when full" 1
+			//	"auto fires full clip" 1
+			}
+		}
+		Remorin_Heavy
+		{
+			Class Heavy
+			MaxVisionRange 1200
+		}
+		Remorin_Heavy_Deflector
+		{
+			Class Heavyweapons
+			Name "Deflector Heavy"
+			ClassIcon heavy_deflector
+			Skill Hard
+			Item "The U-clank-a"
+			Item "Deflector"
+			MaxVisionRange 1200
+			WeaponRestrictions PrimaryOnly
+			ItemAttributes
+			{
+				ItemName "Deflector"
+				"damage penalty"	0.8 // copied from base mighty heavy
+				"attack projectiles" 1	// force ability to shoot down projectiles
+			}
+		}
+		Remorin_Medic_Megaheal
+		{
+		    Class Medic
+			ClassIcon medic_infpop
+			Name "Mega-heal Medic"
+			Tag bot_giant //  Mega-Heal disable stuns but can still be applied addcond 71, which has the be-backstabbed-anywhere debuff.
+		    Skill Normal	// Don't overheal anyone else, pocket your patient
+			WeaponRestrictions SecondaryOnly
+			Attributes SpawnWithFullCharge
+			Tag bot_squad_member
+			Item "The Quick-Fix"
+			Item "Titanium Tyrolean"
+			ItemAttributes
+			{
+			    ItemName "The Quick-Fix"
+			    "bot medic uber health threshold" 400
+				"ubercharge rate bonus" 200
+				"uber duration bonus" -508
+				"heal rate bonus" 1.2
+				"healing received bonus" 1.1
+			}	
+		}
+		Remorin_Medic_Shield // Would be better if they could be a squad leader with shield already out
+		{
+			Class Medic
+			Name "Shield Medic"
+			ClassIcon medic_shield_qf
+			Skill Normal
+			WeaponRestrictions SecondaryOnly
+			Attributes SpawnWithFullCharge
+			Attributes ProjectileShield
+			Attributes IgnoreEnemies
+			Tag bot_squad_member
+			Item "Das Naggenvatcher" 
+			ItemAttributes
+			{
+				ItemName TF_WEAPON_MEDIGUN
+				"ubercharge rate penalty" -3
+				"generate rage on heal" 2
+			}
+			CharacterAttributes
+			{
+				"bot medic uber health threshold" 25
+				"bot medic uber deploy delay duration" 9999
+				"increase buff duration" 3
+			}
+		}
+		Remorin_Medic_Vac_Bullet
+		{
+			Class Medic
+			Skill Expert
+			Name "Bullet-immunnizer Medic"
+			ClassIcon medic_bullet
+			Item "powerhouse_medigun_sparkoflife"
+			Item "The Byte'd Beak"
+			Attributes SpawnWithFullCharge
+			Tag bot_squad_member
+			ItemAttributes
+			{
+				ItemName "powerhouse_medigun_sparkoflife"
+				"ubercharge rate bonus" 25
+				"medigun charge is resists" 3
+				"ubercharge overheal rate penalty" 0.67
+				"overheal fill rate reduced" 0.34
+
+				// Allow hit indicators to show up.
+				"medigun bullet resist passive" 0.99
+				"medigun bullet resist deployed" 0.99
+				"bot medic uber health threshold" 300
+			}
+		}
+		Remorin_Medic_Vac_Blast
+		{
+			Class Medic
+			Skill Expert
+			Name "Blast-immunizer Medic"
+			ClassIcon medic_blast
+			Item "concealedkiller_medigun_maskedmender"
+			Item "The Byte'd Beak"
+			Attributes SpawnWithFullCharge
+			Tag bot_squad_member
+			ItemAttributes
+			{
+				ItemName "concealedkiller_medigun_maskedmender"
+				"ubercharge rate bonus" 25
+				"ubercharge overheal rate penalty" 0.67
+				"overheal fill rate reduced" 0.34
+				"medigun charge is resists" 4
+
+				// Allow hit indicators to show up.
+				"medigun blast resist passive" 0.99
+				"medigun blast resist deployed" 0.99
+				"bot medic uber health threshold" 300
+			}
+		}
+		Remorin_Medic_Vac_Fire
+		{
+			Class Medic
+			Skill Expert
+			Name "Fire-immunizer Medic"
+			ClassIcon medic_fire
+			Item "pyroland_medigun_flowerpower"
+			Item "The Byte'd Beak"
+			Attributes SpawnWithFullCharge
+			Tag bot_squad_member
+			ItemAttributes
+			{
+				ItemName "pyroland_medigun_flowerpower"
+				"ubercharge rate bonus" 25
+				"ubercharge overheal rate penalty" 0.67
+				"overheal fill rate reduced" 0.34
+				"medigun charge is resists" 5
+			//	"lunchbox adds minicrits" 3  // default weapon mode allows inf vac uber duration even with or without the duration bonus att
+			
+				// Overall damage of fire builds up high if you allow it
+				"medigun fire resist passive" 1.0
+				"medigun fire resist deployed" 1.0
+				"bot medic uber health threshold" 300
+			}
+		}
+		Remorin_Sniper_Bow_Bleed
+		{
+			ClassIcon	sniper_huntsman_bleed
+			WeaponRestrictions PrimaryOnly
+			Health	125
+			Skill	Normal
+			Name	"Sharp-eyed Bowman"
+			Class	Sniper
+			Item	"The Huntsman"
+			ItemAttributes
+			{
+				ItemName	"The Huntsman"
+				"bleeding duration"	5
+				"damage penalty" 0.5
+			}
+		}
+		Remorin_Sniper_Bow_Fire
+		{
+			Class Sniper
+			Name "Fiery Bowman"
+			Skill Hard
+			ClassIcon sniper_bow_ignite
+			WeaponRestrictions PrimaryOnly
+			Item "The Huntsman"
+
+			ItemAttributes
+			{
+				ItemName "The Huntsman"
+				"attach particle effect" 13
+				"damage penalty" 0.25
+				"Set DamageType Ignite" 1
+				"weapon burn dmg reduced" 0.75
+			}
+		}
+		Remoir_Sniper_Huntsman_Spammer_Small
+		{
+			Class Sniper
+			Name "Rapid-fire Bowman"
+			Skill Expert
+			ClassIcon sniper_bow_multi
+			Item "The Huntsman"
+			Item "Starduster"
+
+			ItemAttributes  // 15 damage arrows
+			{
+				ItemName "The Huntsman"
+				"dmg penalty vs players" 0.125
+				"dmg penalty vs buildings" 0.125
+				"fire rate bonus HIDDEN" 0.1
+				"mod no reload DISPLAY ONLY" 1
+			}
+		}
+
+		//Giant
+		// Standard Classes ////////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		Remorin_GScout
+		{
+			Class Scout
+			Name "Giant Scout"
+			ClassIcon scout_giant
+			Skill Expert
+			Health 1600
+			MaxVisionRange 1200
+			WeaponRestrictions PrimaryOnly
+			Attributes MiniBoss
+			Tag bot_giant
+			ItemAttributes
+			{
+				ItemName "TF_WEAPON_SCATTERGUN"
+				"bullets per shot bonus" 1.2
+				"damage bonus" 1.25
+				"killstreak tier" 2
+				"killstreak idleeffect" 1
+			}
+			Template gCHAR_SCOUT
+		}
+		Remorin_GSoldier
+		{
+			Class Soldier
+			Name "Giant Soldier"
+			ClassIcon soldier_giant
+			Skill Expert
+			Health 4000
+			WeaponRestrictions PrimaryOnly
+			Attributes HoldFireUntilFullReload
+			Attributes MiniBoss
+			Tag bot_giant
+			ItemAttributes
+			{
+				ItemName "TF_WEAPON_ROCKETLAUNCHER"
+				"damage bonus" 1.2					// this is the superior one :o
+				"killstreak tier" 2
+				"killstreak idleeffect" 1
+			}
+			Template gCHAR_SOLDIER
+		}
+		Remorin_GPyro
+		{
+			Class Pyro
+			Name "Giant Pyro"
+			ClassIcon pyro_giant
+			Skill Expert
+			Health 3300
+			WeaponRestrictions PrimaryOnly
+			Attributes MiniBoss
+			Tag bot_giant
+			ItemAttributes
+			{
+				ItemName "TF_WEAPON_FLAMETHROWER"
+				"damage bonus" 1.5
+				"weapon burn dmg increased" 2
+				"weapon burn time increased" 2
+				"flame life bonus" 1.75
+				"flame size bonus" 1.75
+				"deflection size multiplier" 1.75
+				"airblast_pushback_no_viewpunch" 1
+				"killstreak tier" 2
+				"killstreak idleeffect" 1
+			}
+			Template gCHAR_PYRO
+		}
+		Remorin_GHeavy
+		{
+			Class Heavyweapons
+			Name "Giant Heavy"
+			ClassIcon heavy_giant
+			Skill Expert
+			Health 5000
+			WeaponRestrictions PrimaryOnly
+			Attributes MiniBoss
+			Tag bot_giant
+			ItemAttributes
+			{
+				ItemName " TF_WEAPON_MINIGUN"
+				"damage bonus"	1.5
+				"killstreak tier" 2
+				"killstreak idleeffect" 1
+			}
+			Template gCHAR_HEAVY
+		}
+		
+		//////////////////
+		// ++ SPECIAL ++
+		//////////////////
+		Remorin_GSoldier_Rapid
+		{
+			Class Soldier
+			Name "Giant Rapid-fire Soldier"
+			ClassIcon soldier_spammer
+			Health 4000
+			Skill Expert
+			WeaponRestrictions PrimaryOnly
+			Tag bot_giant
+			Attributes MiniBoss
+			Item "Upgradeable TF_WEAPON_ROCKETLAUNCHER"
+			Item "Full Metal Drill Hat"
+			ItemAttributes
+			{
+				ItemName "Upgradeable TF_WEAPON_ROCKETLAUNCHER"
+				"fire rate bonus" 0.5
+				"reload time increased hidden" -0.1
+				"mod no reload DISPLAY ONLY" 1
+				"Projectile speed decreased" 0.65
+				"killstreak tier" 2
+				"killstreak idleeffect" 2
+			}
+			Template gCHAR_SOLDIER
+		}
+		Remorin_GSoldier_Burst
+		{
+			Class Soldier
+			Name "Giant Burst-fire Soldier"
+			ClassIcon soldier_burstfire
+			Health 4000
+			Skill Expert
+			WeaponRestrictions PrimaryOnly
+			Attributes MiniBoss
+			Attributes HoldFireUntilFullReload
+			Tag bot_giant
+			Item "Upgradeable TF_WEAPON_ROCKETLAUNCHER"
+			Item "The Shellmet"
+			ItemAttributes
+			{
+				ItemName "Upgradeable TF_WEAPON_ROCKETLAUNCHER"
+				"faster reload rate" 0.6
+				"fire rate bonus" 0.1
+				"clip size upgrade atomic" 5.0
+				"Projectile speed decreased" 0.65
+				"gesture speed increase" 3
+				"killstreak tier" 2
+				"killstreak idleeffect" 6
+			}
+			Template gCHAR_SOLDIER
+		}
+		Remorin_GHeavy_Brass
+		{
+			Class Heavyweapons
+			Name "Giant Brass Heavy"
+			ClassIcon heavy_giant
+			Item "The Brass Beast"
+			Skill Expert
+			Health 5000
+			WeaponRestrictions PrimaryOnly
+			Attributes MiniBoss
+			Tag bot_giant
+			ItemAttributes
+			{
+				ItemName "The Brass Beast"
+				"damage bonus"	1.7
+				"minigun spinup time increased" 2.5
+				"killstreak tier" 2
+				"killstreak idleeffect" 2
+			}
+			CharacterAttributes
+			{
+				"gesture speed increase" 0.4
+			}
+			Template gCHAR_HEAVY
+		}
+		Remorin_GHeavy_Natascha
+		{
+			Class Heavyweapons
+			Name "Giant Natascha Heavy"
+			ClassIcon heavy_slowonhit_giant
+			Item "Natascha"
+			Skill Expert
+			Health 5000
+			WeaponRestrictions PrimaryOnly
+			Attributes MiniBoss
+			Tag bot_giant
+			ItemAttributes
+			{
+				ItemName "Natascha"
+				"damage bonus"	1.5
+				"killstreak tier" 2
+				"killstreak idleeffect" 3
+			}
+			CharacterAttributes
+			{
+				"gesture speed increase" 0.8
+			}
+			Template gCHAR_HEAVY
+		}
+		Remorin_GHeavy_Heater
+		{
+			Class Heavyweapons
+			Name "Giant Heater Heavy"
+			ClassIcon heavy_heater_giant
+			Skill Expert
+			Health 5000
+			WeaponRestrictions PrimaryOnly
+			Item "The Huo Long Heatmaker"
+			Attributes MiniBoss
+			Tag bot_giant
+			ItemAttributes
+			{
+				ItemName "The Huo Long Heatmaker"
+				"ring of fire while aiming"	18
+				"damage bonus"	1.3
+				"killstreak tier" 2
+				"killstreak idleeffect" 3
+			}
+			Template gCHAR_HEAVY
+		}
+
+		Remorin_SentryBuster
+		{
+			Class Demoman
+			Name "Sentry Buster"
+			Skill Expert
+			Health 2500
+			Item "The Ullapool Caber"
+			WeaponRestrictions MeleeOnly
+			ClassIcon sentry_buster
+			Attributes MiniBoss
+			Attributes DisableDodge
+			Attributes IgnoreEnemies
+			Attributes SuppressFire
+			Tag bot_giant
+			Tag bot_sentrybuster
+			CharacterAttributes
+			{
+				"move speed bonus" 2
+				"damage force reduction" 0.5
+				"airblast vulnerability multiplier" 0.25
+				"airblast vertical vulnerability multiplier" 0.5
+				"override footstep sound set" 7
+				"cannot be backstabbed" 1
+				"rage giving scale" 0.1
+			}
+		}
+
+		////////////////////
+		// ++ CharAtts ++
+		// Sorted by class, until not
+		//////////////////////////////
+		gCHAR_SCOUT
+		{
+			MaxVisionRange 1200
+			Tag bot_giant
+			CharacterAttributes
+			{
+				"damage force reduction" 0.7
+				"airblast vulnerability multiplier" 0.35
+				"airblast vertical vulnerability multiplier" 0.5
+				"override footstep sound set" 5
+			}
+		}
+		gCHAR_SOLDIER
+		{
+			Tag bot_giant
+			CharacterAttributes
+			{
+				"move speed penalty"	0.5
+				"damage force reduction" 0.6
+				"airblast vulnerability multiplier" 0.2
+				"airblast vertical vulnerability multiplier" 0.5
+				"override footstep sound set" 3
+				"rocket jump damage reduction" 0.01
+			}
+		}
+		gCHAR_PYRO
+		{
+			Tag bot_giant
+			CharacterAttributes
+			{
+				"move speed penalty"	0.6
+				"damage force reduction" 0.6
+				"airblast vulnerability multiplier" 0.3
+				"airblast vertical vulnerability multiplier" 0.5
+				"override footstep sound set" 6
+			}
+		}
+		gCHAR_DEMO
+		{
+			Tag bot_giant
+			CharacterAttributes
+			{
+				"move speed penalty"	0.7
+				"damage force reduction" 0.5
+				"airblast vulnerability multiplier" 0.25
+				"airblast vertical vulnerability multiplier" 0.5
+				"override footstep sound set" 4
+				"rocket jump damage reduction" 0.01
+			}
+		}
+		gCHAR_HEAVY
+		{
+			MaxVisionRange 1200
+			Tag bot_giant
+			CharacterAttributes
+			{
+				"move speed penalty"	0.5
+				"damage force reduction" 0.3
+				"airblast vulnerability multiplier" 0.15
+				"airblast vertical vulnerability multiplier" 0.5
+				"override footstep sound set" 2
+			}
+		}
+		gCHAR_MEDIC
+		{
+			Tag bot_giant
+			CharacterAttributes
+			{
+				"move speed penalty"	0.5
+				"damage force reduction" 0.6
+				"airblast vulnerability multiplier" 0.3
+				"airblast vertical vulnerability multiplier" 0.5
+			}
+		}
+		gCHAR_OTHER
+		{
+			Tag bot_giant
+			CharacterAttributes
+			{
+				"move speed penalty"	0.5
+				"damage force reduction" 0.6
+				"airblast vulnerability multiplier" 0.3
+				"airblast vertical vulnerability multiplier" 0.5
+			}
+		}
+		gCHAR_MINI
+		{
+			Tag bot_giant
+			CharacterAttributes
+			{
+				"move speed penalty" 0.85
+				"damage force reduction" 0.8
+				"airblast vulnerability multiplier" 0.5
+				"airblast vertical vulnerability multiplier" 0.75
+			}
+		}
+		gCHAR_BOSS
+		{
+			Tag bot_giant
+			CharacterAttributes
+			{
+				"move speed penalty"	0.5
+				"damage force reduction" 0.0
+				"airblast vulnerability multiplier" 0.00
+				"airblast vertical vulnerability multiplier" 0.00
+				"rage giving scale"	0.4
+			}
+		}
+
+		////////////////////
+		// ++ Other ++
+		// Crap
+		//////////////////////////////
+		Base_GateBot
+		{
+			Class Heavy
+			Name "Heavyweapons"
+
+			EventChangeAttributes
+			{
+				Default
+				{
+					BehaviorModifiers Push			// having these will cause bots to run towards gates
+					Attributes IgnoreFlag			// having these will cause bots to run towards gates
+					Tag nav_prefer_gate1_flank 		// having these will cause bots to run towards gates
+					Tag bot_gatebot 				// having these will cause bots to run towards gates
+
+					Item "MvM GateBot Light Heavy"
+					Skill Normal
+				}
+				RevertGateBotsBehavior
+				{
+					Skill Normal
+				}
+			}
+		}
+		Trainyard_SignA	
+		{
+			TotalCount 0
+			SpawnCount 0
+			Support 1				
+
+			TFBot
+			{
+				ClassIcon	sign_a
+			}
+		}
+		Trainyard_SignB
+		{
+			TotalCount 0
+			SpawnCount 0
+			Support 1				
+
+			TFBot
+			{
+				ClassIcon	sign_b
+			}
+		}
+		Trainyard_SignC
+		{
+			TotalCount 0
+			SpawnCount 0
+			Support 1				
+
+			TFBot
+			{
+				ClassIcon	sign_c
+			}
+		}
+		Trainyard_SignD
+		{
+			TotalCount 0
+			SpawnCount 0
+			Support 1				
+
+			TFBot
+			{
+				ClassIcon	sign_d
+			}
+		}
+	}
+}

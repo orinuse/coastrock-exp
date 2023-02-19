@@ -1,0 +1,203 @@
+#base robot_standard.pop
+#base robot_giant.pop
+#base robot_remorin.pop
+
+WaveSchedule
+{
+	StartingCurrency 700
+	RespawnWaveTime 6
+	CanBotsAttackWhileInSpawnRoom no
+	Advanced 1
+	
+    Mission
+	{
+		Objective DestroySentries
+		Where spawnbot
+		BeginAtWave 1
+		RunForThisManyWaves 6
+		InitialCooldown 15
+		CooldownTime 30
+		DesiredCount 1
+		TFBot 
+        { 
+            Template Remorin_SentryBuster 
+        }
+	}
+    Wave
+	{
+		StartWaveOutput
+		{
+			Target wave_start_endurance_relay
+			Action Trigger
+		}
+		DoneOutput
+		{
+			Target wave_finished_relay
+			Action Trigger
+		}
+		WaveSpawn
+		{
+			Name "W1_A1"
+			Where spawnbot
+			WaitBeforeStarting 2
+			WaitBetweenSpawns 5
+			TotalCount 24
+			MaxActive 6
+			SpawnCount 6
+			TotalCurrency 50
+			TFBot
+			{
+				Template T_TFBot_Heavyweapons_Shotgun
+			}
+		}
+		WaveSpawn
+		{
+			Name "W1_A"
+			Where spawnbot_tunnel
+			WaitBetweenSpawns 1.25
+			TotalCount 25
+			MaxActive 5
+			SpawnCount 1
+			TotalCurrency 50
+			TFBot
+			{
+				Class Pyro
+                Skill Normal
+			}
+		}
+		WaveSpawn
+		{
+			Name "W1 Giant Charged Soldier"
+			Where spawnbot_parachute
+			WaitBeforeStarting 20
+			WaitBetweenSpawns 35
+			TotalCount 3
+			MaxActive 2
+			SpawnCount 1
+			TotalCurrency 150
+			TFBot
+			{
+				Template T_TFBot_Giant_Soldier_Crit
+				CharacterAttributes
+				{
+					"head scale" 1.0
+				}
+			}
+		}
+        WaveSpawn
+		{
+			Name "W1 Giant Charged Soldier 2"
+            WaitForAllSpawned "W1 Giant Charged Soldier"
+			Where spawnbot_tunnel
+			WaitBeforeStarting 25
+			WaitBetweenSpawns 25
+			TotalCount 6
+			MaxActive 6
+			SpawnCount 3
+			TotalCurrency 150
+            Squad 
+            {
+                TFBot 
+                {
+                    Template T_TFBot_Giant_Soldier_Crit
+                    CharacterAttributes 
+                    {
+                        "head scale" 1.0
+                    }
+                }
+                TFBot 
+                {
+                    Template T_TFBot_Medic_QuickUber
+                }
+                TFBot 
+                {
+                    Template T_TFBot_Medic_QuickUber
+                }
+            }
+		}
+        WaveSpawn
+		{
+			Name "W1_B"
+			Where spawnbot
+            WaitForAllSpawned "W1_A"
+            WaitBeforeStarting 5
+			WaitBetweenSpawns 4
+			TotalCount 33
+			MaxActive 9
+			SpawnCount 3
+			TotalCurrency 50
+			TFBot
+			{
+				Class Demoman
+                Skill Expert
+			}
+		}
+        WaveSpawn
+		{
+			Name "W1_C"
+			Where spawnbot_tunnel
+            Where spawnbot
+            Where spawnbot_parachute
+            WaitForAllSpawned "W1_B"
+            WaitBeforeStarting 5
+			WaitBetweenSpawns 5
+			TotalCount 35
+			MaxActive 10
+			SpawnCount 5
+			TotalCurrency 50
+			TFBot
+			{
+				Template T_TFBot_Demoman_Knight
+			}
+		}
+        WaveSpawn
+		{
+			Name "W1_C2"
+			Where spawnbot_tunnel
+            WaitForAllSpawned "W1_B"
+			WaitBetweenSpawns 3
+			TotalCount 26
+			MaxActive 6
+			SpawnCount 2
+			TotalCurrency 26
+			TFBot
+			{
+				Class Soldier
+                Skill Hard
+			}
+		}
+        WaveSpawn
+		{
+			Name "W1_C2"
+			Where spawnbot
+            WaitForAllSpawned "W1_C"
+			WaitBetweenSpawns 3
+			TotalCount 14
+			MaxActive 6
+			SpawnCount 2
+			TotalCurrency 24
+			TFBot
+			{
+				Class Soldier
+                Skill Hard
+			}
+		}
+        WaveSpawn
+		{
+			Name "W1_D"
+			Where spawnbot_tunnel
+            WaitForAllSpawned "W1_C"
+			WaitBetweenSpawns 5
+			TotalCount 50
+			MaxActive 6
+			SpawnCount 3
+			TotalCurrency 50
+            Support 1
+			TFBot
+			{
+				Class heavy
+                Skill Hard
+			}
+		}
+    }
+}
