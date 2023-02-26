@@ -13,35 +13,41 @@ WaveSchedule
     {
         Sunny_Scout
         {
+			Template Sunny_Scout
+		
             Class Scout
             Name "Boston Fast Food Delivery Bot"
             Item "Fast Food"
             Item "Bottle Cap"
             Skill Normal
         }
+        Sunny_Soldier
+        {
+            Class Soldier
+            Name "Malfunction Outpost Robot"
+        }
         Sunny_Pyro
         {
+			Template Sunny_Pyro
+		
             Class Pyro
             Skill Normal
             Name "Street Cleaner"
             Item "Fireman's Essentials"
             Item "Electric Escorter"
         }
-        Sunny_Heavy
-        {
-            Class Heavy
-            Name "QA-1MIL"
-            Item "Bunsen Brave"
-        }
-        Sunny_Soldier
-        {
-            Class Soldier
-            Name "Malfunction Outpost Robot"
-        }
         Sunny_Demoman
         {
             Class Demoman
             Name "Demolition Expertise"
+        }
+        Sunny_Heavy
+        {
+			Template Sunny_Heavy
+
+            Class Heavy
+            Name "QA-1MIL"
+            Item "Bunsen Brave"
         }
         Sunny_Engineer
         {
@@ -50,11 +56,15 @@ WaveSchedule
         }
         Sunny_Sniper
         {
+			Template T_TFBot_Sniper
+
             Class Sniper
             Name "Underground Assassin"
         }
         Sunny_Spy
         {
+			Template T_TFBot_Spy
+
             Class Spy
             Name "Fancy Restaurant Chef"
         }
