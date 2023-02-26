@@ -183,7 +183,8 @@ WaveSchedule
 				}
 				TFBot
 				{
-					Template Sunny_Medic_Bigheal
+					Template Remorin_Medic_Megaheal
+					ClassIcon medic
 				}
 			}
 		}
