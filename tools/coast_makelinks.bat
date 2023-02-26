@@ -29,5 +29,6 @@ IF NOT EXIST "%_PATH_GIT%" (
 mklink "%_PATH_POP%\mvm_coastrock_rc1_1_exp_sunny_side_up.pop" "%_PATH_GIT%\mvm_coastrock_rc1_1_exp_sunny_side_up.pop"
 mklink "%_PATH_POP%\mvm_coastrock_rc1_1_TEST_REMORIN.pop" "%_PATH_GIT%\mvm_coastrock_rc1_1_TEST_REMORIN.pop"
 mklink "%_PATH_POP%\robot_remorin.pop" "%_PATH_GIT%\robot_remorin.pop"
+mklink "%_PATH_POP%\..\vscripts\exp_sunny_side.nut" "%_PATH_GIT%\..\vscripts\exp_sunny_side.nut"
 
 TIMEOUT 10

@@ -13,8 +13,6 @@ WaveSchedule
     {
         Sunny_Scout
         {
-			Template Sunny_Scout
-		
             Class Scout
             Name "Boston Fast Food Delivery Bot"
             Item "Fast Food"
@@ -28,7 +26,7 @@ WaveSchedule
         }
         Sunny_Pyro
         {
-			Template Sunny_Pyro
+			Template Remorin_Pyro
 		
             Class Pyro
             Skill Normal
@@ -43,7 +41,7 @@ WaveSchedule
         }
         Sunny_Heavy
         {
-			Template Sunny_Heavy
+			Template Remorin_Heavy
 
             Class Heavy
             Name "QA-1MIL"
@@ -68,9 +66,14 @@ WaveSchedule
             Class Spy
             Name "Fancy Restaurant Chef"
         }
+		Sunny_Medic_BigHeal
+		{
+			Template Remorin_Medic_Megaheal
+			ClassIcon Medic
+		}
         Sunny_Medic_Krit
         {
-            Template Sunny_inf_krit
+        //    Template Sunny_inf_krit
             Name "Malpractice Doctor"
             Item "Flatliner"
             Tag bot_squad_member
@@ -95,11 +98,6 @@ WaveSchedule
             Template T_TFBot_Medic_QuickUber
             Name ""
         }
-		Sunny_Medic_BigHeal
-		{
-			Template Remorin_Medic_Megaheal
-			ClassIcon Medic
-		}
     }
     Mission
 	{
@@ -117,6 +115,12 @@ WaveSchedule
 	}
     Wave
 	{
+		InitWaveOutput
+		{
+			Target gamerules
+			Action RunScriptFile
+			Param "exp_sunny_side.nut"
+		}
 		StartWaveOutput
 		{
 			Target wave_start_endurance_relay
@@ -360,6 +364,12 @@ WaveSchedule
 			MaxActive	1
 			SpawnCount	1
 			TotalCurrency	300
+			DoneOutput
+			{
+				Target "gamerules"
+				Action "RunScriptCode"
+				Param "StartWaveBreak(40, `music/mvm_start_tank_wave.wav`)"
+			}
 			Tank
 			{
 				Health 26000
@@ -375,122 +385,6 @@ WaveSchedule
 					Target boss_deploy_relay
 					Action Trigger
 				}
-			}
-		}
-		WaveSpawn
-		//Wave Breaking Sequence
-		//Wave Arrows
-		{
-			Name "W1_Break"
-			TotalCount 0
-			WaitForAllDead	"W1_Tank"
-			FirstSpawnOutput
-			{
-				Target bombpath_right
-				Action Trigger
-			}
-			Support Limited
-			TFBot
-			{
-				ClassIcon Heavy
-			}
-		}
-		WaveSpawn
-		//Wave Breaking Sequence
-		//Wave Arrows
-		{
-			Name "W1_Break"
-			TotalCount 0
-			WaitBeforeStarting 35
-			WaitForAllDead	"W1_Tank"
-			FirstSpawnOutput
-			{
-				Target bombpath_arrows_clear_relay
-				Action Trigger
-			}
-			Support Limited
-			TFBot
-			{
-				ClassIcon Heavy
-			}
-		}
-		WaveSpawn 
-		//Wave Break Sequence
-		//Voice Lines
-		{
-			Name "W1_Break"
-			TotalCount 0
-			WaitForAllDead	"W1_Tank"
-			FirstSpawnOutput
-			{
-				Target upgrade_door_open_midwave_relay
-				Action Trigger
-			}
-			FirstSpawnWarningSound vo/mvm_wave_end08.mp3
-			Support Limited
-			TFBot
-			{
-				ClassIcon Heavy
-			}
-		}
-		WaveSpawn 
-		//Wave Break Sequence
-		//Voice Lines
-		{
-			Name "W1_Break"
-			TotalCount 0
-			WaitBeforeStarting 15
-			WaitForAllDead	"W1_Tank"
-			FirstSpawnWarningSound vo/announcer_begins_20sec.mp3
-			Support Limited
-			TFBot
-			{
-				ClassIcon Heavy
-			}
-		}
-		WaveSpawn 
-		//Wave Break Sequence
-		//Voice Lines
-		{
-			Name "W1_Break"
-			TotalCount 0
-			WaitBeforeStarting 25
-			WaitForAllDead	"W1_Tank"
-			FirstSpawnWarningSound vo/announcer_begins_10sec.mp3
-			Support Limited
-			TFBot
-			{
-				ClassIcon Heavy
-			}
-		}
-		WaveSpawn 
-		//Wave Break Sequence
-		//Voice Lines
-		{
-			Name "W1_Break"
-			TotalCount 0
-			WaitBeforeStarting 30.6
-			WaitForAllDead	"W1_Tank"
-			FirstSpawnWarningSound music/mvm_start_tank_wave.wav
-			Support Limited
-			TFBot
-			{
-				ClassIcon Heavy
-			}
-		}
-		WaveSpawn 
-		//Wave Break Sequence
-		//Voice Lines
-		{
-			Name "W1_Break"
-			TotalCount 0
-			WaitBeforeStarting 30.6
-			WaitForAllDead	"W1_Tank"
-			FirstSpawnWarningSound vo/mvm_general_wav_start02.mp3
-			Support Limited
-			TFBot
-			{
-				ClassIcon Heavy
 			}
 		}
 		WaveSpawn 
