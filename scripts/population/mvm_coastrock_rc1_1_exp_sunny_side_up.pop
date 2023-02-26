@@ -68,8 +68,7 @@ WaveSchedule
         }
 		Sunny_Medic_BigHeal
 		{
-			Template Remorin_Medic_Megaheal
-			ClassIcon Medic
+			Template T_TFBot_Medic_BigHeal
 		}
         Sunny_Medic_Krit
         {
@@ -133,6 +132,37 @@ WaveSchedule
 		}
 		WaveSpawn
 		{
+			Name "W1_A"
+			Where spawnbot_tunnel
+			Where spawnbot
+			Where spawnbot_parachute
+			WaitBetweenSpawns 1.5
+			TotalCount 36
+			MaxActive 7
+			SpawnCount 3
+			TotalCurrency 50
+			TFBot
+			{
+                Template T_TFBot_Demoman_Knight
+			}
+		}
+		WaveSpawn
+		{
+			Name "W1_A"
+			Where spawnbot_parachute
+			WaitBeforeStarting 7
+			WaitBetweenSpawns 5
+			TotalCount 24
+			MaxActive 4
+			SpawnCount 4
+			TotalCurrency 50
+			TFBot
+			{
+                Template Sunny_Medic_Bigheal
+			}
+		}
+		WaveSpawn
+		{
 			Name "W1_Heavy"
 			Where spawnbot
 			Where spawnbot_parachute
@@ -149,26 +179,12 @@ WaveSchedule
 					Template Sunny_Heavy
 					Skill Easy
 					Attributes AlwaysCrit
+					BehaviorModifiers Push
 				}
 				TFBot
 				{
 					Template Sunny_Medic_Bigheal
 				}
-			}
-		}
-		WaveSpawn
-		{
-			Name "W1_A"
-			Where spawnbot_tunnel
-			WaitBetweenSpawns 1.25
-			TotalCount 25
-			MaxActive 5
-			SpawnCount 1
-			TotalCurrency 50
-			TFBot
-			{
-                Template Sunny_Pyro
-                BehaviorModifiers Push
 			}
 		}
 		WaveSpawn
@@ -199,7 +215,7 @@ WaveSchedule
 			WaitBeforeStarting 25
 			WaitBetweenSpawns 25
 			TotalCount 6
-			MaxActive 6
+			MaxActive 3
 			SpawnCount 3
 			TotalCurrency 150
             Squad 
@@ -368,7 +384,7 @@ WaveSchedule
 			{
 				Target "gamerules"
 				Action "RunScriptCode"
-				Param "StartWaveBreak(40, `music/mvm_start_tank_wave.wav`)"
+				Param "StartWaveBreak(35, `music/mvm_start_tank_wave.wav`)"
 			}
 			Tank
 			{
