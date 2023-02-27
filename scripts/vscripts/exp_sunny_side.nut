@@ -1,25 +1,8 @@
 // For Remilia and Orin's Sunny-Side Up
 // ====================================
-
-const COUNTDOWN_20s = "vo/announcer_begins_20sec.mp3"
-const COUNTDOWN_10s = "vo/announcer_begins_10sec.mp3"
-
-local StartVOs =
-[
-	["vo/mvm_general_wav_start01.mp3", 0],
-	["vo/mvm_general_wav_start02.mp3", 1],
-	["vo/mvm_general_wav_start03.mp3", -1],
-	["vo/mvm_general_wav_start07.mp3", -1]
-]
-local EndVOs =
-[
-	"vo/mvm_wave_end01.mp3",
-	"vo/mvm_wave_end02.mp3",
-	"vo/mvm_wave_end07.mp3",
-	"vo/mvm_wave_end08.mp3"
-]	
 	
-local GAMERULES_ENT = Entities.FindByClassname(null, "tf_gamerules")
+const GAMERULES = "tf_gamerules"
+const POPULATOR = "point_populator_interface"
 
 function Init()
 {
@@ -45,44 +28,65 @@ function Init()
 	}
 }
 
-function StartWaveBreak(duration, music, pathrelay = null)
-{
-	if ( !music )
-		music = "music/mvm_start_mid_wave.wav"
+/*****************************************************
+	Starts a wave break. CALL FROM POPFILE.
+	
+	> duration	- Length of break. (Defaults to 35).
+	> music		- On break end, play this music. (Defaults to "music/mvm_start_mid_wave.wav").
+	> pathrelay	- On break end, fire this relay. (Defaults to "bombpath_choose_relay").
+	
+*****************************************************/
 
+const COUNTDOWN_20s = "vo/announcer_begins_20sec.mp3"
+const COUNTDOWN_10s = "vo/announcer_begins_10sec.mp3"
+local StartVOs =
+[
+	["vo/mvm_general_wav_start01.mp3", 0],
+	["vo/mvm_general_wav_start02.mp3", 1],
+	["vo/mvm_general_wav_start03.mp3", -1],
+	["vo/mvm_general_wav_start07.mp3", -1]
+]
+local EndVOs =
+[
+	"vo/mvm_wave_end01.mp3",
+	"vo/mvm_wave_end02.mp3",
+	"vo/mvm_wave_end07.mp3",
+	"vo/mvm_wave_end08.mp3"
+]	
+
+function StartWaveBreak(duration = 35, music = "music/mvm_start_mid_wave.wav", pathrelay = "bombpath_choose_relay")
+{
 	// PATHS
-	if ( pathrelay == null )
-		pathrelay = "bombpath_choose_relay"
-	else if ( pathrelay == "Left" )
+	if ( pathrelay == "Left" )
 		pathrelay = "bombpath_left"
 	else if ( pathrelay == "Right" )
 		pathrelay = "bombpath_right"
-	
+
 	// LOGIC
 	EntFire("bombpath_arrows_clear_relay", "Trigger")
-	EntFire("item_teamflag", "ForceReset")
+	EntFire("bombpath_arrows_clear_relay", "Trigger", null, duration)
 	EntFire("upgrade_door_open_relay", "Trigger")
-	EntFire("point_populator_interface", "PauseBotSpawning")
-	EntFire( "bombpath_arrows_clear_relay", "Trigger", null, duration)
 	EntFire("upgrade_door_close_relay", "Trigger", null, duration)
-	EntFire("point_populator_interface", "UnpauseBotSpawning", null, duration)
+	EntFire( POPULATOR, "PauseBotSpawning")
+	EntFire( POPULATOR, "UnpauseBotSpawning", null, duration)
+	EntFire("item_teamflag", "ForceReset")
 
 	local size = EndVOs.len() - 1
 	local choice = EndVOs[RandomInt(0,size)]
-	EntFireByHandle(GAMERULES_ENT, "PlayVORed", choice, 0, GAMERULES_ENT, GAMERULES_ENT )
-	EntFireByHandle(GAMERULES_ENT, "PlayVORed", "Announcer.MVM_Get_To_Upgrade", 5, GAMERULES_ENT, GAMERULES_ENT )
+	EntFire( GAMERULES, "PlayVORed", choice, 0)
+	EntFire( GAMERULES, "PlayVORed", "Announcer.MVM_Get_To_Upgrade", 5)
 	EntFire( pathrelay, "Trigger", 10)
 	
 	// SOUND
 	if( duration >= 35 )
 	{
 		local delta = (duration - 20)
-		EntFireByHandle(GAMERULES_ENT, "PlayVORed", COUNTDOWN_20s, delta, GAMERULES_ENT, GAMERULES_ENT )
+		EntFire(GAMERULES, "PlayVORed", COUNTDOWN_20s, delta)
 	}
 	if( duration >= 25 )
 	{
 		local delta = (duration - 10)
-		EntFireByHandle(GAMERULES_ENT, "PlayVORed", COUNTDOWN_10s, delta, GAMERULES_ENT, GAMERULES_ENT )
+		EntFire(GAMERULES, "PlayVORed", COUNTDOWN_10s, delta)
 	}
 	if( duration >= 15 )
 	{
@@ -92,9 +96,133 @@ function StartWaveBreak(duration, music, pathrelay = null)
 		local rVO = StartVOs[choice][0]
 		local rFixup = StartVOs[choice][1]
 
-		EntFireByHandle(GAMERULES_ENT, "PlayVORed", rVO, delta + rFixup, GAMERULES_ENT, GAMERULES_ENT )
-		EntFireByHandle(GAMERULES_ENT, "PlayVORed", music, delta + rFixup, GAMERULES_ENT, GAMERULES_ENT )
+		EntFire(GAMERULES, "PlayVORed", rVO, delta + rFixup)
+		EntFire(GAMERULES, "PlayVORed", music, delta + rFixup)
 	}
 }
 
+/*****************************************************
+	Collection of functions for switching a boss
+	bot's loadout, which is handy for boss patterns
+	or boss phases.
+	
+	Functions:
+	1. OnGameEvent_post_inventory_application()
+	2. BossInit()
+	
+*****************************************************/
+
+const TAG_BOSS = "remorin_boss"
+ticker <- null
+::BOSS <-
+{
+	// Intended format:
+	// [ mvmbot, lastupdatetime ]
+	bossbots = []
+}
+
+local TF_TEAM_PVE_INVADERS = Constants.ETFTeam.TF_TEAM_PVE_INVADERS
+
+// Collect any boss robot that spawns for later use
+function OnGameEvent_post_inventory_application( params )
+{
+	local player = GetPlayerFromUserID( params.userid )
+	if( player.IsFakeClient() )
+	{
+		EntFireByHandle(player, "RunScriptCode", "::BOSS.DoBossTag(self)", 0.1, player, player )
+	}
+}
+
+::BOSS.DoBossTag <- function(bot)
+{
+	bot.ValidateScriptScope()
+	local scope = bot.GetScriptScope()
+	if( bot.HasBotTag( TAG_BOSS ) && !("TagAppended" in scope) )
+	{
+		scope["TagAppended"] <- true
+		::BOSS.bossbots.append( [bot, Time()] )
+	}
+}
+
+// Remove any boss bots that have died - TODO
+function OnGameEvent_player_death( params )
+{
+	// local player = GetPlayerFromUserID( params.userid )
+	// if( player.IsFakeClient() && player.HasBotTag( TAG_BOSS ) )
+	// {
+		// bossbots.append( player )
+	// }
+}
+
+function InitBoss()
+{
+	ticker = SpawnEntityFromTable("logic_relay",{
+		targetname = "remorin_bossupdate"
+	//	"OnSpawn#1": "self,RunScriptCode,self.ValidateScriptScope(),0,-1"
+	})
+	ticker.ValidateScriptScope()
+	local scope = ticker.GetScriptScope()
+	scope["bossphasecount"] <- 4
+	scope["bosspatterncount"] <- 1
+	scope["bosschangetime"] <- 10
+	scope["bosslastchoice"] <- 1
+	scope["BossHPScale"] <- 1.0
+	scope["BossDoRun"] <- false
+	scope["BossUpdate"] <- function()
+	{
+		// if ( !("BossDoRun" in scope) || !scope["BossDoRun"] )
+			// return;
+		
+		for( local i = 0; i < ::BOSS.bossbots.len(); i++ )
+		{
+			local ary = ::BOSS.bossbots[i]
+			local bot = ary[0]
+			local lastchangetime = ary[1]
+			
+			if( Time() > lastchangetime + scope["bosschangetime"] )
+			{
+				local hp = bot.GetHealth()
+				local max_hp = bot.GetMaxHealth()
+				this["BossHPScale"] = hp / max_hp
+				printl("----")
+				local hpgate = 1.0 / this["bossphasecount"]
+				local choice = RandomInt(1,scope["bosspatterncount"])
+				if( choice == scope["bosslastchoice"] )
+					choice = scope["bosslastchoice"] == 1 ? 2 : choice;
+				
+				for ( local j = this["bossphasecount"]; j > 0; j-- )
+				{
+					printl( j )
+					if ( this["BossHPScale"] > hpgate )
+					{
+						local loadout = format( "Phase%iPattern%i", j, choice )
+						printl(loadout)
+						EntFire( POPULATOR, "ChangeBotAttributes", loadout)
+						
+						scope["bosslastchoice"] = choice
+						::BOSS.bossbots[i][1] = Time()
+					}
+				}
+			}
+		}
+		
+		return 1.0
+	}
+	
+	AddThinkToEnt(ticker, "BossUpdate")
+}
+
+// POPFILE Functions
+// -----------------
+function RunBossLogic(phasecount, patterncount = 1)
+{
+	local scope = ticker.GetScriptScope()
+	scope["bossphasecount"] = phasecount
+	scope["bosspatterncount"] = patterncount
+	scope["BossDoRun"] = true
+}
+
+ClearGameEventCallbacks()
 Init()
+InitBoss()
+__CollectGameEventCallbacks(this)

@@ -1,0 +1,24 @@
+/*****************************************************
+	Collection of functions for switching a boss
+	bot's loadout, which is handy for boss patterns
+	or boss phases.
+	
+	Functions:
+	1. OnGameEvent_post_inventory_application()
+	  - Catches any spawned boss robots and appends them
+	  into the "bossbots" array
+	2. BossInit()
+	  - Initialises the entities needed for the boss logic to work.
+	3. RunBossLogic()
+	  - Popfile function to start the boss logic
+	  - Sets the amount of phases and patterns a boss will have.
+	  
+	Boss logic works according to these variables set by a `BossInit()` call: 
+	1. Phases
+	  - A phase is the loadout(s) a boss changes to when
+	  enough health is lost.
+	2. Patterns
+	  - Patterns are loadouts the boss'll randomly change
+	  to during each phase.
+	
+*****************************************************/

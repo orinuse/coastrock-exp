@@ -23,6 +23,12 @@ WaveSchedule
 	}
     Wave
 	{
+		InitWaveOutput
+		{
+			Target gamerules
+			Action RunScriptFile
+			Param "exp_sunny_side.nut"
+		}
 		StartWaveOutput
 		{
 			Target wave_start_endurance_relay
@@ -38,14 +44,169 @@ WaveSchedule
 			Name "W1_A"
 			Where spawnbot_tunnel
 			WaitBetweenSpawns 1.25
-			TotalCount 5
-			MaxActive 5
+			TotalCount 1
+			MaxActive 1
 			SpawnCount 1
 			TotalCurrency 50
+			FirstSpawnOutput
+            {
+                Target gamerules
+                Action RunScriptCode
+                Param "RunBossLogic(2,2)"
+            }
 			TFBot
 			{
-				Template Remorin_Sniper_Bow_Bleed
-                Skill Normal
+                Class Sniper
+				Health 500
+				Scale 1.7
+				Name "a"
+				ClassIcon sniper_bow
+				Tag remorin_boss
+				EventChangeAttributes
+				{
+					Default
+					{
+						Skill Expert
+						Tag remorin_boss
+						Tag bot_giant
+						Item "Sniper's Snipin' Glass"
+						Item "The Fortified Compound"
+						Attributes MiniBoss
+						Attributes UseBossHealthBar
+						BehaviorModifiers Push
+						ItemAttributes
+						{
+							ItemName "The Fortified Compound"
+							"override projectile type" 1
+							"damage bonus"	3
+							"fire rate bonus" 0.01
+							"sniper fires tracer" 1
+							"projectile penetration" 1	// has tracer, makes sense
+							"gesture speed increase" 2
+							"ragdolls become ash" 1
+						}
+						CharacterAttributes
+						{
+							"move speed penalty"	0.35
+							"damage force reduction" 0.0
+							"airblast vulnerability multiplier" 0.00
+							"airblast vertical vulnerability multiplier" 0.00
+							"rage giving scale"	0.4
+						}
+					}
+					Phase1Pattern1
+					{
+						Skill Expert
+						Tag remorin_boss
+						Tag bot_giant
+						Item "The Fortified Compound"
+						Attributes MiniBoss
+						Item "Lord Cockswain's Novelty Mutton Chops and Pipe"
+						Attributes UseBossHealthBar
+						BehaviorModifiers Push
+						ItemAttributes
+						{
+							ItemName "The Fortified Compound"
+							"override projectile type" 12	// cm5k doesn't crash
+							"damage bonus HIDDEN"	0.7
+							"fire rate bonus" 0.4
+							"dmg bonus vs buildings" 2.0
+							"Set DamageType Ignite" 1
+							"damage bonus vs burning" 1.5
+							"damage blast push" 5
+							"Blast radius increased"	1.15
+							"projectile speed decreased" 0.65	// gahhh it doesnt work with overriden projectiles
+							"gesture speed increase" 1.5
+							"no self blast dmg" 2
+						}
+						CharacterAttributes
+						{
+							"move speed penalty"	0.35
+							"damage force reduction" 0.0
+							"airblast vulnerability multiplier" 0.00
+							"airblast vertical vulnerability multiplier" 0.00
+							"rage giving scale"	0.4
+						}
+					}
+					Phase1Pattern2
+					{
+						Skill Expert
+						Tag remorin_boss
+						Tag bot_giant
+						Item "The Fortified Compound"
+						Attributes MiniBoss
+						Item "The Buccaneer's Bicorne"
+						Attributes UseBossHealthBar
+						BehaviorModifiers Push
+						ItemAttributes
+						{
+							ItemName "The Fortified Compound"
+							"override projectile type" 17 //cannon ball attribute
+							"damage bonus HIDDEN"	1.5
+							"fire rate bonus" 0.001
+							"gesture speed increase" 2
+							"damage blast push"	30
+						}
+						CharacterAttributes
+						{
+							"move speed penalty"	0.35
+							"damage force reduction" 0.0
+							"airblast vulnerability multiplier" 0.00
+							"airblast vertical vulnerability multiplier" 0.00
+							"rage giving scale"	0.4
+						}
+					}
+					Phase2Pattern1
+					{
+						Skill Normal
+						Tag remorin_boss
+						Attributes MiniBoss
+						Tag bot_giant
+						BehaviorModifiers Mobber
+						WeaponRestrictions	SecondaryOnly
+						Attributes	"AlwaysFireWeapon"
+						Item jarate
+						ItemAttributes
+						{
+							ItemName	jarate
+							"effect bar recharge rate increased"	0.125
+							"deploy time increased" 0.0
+						}
+						CharacterAttributes
+						{
+							"move speed penalty"	0.8
+							"damage force reduction" 0.0
+							"airblast vulnerability multiplier" 0.00
+							"airblast vertical vulnerability multiplier" 0.00
+							"rage giving scale"	0.4
+						}
+					}
+					Phase2Pattern2
+					{
+						Skill Normal
+						Tag remorin_boss
+						Attributes MiniBoss
+						Item "The Bushwacka"
+						WeaponRestrictions MeleeOnly
+						Tag bot_giant
+						BehaviorModifiers Mobber
+						ItemAttributes
+						{
+							ItemName "The Bushwacka"
+							"fire rate bonus" 0.6
+							"damage bonus" 1.5
+							"melee range multiplier" 1.5
+						}
+						CharacterAttributes
+						{
+							"move speed penalty"	1.15
+							"damage force reduction" 0.0
+							"airblast vulnerability multiplier" 0.00
+							"airblast vertical vulnerability multiplier" 0.00
+							"rage giving scale"	0.4
+						}
+					}
+				}
 			}
 		}
 		
