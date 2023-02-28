@@ -68,19 +68,47 @@ WaveSchedule
         }
 		Sunny_Medic_BigHeal
 		{
-			Template T_TFBot_Medic_BigHeal
+			Template Remorin_Medic_Megaheal
+			ClassIcon Medic
+			ItemAttributes
+			{
+			    ItemName "The Quick-Fix"
+			    "bot medic uber health threshold" 400
+				"ubercharge rate bonus" 200
+				"uber duration bonus" -508
+				"heal rate bonus" 0.5
+				"healing received bonus" 0.8
+			}	
 		}
         Sunny_Medic_Krit
         {
         //    Template Sunny_inf_krit
+			Class Medic
+			Health	150
+			ClassIcon	medic_kritz
+			Skill	Easy
+			Item	"The Kritzkrieg"
+			Item	"Titanium Tyrolean"
             Name "Malpractice Doctor"
             Item "Flatliner"
+			Attributes AlwaysCrit
+			Attributes SpawnWithFullCharge
+			ItemAttributes
+			{
+				ItemName "TF_WEAPON_SYRINGEGUN_MEDIC"
+				"damage penalty" 0.1
+			}
+			CharacterAttributes
+			{
+				"heal rate bonus" 0.1
+			}
             Tag bot_squad_member
             ItemAttributes
             {
                 ItemName	"The Kritzkrieg"
                 "uber duration bonus" 3.0
                 "ubercharge rate bonus" 6
+				"bot medic uber health threshold" 400
             }
         }
         Sunny_Medic_Krit_Inf
@@ -112,6 +140,9 @@ WaveSchedule
             Template Remorin_SentryBuster
         }
 	}
+
+	//Subwave 1: $700 + $1950 = $2650
+	//Subwave 2: 
     Wave
 	{
 		InitWaveOutput
@@ -132,41 +163,105 @@ WaveSchedule
 		}
 		WaveSpawn
 		{
-			Name "W1_A"
-			Where spawnbot_tunnel
-			Where spawnbot
-			Where spawnbot_parachute
-			WaitBetweenSpawns 1.5
-			TotalCount 36
-			MaxActive 7
-			SpawnCount 3
-			TotalCurrency 50
-			TFBot
+			Name "Intro"
+			WaitBeforeStarting 1
+			TotalCount 0
+			FirstSpawnOutput 
 			{
-                Template T_TFBot_Demoman_Knight
+				Target gamerules
+				Action RunScriptCode
+				Param "ChatPrint(`\x000722A1FFWelcome to the \x0007393232Gray Mann \x000722A1FFCoastrock Vacation Village!`)"
 			}
 		}
 		WaveSpawn
 		{
-			Name "W1_A"
-			Where spawnbot_parachute
-			WaitBeforeStarting 7
-			WaitBetweenSpawns 5
-			TotalCount 24
-			MaxActive 4
-			SpawnCount 4
-			TotalCurrency 50
-			TFBot
+			Name "Intro"
+			WaitBeforeStarting 4
+			TotalCount 0
+			FirstSpawnOutput 
 			{
-                Template Sunny_Medic_Bigheal
+				Target gamerules
+				Action RunScriptCode
+				Param "ChatPrint(`\x000722A1FFIn this facility, we have a lot of entertainment!`)"
+			}
+		}
+		WaveSpawn
+		{
+			Name "Intro"
+			WaitBeforeStarting 8
+			TotalCount 0
+			FirstSpawnOutput 
+			{
+				Target gamerules
+				Action RunScriptCode
+				Param "ChatPrint(`\x000722A1FFsuch as the water park...`)"
+			}
+		}
+		WaveSpawn
+		{
+			Name "Intro"
+			WaitBeforeStarting 12
+			TotalCount 0
+			FirstSpawnOutput 
+			{
+				Target gamerules
+				Action RunScriptCode
+				Param "ChatPrint(`\x000722A1FFnice cafe...`)"
+			}
+		}
+		WaveSpawn
+		{
+			Name "Intro"
+			WaitBeforeStarting 16
+			TotalCount 0
+			FirstSpawnOutput 
+			{
+				Target gamerules
+				Action RunScriptCode
+				Param "ChatPrint(`\x0007FF0000and deadly killing robot!`)"
+			}
+			FirstSpawnWarningSound "vo/mvm/norm/Heavy_mvm_battlecry04.mp3"
+		}
+		WaveSpawn
+		{
+			Name "Intro"
+			WaitBeforeStarting 16.2
+			TotalCount 0
+			FirstSpawnWarningSound "vo/mvm/norm/Heavy_mvm_battlecry05.mp3"
+		}
+		WaveSpawn
+		{
+			Name "Intro"
+			WaitBeforeStarting 16.5
+			TotalCount 0
+			FirstSpawnWarningSound "vo/mvm/norm/Heavy_mvm_battlecry06.mp3"
+		}
+		WaveSpawn
+		{
+			Name "Intro"
+			WaitBeforeStarting 16.7
+			TotalCount 0
+			FirstSpawnWarningSound "vo/mvm/norm/Demoman_mvm_battlecry05.mp3"
+		}
+		WaveSpawn
+		{
+			Name "Intro_Last"
+			WaitBeforeStarting 20
+			TotalCount 0
+			FirstSpawnOutput 
+			{
+				Target gamerules
+				Action RunScriptCode
+				Param "ChatPrint(`\x000722A1FFPlease do enjoy your stay!`)"
 			}
 		}
 		WaveSpawn
 		{
 			Name "W1_Heavy"
+			WaitForAllDead "Intro"
 			Where spawnbot
 			Where spawnbot_parachute
-			WaitBeforeStarting 20
+			WaitBeforeStarting 1
 			WaitBetweenSpawns 15
 			TotalCount 40
 			MaxActive 8
@@ -179,18 +274,56 @@ WaveSchedule
 					Template Sunny_Heavy
 					Skill Easy
 					Attributes AlwaysCrit
-					BehaviorModifiers Push
+					ItemAttributes
+					{
+						ItemName "tf_weapon_minigun"
+						"damage bonus" 0.6
+					}
 				}
 				TFBot
 				{
-					Template Remorin_Medic_Megaheal
-					ClassIcon medic
+					Template Sunny_Medic_Bigheal
 				}
 			}
 		}
 		WaveSpawn
 		{
+			Name "W1_A"
+			WaitForAllDead "Intro"
+			Where spawnbot_tunnel
+			WaitBetweenSpawns 1.5
+			TotalCount 25
+			MaxActive 5
+			SpawnCount 1
+			TotalCurrency 50
+			TFBot
+			{
+                Template Sunny_Pyro
+                BehaviorModifiers Push
+			}
+		}
+		WaveSpawn
+		{
+			Name "W1_A"
+			WaitForAllDead "Intro"
+			Where spawnbot_tunnel
+            Where spawnbot
+            Where spawnbot_parachute
+            WaitBeforeStarting 2
+			WaitBetweenSpawns 4
+			TotalCount 36
+			MaxActive 8
+			SpawnCount 4
+			TotalCurrency 50
+			TFBot
+			{
+				Template T_TFBot_Demoman_Knight
+			}
+		}
+		WaveSpawn
+		{
 			Name "W1 Giant Charged Soldier"
+			WaitForAllDead "Intro"
 			Where spawnbot_parachute
 			WaitBeforeStarting 20
 			WaitBetweenSpawns 35
@@ -202,10 +335,6 @@ WaveSchedule
 			{
 				Template T_TFBot_Giant_Soldier_Crit
                 Name "Giant Charged Rocketeer"
-				CharacterAttributes
-				{
-					"head scale" 1.0
-				}
 			}
 		}
         WaveSpawn
@@ -216,7 +345,7 @@ WaveSchedule
 			WaitBeforeStarting 25
 			WaitBetweenSpawns 25
 			TotalCount 6
-			MaxActive 3
+			MaxActive 6
 			SpawnCount 3
 			TotalCurrency 150
             Squad 
@@ -225,10 +354,6 @@ WaveSchedule
                 {
                     Template T_TFBot_Giant_Soldier_Crit
                     Name "Giant Charged Rocketeer"
-                    CharacterAttributes 
-                    {
-                        "head scale" 1.0
-                    }
                 }
                 TFBot 
                 {
@@ -330,11 +455,10 @@ WaveSchedule
 			Where spawnbot_tunnel
             WaitForAllSpawned "W1_C"
 			WaitBetweenSpawns 5
-			TotalCount 28
+			TotalCount 12
 			MaxActive 4
 			SpawnCount 2
 			TotalCurrency 50
-            Support Limited
 			TFBot
 			{
 				Template Sunny_Heavy
@@ -346,11 +470,10 @@ WaveSchedule
 			Where spawnbot_flank
             WaitForAllSpawned "W1_C2"
 			WaitBetweenSpawns 5
-			TotalCount 32
+			TotalCount 20
 			MaxActive 4
 			SpawnCount 2
 			TotalCurrency 50
-            Support Limited
 			TFBot
 			{
 				Template Sunny_Heavy
@@ -375,18 +498,13 @@ WaveSchedule
 		}
 		WaveSpawn 
 		{
-			Name "W1_Tank"
-			WaitForAllDead	"W1_C"
+			Name "W1_Boss"
+			WaitForAllDead	"W1_D Heavy"
+			WaitBeforeStarting	3
 			TotalCount 	1
 			MaxActive	1
 			SpawnCount	1
-			TotalCurrency	300
-			DoneOutput
-			{
-				Target "gamerules"
-				Action "RunScriptCode"
-				Param "StartWaveBreak(35, `music/mvm_start_tank_wave.wav`)"
-			}
+			TotalCurrency	200
 			Tank
 			{
 				Health 26000
@@ -404,19 +522,216 @@ WaveSchedule
 				}
 			}
 		}
+		WaveSpawn
+		{
+			Name "W1_Boss"
+			WaitForAllDead	"W1_D Heavy"
+			WaitBeforeStarting	3
+			Where spawnbot_parachute
+			TotalCount 1
+			MaxActive 1
+			SpawnCount 1
+			TotalCurrency 800
+			// FirstSpawnOutput 			//replace these with the new vscript
+			// {
+			// 	Target gamerules
+			// 	Action RunScriptCode
+			// 	Param "BossPhase(self)"
+			// }
+			FirstSpawnOutput 
+			{
+				Target gamerules
+				Action RunScriptCode
+				Param "ChatPrint(`\x0007CA3131A Rocketeer dropping into the battle field!`)"
+			}
+			TFBot
+			{
+                Class Soldier
+				Health 12500
+				Scale 1.8
+				Name "RoboDoe"
+				ClassIcon soldier_barrage
+				EventChangeAttributes
+				{
+					Default
+					{
+						Skill Hard
+						Tag remorin_boss
+						Tag bot_giant
+						Item "Hat With No Name"
+						Item "The Original"
+						Attributes MiniBoss
+						Attributes UseBossHealthBar
+						WeaponRestrictions PrimaryOnly
+						ItemAttributes
+						{
+							ItemName "The Original"
+							"faster reload rate" 0.2
+							"fire rate penalty" 2
+							"damage bonus" 1.6
+							"Projectile speed decreased" 0.5
+						}
+						CharacterAttributes
+						{
+							"move speed penalty"	0.35
+							"damage force reduction" 0.0
+							"airblast vulnerability multiplier" 0.00
+							"airblast vertical vulnerability multiplier" 0.00
+							"rage giving scale"	0.4
+						}
+					}
+					BossAttack1
+					{
+						Skill Expert
+						Tag bot_Boss
+						Tag bot_giant
+						Item "The Liberty Launcher"
+						Attributes MiniBoss
+						Attributes UseBossHealthBar
+						WeaponRestrictions PrimaryOnly
+						ItemAttributes
+						{
+							ItemName "The Liberty Launcher"
+							"damage causes airblast" 1
+							"damage penalty" 0.5
+							"fire rate bonus" 0.25
+							"clip size upgrade atomic" 5
+							"faster reload rate" 0.2
+							"Blast radius increased" 1.2
+							"projectile spread angle penalty" 4
+						}
+						CharacterAttributes
+						{
+							"move speed penalty"	0.35
+							"damage force reduction" 0.0
+							"airblast vulnerability multiplier" 0.00
+							"airblast vertical vulnerability multiplier" 0.00
+							"rage giving scale"	0.4
+						}
+					}
+					BossAttack2
+					{
+						Skill Expert
+						Tag bot_Boss
+						Tag bot_giant
+						Item "tf_weapon_rocketlauncher"
+						Attributes MiniBoss
+						Attributes UseBossHealthBar
+						Attributes HoldFireUntilFullReload
+						WeaponRestrictions PrimaryOnly
+						ItemAttributes
+						{
+							Itemname "tf_weapon_rocketlauncher"
+							"clip size upgrade atomic" 26.0
+							"faster reload rate" 0.22
+							"fire rate bonus" 0.18
+							"projectile spread angle penalty" 5
+							"damage bonus" 1.0
+							"Projectile speed decreased" 0.5
+						}
+						CharacterAttributes
+						{
+							"move speed penalty"	0.35
+							"damage force reduction" 0.0
+							"airblast vulnerability multiplier" 0.00
+							"airblast vertical vulnerability multiplier" 0.00
+							"rage giving scale"	0.4
+						}
+					}
+					BossHalfHealthAttack1
+					{
+						Skill Expert
+						Tag bot_Boss
+						Tag bot_giant
+						Item "The Black Box"
+						Item "The Buff Banner"
+						Attributes MiniBoss
+						Attributes HoldFireUntilFullReload
+						WeaponRestrictions PrimaryOnly
+						ItemAttributes
+						{
+							ItemName	 "The Black Box"
+							"damage penalty" 0.45
+							"fire rate bonus" 0.2
+							"reload time increased" 0.7
+							"blast radius increased" 1.25
+							"clip size upgrade atomic" 5
+							"projectile spread angle penalty" 4
+							"heal on hit for rapidfire" 350
+							"Projectile speed decreased" 0.75
+							"killstreak tier" 2
+							"killstreak idleeffect" 7
+						}
+						CharacterAttributes
+						{
+							"move speed penalty"	0.35
+							"damage force reduction" 0.0
+							"airblast vulnerability multiplier" 0.00
+							"airblast vertical vulnerability multiplier" 0.00
+							"rage giving scale"	0.4
+							"increase buff duration"	1001
+						}
+					}
+					BossHalfHealthAttack2
+					{
+						Skill Expert
+						Tag bot_Boss
+						Tag bot_giant
+						Item "tf_weapon_rocketlauncher"
+						Item "The Buff Banner"
+						Attributes MiniBoss
+						Attributes HoldFireUntilFullReload
+						WeaponRestrictions PrimaryOnly
+						ItemAttributes
+						{
+							ItemName "tf_weapon_rocketlauncher"
+							"fire rate bonus" 0.2
+							"faster reload rate" 0.4
+							"clip size upgrade atomic" 5.0
+							"Projectile speed decreased" 0.8
+						}
+						CharacterAttributes
+						{
+							"move speed penalty"	0.35
+							"damage force reduction" 0.0
+							"airblast vulnerability multiplier" 0.00
+							"airblast vertical vulnerability multiplier" 0.00
+							"rage giving scale"	0.4
+							"increase buff duration"	1001
+						}
+					}
+				}
+			}
+		}
+		WaveSpawn 
+		{
+			Name "W1_WaveBreak"
+			WaitForAllDead	"W1_Boss"
+			TotalCount 	0
+			DoneOutput
+			{
+				Target "gamerules"
+				Action "RunScriptCode"
+				Param "StartWaveBreak(40, `music/mvm_start_tank_wave.wav`)"
+			}
+			TFBot
+			{
+				ClassIcon Heavy
+			}
+		}
 		WaveSpawn 
 		{
 			Name "W2_Tank"
-			WaitBeforeStarting	38
+			WaitBeforeStarting	45
 			WaitBetweenSpawns	60
-			WaitForAllDead	"W1_Tank"
-			TotalCount 	3
+			WaitForAllDead	"W1_Boss"
+			TotalCount 	2
 			MaxActive	2
 			SpawnCount	1
-			TotalCurrency	500
+			TotalCurrency	250
 			Tank
 			{
-				Health 28000
+				Health 20000
 				Speed 65
 				Name "Tank"
 				StartingPathTrackNode "tankpath_alt"
@@ -432,5 +747,667 @@ WaveSchedule
 				}
 			}
 		}
+		WaveSpawn 
+		{
+			Name "W2_Tank_2"
+			WaitBeforeStarting	60
+			WaitBetweenSpawns	60
+			WaitForAllDead	"W2_Tank"
+			TotalCount 	2
+			MaxActive	2
+			SpawnCount	1
+			TotalCurrency	250
+			Tank
+			{
+				Health 30000
+				Speed 55
+				Name "Tank"
+				StartingPathTrackNode "tankpath_alt"
+				OnKilledOutput
+				{
+					Target boss_dead_relay
+					Action Trigger
+				}
+				OnBombDroppedOutput
+				{
+					Target boss_deploy_relay
+					Action Trigger
+				}
+			}
+		}
+		WaveSpawn 
+		{
+			Name "W2_Crit_Pyro"
+			Where	spawnbot
+			Where 	spawnbot_tunnel
+			Where 	spawnbot_parachute
+			WaitBeforeStarting	38
+			WaitBetweenSpawns	1.5
+			WaitForAllDead	"W1_Boss"
+			TotalCount 	56
+			MaxActive	15
+			SpawnCount	1
+			TotalCurrency	100
+			FirstSpawnOutput 
+			{
+				Target gamerules
+				Action RunScriptCode
+				Param "ChatPrint(`\x00072229F9CRIT BOT MALICE!!!`)"
+			}
+			TFBot
+			{
+				Template Sunny_Pyro
+				Skill Easy
+				Attributes AlwaysFireWeapon
+				Attributes AlwaysCrit
+			}
+		}
+		WaveSpawn 
+		{
+			Name "W2_Crit_Heavy"
+			Where	spawnbot
+			Where 	spawnbot_tunnel
+			Where 	spawnbot_parachute
+			WaitBeforeStarting	39
+			WaitBetweenSpawns	3
+			WaitForAllDead	"W2_Boss"
+			TotalCount 	24
+			MaxActive	6
+			SpawnCount	3
+			TotalCurrency	50
+			TFBot
+			{
+				Template T_TFBot_Heavyweapons_Shotgun
+				Name "Coastline Shotgunner"
+				ClassIcon Heavy
+				Skill Hard
+				Attributes AlwaysCrit
+			}
+		}
+		WaveSpawn 
+		{
+			Name "W2_Crit_Scout"
+			Where	spawnbot
+			Where 	spawnbot_tunnel
+			Where 	spawnbot_parachute
+			WaitBeforeStarting	6
+			WaitBetweenSpawns	5
+			WaitForAllSpawned	"W2_Crit_Pyro"
+			TotalCount 	49
+			MaxActive	14
+			SpawnCount	7
+			TotalCurrency	50
+			TFBot
+			{
+				Template Sunny_Scout
+				Skill Normal
+				Attributes AlwaysCrit
+			}
+		}
+		WaveSpawn 
+		{
+			Name "W2_Crit_Bowman"
+			Where	spawnbot
+			Where 	spawnbot_tunnel
+			Where 	spawnbot_parachute
+			WaitBeforeStarting	6
+			WaitBetweenSpawns	1
+			WaitForAllSpawned	"W2_Crit_Heavy"
+			TotalCount 	33
+			MaxActive	5
+			SpawnCount	1
+			TotalCurrency	50
+			TFBot
+			{
+				ClassIcon	sniper
+				WeaponRestrictions PrimaryOnly
+				Health	125
+				Attributes	AlwaysCrit
+				Skill	Normal
+				Name	"Bowbot"
+				Class	Sniper
+				Item	"The Huntsman"
+				ItemAttributes
+				{
+					ItemName	"The Huntsman"
+					"damage penalty" 0.8
+				}
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_jarate"
+			Where	spawnbot
+			Where 	spawnbot_parachute
+			WaitBeforeStarting	6
+			WaitBetweenSpawns	1
+			WaitForAllSpawned	"W2_Crit_Bowman"
+			WaitForAllDead	"W2_Crit_Scout"
+			TotalCount 	44
+			MaxActive	11
+			SpawnCount	11
+			TotalCurrency	50
+			TFBot
+			{
+				ClassIcon	sniper
+				WeaponRestrictions SecondaryOnly
+				Attributes AlwaysFireWeapon
+				Health	125
+				Attributes	AlwaysCrit
+				Skill	Easy
+				Name	"Lemon Juice Production Robot"
+				Class	Sniper
+				Item	"jarate"
+				ItemAttributes
+				{
+					ItemName	"jarate"
+					"effect bar recharge rate increased"	0.4
+					"deploy time increased" 0.0
+				}
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_jarate"
+			Where	spawnbot
+			Where 	spawnbot_tunnel
+			WaitBeforeStarting	6
+			WaitBetweenSpawns	1
+			WaitForAllSpawned	"W2_Crit_Bowman"
+			WaitForAllDead	"W2_Crit_Scout"
+			TotalCount 	31
+			MaxActive	6
+			SpawnCount	1
+			TotalCurrency	50
+			TFBot
+			{
+				ClassIcon	sniper
+				WeaponRestrictions MeleeOnly
+				Attributes AlwaysFireWeapon
+				Health	250
+				Attributes	AlwaysCrit
+				Skill	Hard
+				Name	"Crocodile Robot"
+				Class	Sniper
+				Scale 1.2
+				Item	"The Bushwacka"
+				CharacterAttributes	
+				{
+					"move speed bonus" 1.10
+				}
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_Support Scout"
+			Where	spawnbot
+			Where   spawnbot_flank
+			Where 	spawnbot_tunnel
+			WaitBeforeStarting	6
+			WaitBetweenSpawns	10
+			WaitForAllSpawned	"W2_Jarate"
+			TotalCount 	400
+			MaxActive	8
+			SpawnCount	4
+			TotalCurrency	400
+			Support 1
+			RandomChoice
+			{
+				TFBot
+				{
+					Class Scout
+					Skill Hard
+				}
+				TFBot
+				{
+					Class Scout
+					Skill Hard
+				}
+				TFBot
+				{
+					Class Scout
+					Skill Hard
+				}
+				TFBot
+				{
+					Class Scout
+					Skill Hard
+				}
+				TFBot
+				{
+					Class Scout
+					Skill Hard
+				}
+				TFBot
+				{
+					Template T_TFBot_Scout_FAN
+					Attributes AlwaysCrit
+				}
+				TFBot
+				{
+					Template T_TFBot_Scout_FAN
+					Attributes AlwaysCrit				
+					}
+				TFBot
+				{
+					Template T_TFBot_Scout_FAN
+					Attributes AlwaysCrit
+				}
+				TFBot
+				{
+					Template T_TFBot_Scout_Bonk
+					Attributes AlwaysCrit
+				}
+				TFBot
+				{
+					Template T_TFBot_Scout_Bonk
+					Attributes AlwaysCrit
+				}
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_Giant"
+			Where	spawnbot
+			Where 	spawnbot_tunnel
+			WaitBeforeStarting	6
+			WaitBetweenSpawns	20
+			WaitForAllSpawned	"W2_Jarate"
+			TotalCount 	15
+			MaxActive	15
+			SpawnCount	5
+			TotalCurrency	100
+			Squad
+			{
+				TFBot
+				{
+					Template Remorin_Heavy_Deflector
+					Template gCHAR_HEAVY
+					Name "Mr. Red Deflect"
+					Attributes MiniBoss
+					Health 5000
+					Skill Expert
+					WeaponRestrictions PrimaryOnly
+					ItemAttributes
+					{
+						ItemName "Deflector"
+						"damage bonus"	1.5
+						"damage penalty" 1.0
+					}
+					CharacterAttributes
+					{
+						"move speed bonus" 0.45
+					}
+				}
+				TFBot
+				{
+					Template Sunny_Medic_Krit_Inf
+				}
+				TFBot
+				{
+					Template Sunny_Medic_Krit_Inf
+				}
+				TFBot
+				{
+					Template Sunny_Medic_Krit_Inf
+				}
+				TFBot
+				{
+					Template Sunny_Medic_Krit_Inf
+				}
+			}
+		}
 	}
+	Wave
+	{
+		InitWaveOutput
+		{
+			Target gamerules
+			Action RunScriptFile
+			Param "exp_sunny_side.nut"
+		}
+		StartWaveOutput
+		{
+			Target wave_start_endurance_relay
+			Action Trigger
+		}
+		DoneOutput
+		{
+			Target wave_finished_relay
+			Action Trigger
+		}
+		WaveSpawn 
+		{
+			Name "W2_Tank"
+			WaitBetweenSpawns	60
+			TotalCount 	2
+			MaxActive	2
+			SpawnCount	1
+			TotalCurrency	250
+			Tank
+			{
+				Health 20000
+				Speed 65
+				Name "Tank"
+				StartingPathTrackNode "tankpath_alt"
+				OnKilledOutput
+				{
+					Target boss_dead_relay
+					Action Trigger
+				}
+				OnBombDroppedOutput
+				{
+					Target boss_deploy_relay
+					Action Trigger
+				}
+			}
+		}
+		WaveSpawn 
+		{
+			Name "W2_Tank_2"
+			WaitBeforeStarting	60
+			WaitBetweenSpawns	60
+			WaitForAllDead	"W2_Tank"
+			TotalCount 	2
+			MaxActive	2
+			SpawnCount	1
+			TotalCurrency	250
+			Tank
+			{
+				Health 30000
+				Speed 55
+				Name "Tank"
+				StartingPathTrackNode "tankpath_alt"
+				OnKilledOutput
+				{
+					Target boss_dead_relay
+					Action Trigger
+				}
+				OnBombDroppedOutput
+				{
+					Target boss_deploy_relay
+					Action Trigger
+				}
+			}
+		}
+		WaveSpawn 
+		{
+			Name "W2_Crit_Pyro"
+			Where	spawnbot
+			Where 	spawnbot_tunnel
+			Where 	spawnbot_parachute
+			WaitBetweenSpawns	1.5
+			TotalCount 	56
+			MaxActive	15
+			SpawnCount	1
+			TotalCurrency	100
+			FirstSpawnOutput 
+			{
+				Target gamerules
+				Action RunScriptCode
+				Param "ChatPrint(`\x00072229F9CRIT BOT MALICE!!!`)"
+			}
+			TFBot
+			{
+				Template Sunny_Pyro
+				Skill Easy
+				Attributes AlwaysFireWeapon
+				Attributes AlwaysCrit
+			}
+		}
+		WaveSpawn 
+		{
+			Name "W2_Crit_Heavy"
+			Where	spawnbot
+			Where 	spawnbot_tunnel
+			Where 	spawnbot_parachute
+			WaitBetweenSpawns	8
+			TotalCount 	24
+			MaxActive	6
+			SpawnCount	3
+			TotalCurrency	50
+			TFBot
+			{
+				Template T_TFBot_Heavyweapons_Shotgun
+				Name "Coastline Shotgunner"
+				ClassIcon Heavy
+				Skill Hard
+				Attributes AlwaysCrit
+			}
+		}
+		WaveSpawn 
+		{
+			Name "W2_Crit_Scout"
+			Where	spawnbot
+			Where 	spawnbot_tunnel
+			Where 	spawnbot_parachute
+			WaitBeforeStarting	6
+			WaitBetweenSpawns	5
+			WaitForAllSpawned	"W2_Crit_Pyro"
+			TotalCount 	49
+			MaxActive	14
+			SpawnCount	7
+			TotalCurrency	50
+			TFBot
+			{
+				Template Sunny_Scout
+				Skill Normal
+				Attributes AlwaysCrit
+			}
+		}
+		WaveSpawn 
+		{
+			Name "W2_Crit_Bowman"
+			Where	spawnbot
+			Where 	spawnbot_tunnel
+			Where 	spawnbot_parachute
+			WaitBeforeStarting	6
+			WaitBetweenSpawns	1
+			WaitForAllSpawned	"W2_Crit_Heavy"
+			TotalCount 	33
+			MaxActive	5
+			SpawnCount	1
+			TotalCurrency	50
+			TFBot
+			{
+				ClassIcon	sniper
+				WeaponRestrictions PrimaryOnly
+				Health	125
+				Attributes	AlwaysCrit
+				Skill	Normal
+				Name	"Bowbot"
+				Class	Sniper
+				Item	"The Huntsman"
+				ItemAttributes
+				{
+					ItemName	"The Huntsman"
+					"damage penalty" 0.8
+				}
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_jarate"
+			Where	spawnbot
+			Where 	spawnbot_parachute
+			WaitBeforeStarting	6
+			WaitBetweenSpawns	1
+			WaitForAllSpawned	"W2_Crit_Bowman"
+			WaitForAllDead	"W2_Crit_Scout"
+			TotalCount 	44
+			MaxActive	11
+			SpawnCount	11
+			TotalCurrency	50
+			TFBot
+			{
+				ClassIcon	sniper
+				WeaponRestrictions SecondaryOnly
+				Attributes AlwaysFireWeapon
+				Health	125
+				Attributes	AlwaysCrit
+				Skill	Easy
+				Name	"Lemon Juice Production Robot"
+				Class	Sniper
+				Item	"jarate"
+				ItemAttributes
+				{
+					ItemName	"jarate"
+					"effect bar recharge rate increased"	0.4
+					"deploy time increased" 0.0
+				}
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_jarate"
+			Where	spawnbot
+			Where 	spawnbot_tunnel
+			WaitBeforeStarting	6
+			WaitBetweenSpawns	1
+			WaitForAllSpawned	"W2_Crit_Bowman"
+			WaitForAllDead	"W2_Crit_Scout"
+			TotalCount 	31
+			MaxActive	6
+			SpawnCount	1
+			TotalCurrency	50
+			TFBot
+			{
+				ClassIcon	sniper
+				WeaponRestrictions MeleeOnly
+				Attributes AlwaysFireWeapon
+				Health	250
+				Attributes	AlwaysCrit
+				Skill	Hard
+				Name	"Crocodile Robot"
+				Class	Sniper
+				Scale 1.2
+				Item	"The Bushwacka"
+				CharacterAttributes	
+				{
+					"move speed bonus" 1.10
+				}
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_Support Scout"
+			Where	spawnbot
+			Where   spawnbot_flank
+			Where 	spawnbot_tunnel
+			WaitBeforeStarting	6
+			WaitBetweenSpawns	10
+			WaitForAllSpawned	"W2_Jarate"
+			TotalCount 	400
+			MaxActive	8
+			SpawnCount	4
+			TotalCurrency	400
+			Support 1
+			RandomChoice
+			{
+				TFBot
+				{
+					Class Scout
+					Skill Hard
+				}
+				TFBot
+				{
+					Class Scout
+					Skill Hard
+				}
+				TFBot
+				{
+					Class Scout
+					Skill Hard
+				}
+				TFBot
+				{
+					Class Scout
+					Skill Hard
+				}
+				TFBot
+				{
+					Class Scout
+					Skill Hard
+				}
+				TFBot
+				{
+					Template T_TFBot_Scout_FAN
+					Attributes AlwaysCrit
+				}
+				TFBot
+				{
+					Template T_TFBot_Scout_FAN
+					Attributes AlwaysCrit				
+					}
+				TFBot
+				{
+					Template T_TFBot_Scout_FAN
+					Attributes AlwaysCrit
+				}
+				TFBot
+				{
+					Template T_TFBot_Scout_Bonk
+					Attributes AlwaysCrit
+				}
+				TFBot
+				{
+					Template T_TFBot_Scout_Bonk
+					Attributes AlwaysCrit
+				}
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_Giant"
+			Where	spawnbot
+			Where 	spawnbot_tunnel
+			WaitBeforeStarting	6
+			WaitBetweenSpawns	20
+			WaitForAllSpawned	"W2_Jarate"
+			TotalCount 	15
+			MaxActive	15
+			SpawnCount	5
+			TotalCurrency	100
+			Squad
+			{
+				TFBot
+				{
+					Template Remorin_Heavy_Deflector
+					Template gCHAR_HEAVY
+					Name "Mr. Red Deflect"
+					Attributes MiniBoss
+					Health 5000
+					Skill Expert
+					WeaponRestrictions PrimaryOnly
+					ItemAttributes
+					{
+						ItemName "Deflector"
+						"damage bonus"	1.5
+						"damage penalty" 1.0
+					}
+					CharacterAttributes
+					{
+						"move speed bonus" 0.5
+					}
+				}
+				TFBot
+				{
+					Template Sunny_Medic_Krit_Inf
+				}
+				TFBot
+				{
+					Template Sunny_Medic_Krit_Inf
+				}
+				TFBot
+				{
+					Template Sunny_Medic_Krit_Inf
+				}
+				TFBot
+				{
+					Template Sunny_Medic_Krit_Inf
+				}
+			}
+		}
+	}
+	
 }
