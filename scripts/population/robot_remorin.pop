@@ -591,6 +591,7 @@ WaveSchedule
 				"damage force reduction" 0.6
 				"airblast vulnerability multiplier" 0.3
 				"airblast vertical vulnerability multiplier" 0.5
+				"override footstep sound set" 7
 			}
 		}
 		gCHAR_MINI
@@ -613,6 +614,7 @@ WaveSchedule
 				"damage force reduction" 0.0
 				"airblast vulnerability multiplier" 0.00
 				"airblast vertical vulnerability multiplier" 0.00
+			//	"override footstep sound set" 5
 				"rage giving scale"	0.4
 			}
 		}

@@ -52,28 +52,30 @@ WaveSchedule
             {
                 Target gamerules
                 Action RunScriptCode
-                Param "RunBossLogic(2,2)"
+                Param "RunBossLogic(2,3)"
             }
 			TFBot
 			{
-                Class Sniper
-				Health 500
-				Scale 1.7
-				Name "a"
+				Class Sniper
+				Health 3300
+				Name "Super Awesome Name"
 				ClassIcon sniper_bow
 				Tag remorin_boss
+				BehaviorModifiers Push
+
 				EventChangeAttributes
-				{
+				{	
 					Default
 					{
 						Skill Expert
 						Tag remorin_boss
 						Tag bot_giant
-						Item "Sniper's Snipin' Glass"
 						Item "The Fortified Compound"
+						Item "Sniper's Snipin' Glass"
+						Item "Lord Cockswain's Novelty Mutton Chops and Pipe"
+						Item "The Buccaneer's Bicorne"
 						Attributes MiniBoss
 						Attributes UseBossHealthBar
-						BehaviorModifiers Push
 						ItemAttributes
 						{
 							ItemName "The Fortified Compound"
@@ -91,19 +93,19 @@ WaveSchedule
 							"damage force reduction" 0.0
 							"airblast vulnerability multiplier" 0.00
 							"airblast vertical vulnerability multiplier" 0.00
+							"override footstep sound set" 7
 							"rage giving scale"	0.4
 						}
 					}
-					Phase1Pattern1
+					Phase1Pattern2
 					{
 						Skill Expert
 						Tag remorin_boss
 						Tag bot_giant
 						Item "The Fortified Compound"
-						Attributes MiniBoss
+						Item "Sniper's Snipin' Glass"
 						Item "Lord Cockswain's Novelty Mutton Chops and Pipe"
-						Attributes UseBossHealthBar
-						BehaviorModifiers Push
+						Item "The Buccaneer's Bicorne"
 						ItemAttributes
 						{
 							ItemName "The Fortified Compound"
@@ -125,19 +127,19 @@ WaveSchedule
 							"damage force reduction" 0.0
 							"airblast vulnerability multiplier" 0.00
 							"airblast vertical vulnerability multiplier" 0.00
+							"override footstep sound set" 7
 							"rage giving scale"	0.4
 						}
 					}
-					Phase1Pattern2
+					Phase1Pattern3
 					{
 						Skill Expert
 						Tag remorin_boss
 						Tag bot_giant
 						Item "The Fortified Compound"
-						Attributes MiniBoss
+						Item "Sniper's Snipin' Glass"
+						Item "Lord Cockswain's Novelty Mutton Chops and Pipe"
 						Item "The Buccaneer's Bicorne"
-						Attributes UseBossHealthBar
-						BehaviorModifiers Push
 						ItemAttributes
 						{
 							ItemName "The Fortified Compound"
@@ -153,6 +155,7 @@ WaveSchedule
 							"damage force reduction" 0.0
 							"airblast vulnerability multiplier" 0.00
 							"airblast vertical vulnerability multiplier" 0.00
+							"override footstep sound set" 7
 							"rage giving scale"	0.4
 						}
 					}
@@ -160,9 +163,7 @@ WaveSchedule
 					{
 						Skill Normal
 						Tag remorin_boss
-						Attributes MiniBoss
 						Tag bot_giant
-						BehaviorModifiers Mobber
 						WeaponRestrictions	SecondaryOnly
 						Attributes	"AlwaysFireWeapon"
 						Item jarate
@@ -174,10 +175,11 @@ WaveSchedule
 						}
 						CharacterAttributes
 						{
-							"move speed penalty"	0.8
+							"move speed penalty"	0.6
 							"damage force reduction" 0.0
 							"airblast vulnerability multiplier" 0.00
 							"airblast vertical vulnerability multiplier" 0.00
+							"override footstep sound set" 7
 							"rage giving scale"	0.4
 						}
 					}
@@ -185,11 +187,9 @@ WaveSchedule
 					{
 						Skill Normal
 						Tag remorin_boss
-						Attributes MiniBoss
+						Tag bot_giant
 						Item "The Bushwacka"
 						WeaponRestrictions MeleeOnly
-						Tag bot_giant
-						BehaviorModifiers Mobber
 						ItemAttributes
 						{
 							ItemName "The Bushwacka"
@@ -199,10 +199,35 @@ WaveSchedule
 						}
 						CharacterAttributes
 						{
-							"move speed penalty"	1.15
+							"move speed penalty"	0.6
 							"damage force reduction" 0.0
 							"airblast vulnerability multiplier" 0.00
 							"airblast vertical vulnerability multiplier" 0.00
+							"override footstep sound set" 7
+							"rage giving scale"	0.4
+						}
+					}
+					Phase2Pattern3
+					{
+						Skill Normal
+						Tag remorin_boss
+						Tag bot_giant
+						Item "The Bushwacka"
+						WeaponRestrictions MeleeOnly
+						ItemAttributes
+						{
+							ItemName "The Bushwacka"
+							"fire rate bonus" 0.6
+							"damage bonus" 1.5
+							"melee range multiplier" 1.5
+						}
+						CharacterAttributes
+						{
+							"move speed penalty"	0.6
+							"damage force reduction" 0.0
+							"airblast vulnerability multiplier" 0.00
+							"airblast vertical vulnerability multiplier" 0.00
+							"override footstep sound set" 7
 							"rage giving scale"	0.4
 						}
 					}

@@ -122,6 +122,7 @@ ticker <- null
 }
 
 local TF_TEAM_PVE_INVADERS = Constants.ETFTeam.TF_TEAM_PVE_INVADERS
+local MAX_PLAYERS = Constants.Server.MAX_PLAYERS
 
 // Collect any boss robot that spawns for later use
 function OnGameEvent_post_inventory_application( params )
@@ -144,21 +145,54 @@ function OnGameEvent_post_inventory_application( params )
 	}
 }
 
+::BOSS.ClearBossTags <- function()
+{
+	for( local i = 0; i < MAX_PLAYERS; i++ )
+	{
+		local player = GetPlayerFromUserID(i)
+		if ( player && player.IsFakeClient() )
+		{
+			local scope = player.GetScriptScope()
+			if( "TagAppended" in scope )
+				delete scope["TagAppended"]
+		}
+	}
+	::BOSS.bossbots.clear()
+}
+
 // Remove any boss bots that have died - TODO
 function OnGameEvent_player_death( params )
 {
-	// local player = GetPlayerFromUserID( params.userid )
-	// if( player.IsFakeClient() && player.HasBotTag( TAG_BOSS ) )
-	// {
-		// bossbots.append( player )
-	// }
+	local player = GetPlayerFromUserID( params.userid )
+	local scope = player.GetScriptScope()
+	if( player.IsFakeClient() && ("TagAppended" in scope) )
+	{
+		for( local i = 0; i < ::BOSS.bossbots.len(); i++ )
+		{
+			local ary_player = ::BOSS.bossbots[i][0]
+			if ( player == ary_player )
+			{
+				local scope = player.GetScriptScope()
+				if( "TagAppended" in scope )
+					delete scope["TagAppended"]
+
+				::BOSS.bossbots.remove( i )
+			}
+		}
+	}
+}
+// Reset all bots we remember as bosses and remove their tags
+function OnGameEvent_teamplay_round_win( params )
+{
+	::BOSS.ClearBossTags()
 }
 
 function InitBoss()
 {
+	::BOSS.ClearBossTags()
+
 	ticker = SpawnEntityFromTable("logic_relay",{
 		targetname = "remorin_bossupdate"
-	//	"OnSpawn#1": "self,RunScriptCode,self.ValidateScriptScope(),0,-1"
 	})
 	ticker.ValidateScriptScope()
 	local scope = ticker.GetScriptScope()
@@ -170,8 +204,8 @@ function InitBoss()
 	scope["BossDoRun"] <- false
 	scope["BossUpdate"] <- function()
 	{
-		// if ( !("BossDoRun" in scope) || !scope["BossDoRun"] )
-			// return;
+		if ( !("BossDoRun" in scope) || !scope["BossDoRun"] )
+			return;
 		
 		for( local i = 0; i < ::BOSS.bossbots.len(); i++ )
 		{
@@ -183,24 +217,31 @@ function InitBoss()
 			{
 				local hp = bot.GetHealth()
 				local max_hp = bot.GetMaxHealth()
-				this["BossHPScale"] = hp / max_hp
-				printl("----")
-				local hpgate = 1.0 / this["bossphasecount"]
+				this["BossHPScale"] = hp.tofloat() / max_hp.tofloat() // Returns 0 otherwise
+
 				local choice = RandomInt(1,scope["bosspatterncount"])
 				if( choice == scope["bosslastchoice"] )
-					choice = scope["bosslastchoice"] == 1 ? 2 : choice;
-				
-				for ( local j = this["bossphasecount"]; j > 0; j-- )
 				{
-					printl( j )
-					if ( this["BossHPScale"] > hpgate )
+					choice = scope["bosslastchoice"] == 1 ? 2 : choice -= 1;
+				}
+				
+				for ( local j = 1; j <= this["bossphasecount"]; j++ )
+				{
+					local basehpgate = 1.0 / this["bossphasecount"]
+					if ( this["BossHPScale"] <= (basehpgate * j) )
 					{
-						local loadout = format( "Phase%iPattern%i", j, choice )
-						printl(loadout)
+						local loadout = "Default"
+						if( choice != 1 && j != 1 )
+							loadout = format( "Phase%iPattern%i", this["bossphasecount"]+1 - j, choice )
+						
+						if( developer() )
+							printl("LOADOUT: "+loadout)
+
 						EntFire( POPULATOR, "ChangeBotAttributes", loadout)
 						
 						scope["bosslastchoice"] = choice
 						::BOSS.bossbots[i][1] = Time()
+						break;
 					}
 				}
 			}
