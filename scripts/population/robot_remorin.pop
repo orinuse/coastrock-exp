@@ -168,6 +168,24 @@ WaveSchedule
 				"healing received bonus" 1.1
 			}	
 		}
+		Remorin_Medic_BigHeal
+		{
+		    Class Medic
+			ClassIcon medic
+			Name "Mega-heal Medic"
+		    Skill Normal	// Don't overheal anyone else, pocket your patient
+			WeaponRestrictions SecondaryOnly
+			Tag bot_squad_member
+			Item "The Quick-Fix"
+			Item "Titanium Tyrolean"
+			ItemAttributes
+			{
+			    ItemName "The Quick-Fix"
+				"ubercharge rate bonus" 0.0
+				"uber duration bonus" 0.0
+				"heal rate bonus" 2.0
+			}	
+		}
 		Remorin_Medic_Shield // Would be better if they could be a squad leader with shield already out
 		{
 			Class Medic
