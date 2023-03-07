@@ -356,10 +356,10 @@ WaveSchedule
 			WaitBeforeStarting	15
 			WaitBetweenSpawns	20
 			Where spawnbot_tunnel
-			TotalCount	3
+			TotalCount	6
 			MaxActive	1
 			SpawnCount	1
-			TotalCurrency	200
+			TotalCurrency	250
 			TFBot {
 				Template T_TFBot_Giant_Scout_Fast
 				WeaponRestrictions	SecondaryOnly
@@ -407,27 +407,54 @@ WaveSchedule
 			MaxActive	6
 			SpawnCount	2
 			TotalCurrency	30
-			Squad {
-				TFBot {
-					Template T_TFBot_Soldier_Extended_Concheror
-					Attributes IgnoreFlag
-					BehaviorModifiers Push
-				}
-				TFBot {
-					Template T_TFBot_Soldier_Extended_Concheror
-					Attributes IgnoreFlag
-					BehaviorModifiers Push
-				}
-				TFBot {
-					Template T_TFBot_Soldier_Extended_Concheror
-					Attributes IgnoreFlag
-					BehaviorModifiers Push
-				}
+			TFBot {
+				Template T_TFBot_Soldier_Extended_Concheror
+				Attributes IgnoreFlag
+				BehaviorModifiers Push
 			}
 		}
 		WaveSpawn {
-			Name "W1 Giant Burst Fire Soldier"
+			Name "W1 Soldier + Demoman"
 			WaitForAllDead "W1 Pyro + Extended Buff Soldier"
+			Where spawnbot_flank
+			WaitBeforeStarting	3
+			WaitBetweenSpawns	7
+			DoneOutput {
+				Target intel_endurance
+				Action ForceReset
+			}
+			TotalCount	49
+			MaxActive	14
+			SpawnCount	7
+			TotalCurrency	150
+			Squad {
+				TFBot {
+					Template T_TFBot_Soldier_Extended_Buff_Banner
+				}
+				TFBot {
+					Template T_TFBot_Soldier_Extended_Concheror
+				}
+				TFBot {
+					Template Sunny_Demoman
+				}
+				TFBot {
+					Template Sunny_Soldier
+				}
+				TFBot {
+					Template Sunny_Demoman
+				}
+				TFBot {
+					Template Sunny_Soldier
+				}
+				TFBot {
+					Template Sunny_Demoman
+				}
+			}
+
+		}
+		WaveSpawn {
+			Name "W1 Giant Burst Fire Soldier"
+			WaitForAllDead "W1 Soldier + Demoman"
 			Where spawnbot_tunnel
 			WaitBeforeStarting	7
 			TotalCount	9
@@ -458,16 +485,16 @@ WaveSchedule
 					}
 				}
 				TFBot {
-					Template Sunny_Medic_Krit
+					Template Sunny_Medic_Krit_Inf
 				}
 				TFBot {
-					Template Sunny_Medic_Krit
+					Template Sunny_Medic_Krit_Inf
 				}
 				TFBot {
-					Template Sunny_Medic_Krit
+					Template Sunny_Medic_Krit_Inf
 				}
 				TFBot {
-					Template Sunny_Medic_Krit
+					Template Sunny_Medic_Krit_Inf
 				}
 				TFBot {
 					Template Sunny_Medic_QuickUber
