@@ -57,6 +57,7 @@ WaveSchedule
 		{
 			Class Engineer
 			Name "Constructor Bot"
+			Skill Expert
 		}
 		Sunny_Sniper
 		{
@@ -851,8 +852,25 @@ WaveSchedule
 			TFBot
 			{
 				Template Sunny_Sniper_Huntsman
-				Skill Hard
+				Skill Expert
 			}
 		}
+		// WaveSpawn
+		// {
+			// Name "W2_A"
+			// Where spawnbot_parachute
+			// WaitBeforeStarting 90
+			// WaitBetweenSpawns 30
+			// TotalCount 8
+			// MaxActive 2
+			// SpawnCount 2
+			// TotalCurrency 100
+			// Support Limited
+			// TFBot
+			// {
+				// Template Sunny_Engineer
+				// Attributes TeleportToHint
+			// }
+		// }
 	}
 }
