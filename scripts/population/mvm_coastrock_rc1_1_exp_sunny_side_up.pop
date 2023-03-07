@@ -24,6 +24,12 @@ WaveSchedule
 			Class Soldier
 			Name "Malfunction Outpost Robot"
 		}
+		Sunny_Soldier_Buff
+		{
+			Template T_TFBot_Soldier_Extended_Buff_Banner
+	
+			Name "Celebrative Servicer"
+		}
 		Sunny_Pyro
 		{
 			Template Remorin_Pyro
@@ -58,6 +64,13 @@ WaveSchedule
 
 			Class Sniper
 			Name "Underground Assassin"
+		}
+		Sunny_Sniper_Huntsman
+		{
+			Template T_TFBot_Sniper_Huntsman
+
+			Class Sniper
+			Name "Archery Enthusiast"
 		}
 		Sunny_Spy
 		{
@@ -715,17 +728,41 @@ WaveSchedule
 			Target wave_finished_relay
 			Action Trigger
 		}
+		
+		// Non-stop Tanks
 		WaveSpawn 
 		{
 			Name "W2_Tank"
+			WaitBetweenSpawns	50
+			TotalCount 	2
+			MaxActive	2
+			SpawnCount	1
+			TotalCurrency	50
+			Tank
+			{
+				Health 12000
+				Speed 75
+				Name "Tank"
+				StartingPathTrackNode "tankpath_same"
+				OnBombDroppedOutput
+				{
+					Target boss_deploy_relay
+					Action Trigger
+				}
+			}
+		}
+		WaveSpawn 
+		{
+			Name "W2_Tank"
+			WaitBeforeStarting	30
 			WaitBetweenSpawns	60
 			TotalCount 	2
 			MaxActive	2
 			SpawnCount	1
-			TotalCurrency	250
+			TotalCurrency	50
 			Tank
 			{
-				Health 20000
+				Health 12000
 				Speed 75
 				Name "Tank"
 				StartingPathTrackNode "tankpath_alt"
@@ -741,17 +778,17 @@ WaveSchedule
 			Name "W2_Tank_2"
 			WaitBeforeStarting	60
 			WaitBetweenSpawns	60
-			WaitForAllDead	"W2_Tank"
+			WaitForAllSpawned	"W2_Tank"
 			TotalCount 	2
 			MaxActive	2
 			SpawnCount	1
-			TotalCurrency	250
+			TotalCurrency	50
 			Tank
 			{
-				Health 30000
-				Speed 75
+				Health 15000
+				Speed 42
 				Name "Tank"
-				StartingPathTrackNode "tankpath_alt"
+				StartingPathTrackNode "tankpath_same"
 				OnBombDroppedOutput
 				{
 					Target boss_deploy_relay
@@ -761,282 +798,61 @@ WaveSchedule
 		}
 		WaveSpawn 
 		{
-			Name "W2_Crit_Pyro"
-			Where	spawnbot
-			Where 	spawnbot_tunnel
-			Where 	spawnbot_parachute
-			WaitBetweenSpawns	1.5
-			TotalCount 	56
-			MaxActive	15
+			Name "W2_Tank_2"
+			WaitBeforeStarting	90
+			WaitBetweenSpawns	60
+			WaitForAllSpawned	"W2_Tank"
+			TotalCount 	2
+			MaxActive	2
 			SpawnCount	1
-			TotalCurrency	100
-			FirstSpawnOutput 
+			TotalCurrency	50
+			Tank
 			{
-				Target gamerules
-				Action RunScriptCode
-				Param "ClientPrint(null, 3, `\x00072229F9CRIT BOT MALICE!!!`)"
-			}
-			TFBot
-			{
-				Template Sunny_Pyro
-				Skill Easy
-				Attributes AlwaysFireWeapon
-				Attributes AlwaysCrit
+				Health 15000
+				Speed 42
+				Name "Tank"
+				StartingPathTrackNode "tankpath_alt"
+				OnBombDroppedOutput
+				{
+					Target boss_deploy_relay
+					Action Trigger
+				}
 			}
 		}
-		WaveSpawn 
+		WaveSpawn
 		{
-			Name "W2_Crit_Heavy"
-			Where	spawnbot
-			Where 	spawnbot_tunnel
-			Where 	spawnbot_parachute
-			WaitBetweenSpawns	8
-			TotalCount 	24
-			MaxActive	6
-			SpawnCount	3
-			TotalCurrency	50
+			Name "W2_A"
+			Where spawnbot
+			Where spawnbot_flank
+			WaitBeforeStarting 8
+			WaitBetweenSpawns 8
+			TotalCount 27
+			MaxActive 3
+			SpawnCount 3
+			TotalCurrency 100
 			TFBot
 			{
-				Template T_TFBot_Heavyweapons_Shotgun
-				Name "Coastline Shotgunner"
-				ClassIcon Heavy
+				Template Sunny_Soldier_Buff
 				Skill Hard
-				Attributes AlwaysCrit
-			}
-		}
-		WaveSpawn 
-		{
-			Name "W2_Crit_Scout"
-			Where	spawnbot
-			Where 	spawnbot_tunnel
-			Where 	spawnbot_parachute
-			WaitBeforeStarting	6
-			WaitBetweenSpawns	5
-			WaitForAllSpawned	"W2_Crit_Pyro"
-			TotalCount 	49
-			MaxActive	14
-			SpawnCount	7
-			TotalCurrency	50
-			TFBot
-			{
-				Template Sunny_Scout
-				Skill Normal
-				Attributes AlwaysCrit
-			}
-		}
-		WaveSpawn 
-		{
-			Name "W2_Crit_Bowman"
-			Where	spawnbot
-			Where 	spawnbot_tunnel
-			Where 	spawnbot_parachute
-			WaitBeforeStarting	6
-			WaitBetweenSpawns	1
-			WaitForAllSpawned	"W2_Crit_Heavy"
-			TotalCount 	33
-			MaxActive	5
-			SpawnCount	1
-			TotalCurrency	50
-			TFBot
-			{
-				ClassIcon	sniper
-				WeaponRestrictions PrimaryOnly
-				Health	125
-				Attributes	AlwaysCrit
-				Skill	Normal
-				Name	"Bowbot"
-				Class	Sniper
-				Item	"The Huntsman"
-				ItemAttributes
-				{
-					ItemName	"The Huntsman"
-					"damage penalty" 0.8
-				}
 			}
 		}
 		WaveSpawn
 		{
-			Name "W2_jarate"
-			Where	spawnbot
-			Where 	spawnbot_parachute
-			WaitBeforeStarting	6
-			WaitBetweenSpawns	1
-			WaitForAllSpawned	"W2_Crit_Bowman"
-			WaitForAllDead	"W2_Crit_Scout"
-			TotalCount 	44
-			MaxActive	11
-			SpawnCount	11
-			TotalCurrency	50
+			Name "W2_A"
+			Where spawnbot
+			Where spawnbot_flank
+			WaitBeforeStarting 18
+			WaitBetweenSpawns 15
+			TotalCount 64
+			MaxActive 8
+			SpawnCount 8
+			TotalCurrency 100
+			RandomSpawn 1
 			TFBot
 			{
-				ClassIcon	sniper
-				WeaponRestrictions SecondaryOnly
-				Attributes AlwaysFireWeapon
-				Health	125
-				Attributes	AlwaysCrit
-				Skill	Easy
-				Name	"Lemon Juice Production Robot"
-				Class	Sniper
-				Item	"jarate"
-				ItemAttributes
-				{
-					ItemName	"jarate"
-					"effect bar recharge rate increased"	0.4
-					"deploy time increased" 0.0
-				}
-			}
-		}
-		WaveSpawn
-		{
-			Name "W2_jarate"
-			Where	spawnbot
-			Where 	spawnbot_tunnel
-			WaitBeforeStarting	6
-			WaitBetweenSpawns	1
-			WaitForAllSpawned	"W2_Crit_Bowman"
-			WaitForAllDead	"W2_Crit_Scout"
-			TotalCount 	31
-			MaxActive	6
-			SpawnCount	1
-			TotalCurrency	50
-			TFBot
-			{
-				ClassIcon	sniper
-				WeaponRestrictions MeleeOnly
-				Attributes AlwaysFireWeapon
-				Health	250
-				Attributes	AlwaysCrit
-				Skill	Hard
-				Name	"Crocodile Robot"
-				Class	Sniper
-				Scale 1.2
-				Item	"The Bushwacka"
-				CharacterAttributes	
-				{
-					"move speed bonus" 1.10
-				}
-			}
-		}
-		WaveSpawn
-		{
-			Name "W2_Support Scout"
-			Where	spawnbot
-			Where   spawnbot_flank
-			Where 	spawnbot_tunnel
-			WaitBeforeStarting	6
-			WaitBetweenSpawns	10
-			WaitForAllSpawned	"W2_Jarate"
-			TotalCount 	400
-			MaxActive	8
-			SpawnCount	4
-			TotalCurrency	400
-			Support 1
-			RandomChoice
-			{
-				TFBot
-				{
-					Class Scout
-					Skill Hard
-				}
-				TFBot
-				{
-					Class Scout
-					Skill Hard
-				}
-				TFBot
-				{
-					Class Scout
-					Skill Hard
-				}
-				TFBot
-				{
-					Class Scout
-					Skill Hard
-				}
-				TFBot
-				{
-					Class Scout
-					Skill Hard
-				}
-				TFBot
-				{
-					Template T_TFBot_Scout_FAN
-					Attributes AlwaysCrit
-				}
-				TFBot
-				{
-					Template T_TFBot_Scout_FAN
-					Attributes AlwaysCrit				
-					}
-				TFBot
-				{
-					Template T_TFBot_Scout_FAN
-					Attributes AlwaysCrit
-				}
-				TFBot
-				{
-					Template T_TFBot_Scout_Bonk
-					Attributes AlwaysCrit
-				}
-				TFBot
-				{
-					Template T_TFBot_Scout_Bonk
-					Attributes AlwaysCrit
-				}
-			}
-		}
-		WaveSpawn
-		{
-			Name "W2_Giant"
-			Where	spawnbot
-			Where 	spawnbot_tunnel
-			WaitBeforeStarting	6
-			WaitBetweenSpawns	20
-			WaitForAllSpawned	"W2_Jarate"
-			TotalCount 	15
-			MaxActive	15
-			SpawnCount	5
-			TotalCurrency	100
-			Squad
-			{
-				TFBot
-				{
-					Template Remorin_Heavy_Deflector
-					Template gCHAR_HEAVY
-					Name "Mr. Red Deflect"
-					Attributes MiniBoss
-					Health 5000
-					Skill Expert
-					WeaponRestrictions PrimaryOnly
-					ItemAttributes
-					{
-						ItemName "Deflector"
-						"damage bonus"	1.5
-						"damage penalty" 1.0
-					}
-					CharacterAttributes
-					{
-						"move speed bonus" 0.5
-					}
-				}
-				TFBot
-				{
-					Template Sunny_Medic_Kritz
-				}
-				TFBot
-				{
-					Template Sunny_Medic_Kritz
-				}
-				TFBot
-				{
-					Template Sunny_Medic_Kritz
-				}
-				TFBot
-				{
-					Template Sunny_Medic_Kritz
-				}
+				Template Sunny_Sniper_Huntsman
+				Skill Hard
 			}
 		}
 	}
-	
 }

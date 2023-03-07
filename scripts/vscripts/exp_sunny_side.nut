@@ -10,16 +10,41 @@ function Init()
 	[
 		// Each entry is an 2D array with 2 more arrays inside
 		// 1st among the two is a sentry hint, and the other a nest hint
-		[[Vector(566, -473, 64), QAngle(0,48,0)], [Vector(372, -630, 64), QAngle(16,36,0)]],
+		[
+			[Vector(-627, 1502, 64), QAngle(-1,-28,0)],
+			[Vector(-600, 1717, 64), QAngle( 5,-99,0)]
+		],
+		[
+			[Vector(-593, 912,64), QAngle(3,-20,0)],
+			[Vector(-779, 796,64), QAngle(6, 36,0)]
+		],
+		[
+			[Vector(-819, -540,64), QAngle(4, 15,0)],
+			[Vector(-1087,-382,64), QAngle(4,-26,0)]
+		],
+		[
+			[Vector(566, -473,64), QAngle(0, 48,0), Vector(286,-475,64), QAngle(8,45,0)],
+			[Vector(372, -630,64), QAngle(16,36,0)]
+		],
+		[
+			[Vector(908, 1388,4), QAngle(-1,-63,0)],
+			[Vector(777, 1523,4), QAngle(-1,-63,0)]
+		],
 	]
 	
 	for( local i = 0; i < EngyHints.len(); i++ )
 	{
-		SpawnEntityFromTable("bot_hint_sentrygun", {
-			targetname = "remorin_hint_engy"+i,
-			origin = EngyHints[i][0][0],
-			angles = EngyHints[i][0][1]
-		})
+		local sentryhintcount = EngyHints[i][0].len() / 2
+		
+		for( local j = 0; j < sentryhintcount; j++ )
+		{
+			local mult = j > 0 ? j * 2 : 0;
+			SpawnEntityFromTable("bot_hint_sentrygun", {
+				targetname = "remorin_hint_engy"+i,
+				origin = EngyHints[i][0][0+mult],
+				angles = EngyHints[i][0][1+mult]
+			})
+		}
 		SpawnEntityFromTable("bot_hint_engineer_nest", {
 			targetname = "remorin_hint_engy"+i,
 			origin = EngyHints[i][1][0],
