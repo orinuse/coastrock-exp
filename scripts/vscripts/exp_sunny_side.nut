@@ -10,33 +10,62 @@ function Init()
 	[
 		// Each entry is an 2D array with 2 more arrays inside
 		// 1st among the two is a sentry hint, and the other a nest hint
+		// #0
 		[
-			[Vector(-627, 1502, 64), QAngle(-1,-28,0)],
-			[Vector(-600, 1717, 64), QAngle( 5,-99,0)]
+			[Vector(-627, 1502, 64), QAngle(0,-28,0)],
+			[Vector(-600, 1717, 64), QAngle(0,-99,0)],
+			[Vector(-727, 1364, 64), QAngle(0,-39,0)]
 		],
+		// #1
 		[
-			[Vector(-593, 912,64), QAngle(3,-20,0)],
-			[Vector(-779, 796,64), QAngle(6, 36,0)]
+			[Vector(-593,  912, 64), QAngle(0,-20,0)],
+			[Vector(-779,  796, 64), QAngle(0, 36,0)],
+			[Vector(-728, 1000, 64), QAngle(0, 26,0)]
 		],
+		// #2
 		[
-			[Vector(-819, -540,64), QAngle(4, 15,0)],
-			[Vector(-1087,-382,64), QAngle(4,-26,0)]
+			[Vector( 176,  943, 64), QAngle(0,-30,0)],
+			[Vector(  19,  853, 64), QAngle(0, 21,0)],
+			[Vector( -97,  859, 64), QAngle(0, 94,0)]
 		],
+		// #3
 		[
-			[Vector(566, -473,64), QAngle(0, 48,0), Vector(286,-475,64), QAngle(8,45,0)],
-			[Vector(372, -630,64), QAngle(16,36,0)]
+			[Vector( 131, 1379,  64), QAngle(0, 330,0)],
+			[Vector( -68, 1281,  64), QAngle(0,  10,0)],
+			[Vector( -40, 1580, 128), QAngle(0, 276,0)]
 		],
+		// #4
 		[
-			[Vector(908, 1388,4), QAngle(-1,-63,0)],
-			[Vector(777, 1523,4), QAngle(-1,-63,0)]
+			[Vector(908, 1388, 4), QAngle(0, -63,0)],
+			[Vector(777, 1523, 4), QAngle(0, -63,0)],
+			[Vector(886, 1535, 4), QAngle(0,-100,0)]
+		],
+		// #5
+		[
+			[Vector(-526, -330, 320), QAngle(0,  30,0)],
+			[Vector(-656, -621, 320), QAngle(0,  65,0)],
+			[Vector(-636,  -18, 256), QAngle(0, 272,0)]
+		],
+		// #6
+		[
+			[Vector(-819,  -540, 64), QAngle(0, 15,0), Vector(-764, -414, 64), QAngle(0, -6, 0)],
+			[Vector(-1050, -550, 64), QAngle(0,-26,0)],
+			[Vector(-1087, -382, 64), QAngle(0,-26,0), Vector(-1160, -481, 64), QAngle(0, 63, 0)]
+		],
+		// #7
+		[
+			[Vector(566, -473,64), QAngle(0,48,0), Vector(286,-475,64), QAngle(0,45,0)],
+			[Vector(479, -179,64), QAngle(0, -101,0)],
+			[Vector(380, -610,64), QAngle(0,   36,0)]
 		],
 	]
 	
 	for( local i = 0; i < EngyHints.len(); i++ )
 	{
-		local sentryhintcount = EngyHints[i][0].len() / 2
+		local hinttypes = EngyHints[i].len()
+		local sentry_hintcount = EngyHints[i][0].len() / 2
 		
-		for( local j = 0; j < sentryhintcount; j++ )
+		for( local j = 0; j < sentry_hintcount; j++ )
 		{
 			local mult = j > 0 ? j * 2 : 0;
 			SpawnEntityFromTable("bot_hint_sentrygun", {
@@ -50,7 +79,27 @@ function Init()
 			origin = EngyHints[i][1][0],
 			angles = EngyHints[i][1][1]
 		})
+		
+		if( hinttypes > 1 )
+		{
+			local tele_hintcount = EngyHints[i][0].len() / 2
+			for( local k = 0; k < tele_hintcount; k++ )
+			{
+				SpawnEntityFromTable("bot_hint_teleporter_exit", {
+					targetname = "remorin_hint_engy"+i,
+					origin = EngyHints[i][2][0],
+					angles = EngyHints[i][2][1]
+				})
+			}
+		}
 	}
+	
+	// Force this path, we'll use this for the 1st and 2nd wave
+	EntFire("bombpath_arrows_clear_relay", "Trigger", null, 1)
+	EntFire("bombpath_right", "Trigger", null, 1.1)
+	
+	// Don't use in final version.
+	EnableRedBots()
 }
 
 /*****************************************************
@@ -146,6 +195,7 @@ ticker <- null
 	bossbots = []
 }
 
+local TF_TEAM_PVE_DEFENDERS = Constants.ETFTeam.TF_TEAM_PVE_DEFENDERS
 local TF_TEAM_PVE_INVADERS = Constants.ETFTeam.TF_TEAM_PVE_INVADERS
 local MAX_PLAYERS = Constants.Server.MAX_PLAYERS
 
@@ -255,13 +305,16 @@ function InitBoss()
 					local basehpgate = 1.0 / this["bossphasecount"]
 					if ( this["BossHPScale"] <= (basehpgate * j) )
 					{
-						local loadout = "Default"
-						if( choice != 1 && j != 1 )
+						local phase = this["bossphasecount"]+1 - j
+						local loadout = null
+						if( choice == 1 && phase == 1 )
+						{
+							loadout = "Default"
+						}
+						else
+						{
 							loadout = format( "Phase%iPattern%i", this["bossphasecount"]+1 - j, choice )
-						
-						if( developer() )
-							printl("LOADOUT: "+loadout)
-
+						}
 						EntFire( POPULATOR, "ChangeBotAttributes", loadout)
 						
 						scope["bosslastchoice"] = choice
@@ -286,6 +339,38 @@ function RunBossLogic(phasecount, patterncount = 1)
 	scope["bossphasecount"] = phasecount
 	scope["bosspatterncount"] = patterncount
 	scope["BossDoRun"] = true
+}
+
+// DON'T LOOK
+// ----------
+function EnableRedBots()
+{
+	local redflag = Entities.FindByName(null, "orin_redflag")
+	if( !redflag )
+	{
+		redflag = SpawnEntityFromTable("item_teamflag", {
+			targetname = "orin_redflag",
+			origin = Vector(-627, 1502, 64),
+			TeamNum = 2,
+			GameType = 1,
+			"OnPickup#1": "!self,ForceResetSilent,,0,-1" 
+		})
+	}
+	
+	// Timing issue
+	// for( local i = 0; i < MAX_PLAYERS; i++ )
+	// {
+		// local player = GetPlayerFromUserID(i)
+		// if ( player && player.IsFakeClient() && player.GetTeam() == TF_TEAM_PVE_DEFENDERS )
+		// {
+			// local weapon = player.GetActiveWeapon()
+			// if ( weapon )
+			// {
+				// weapon.AddAttribute("damage bonus", 1.5, -1)
+				// weapon.AddAttribute("ammo regen", 1, -1)
+			// }
+		// }
+	// }
 }
 
 ClearGameEventCallbacks()

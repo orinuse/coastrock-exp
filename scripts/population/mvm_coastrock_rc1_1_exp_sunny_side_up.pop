@@ -734,7 +734,7 @@ WaveSchedule
 		WaveSpawn 
 		{
 			Name "W2_Tank"
-			WaitBetweenSpawns	50
+			WaitBetweenSpawns	100
 			TotalCount 	2
 			MaxActive	2
 			SpawnCount	1
@@ -755,8 +755,8 @@ WaveSchedule
 		WaveSpawn 
 		{
 			Name "W2_Tank"
-			WaitBeforeStarting	30
-			WaitBetweenSpawns	60
+			WaitBeforeStarting	50
+			WaitBetweenSpawns	100
 			TotalCount 	2
 			MaxActive	2
 			SpawnCount	1
@@ -774,11 +774,97 @@ WaveSchedule
 				}
 			}
 		}
+		WaveSpawn
+		{
+			Name "W2_A"
+			Where spawnbot
+			WaitBeforeStarting 8
+			WaitBetweenSpawns 8
+			TotalCount 27
+			MaxActive 3
+			SpawnCount 3
+			TotalCurrency 50
+			TFBot
+			{
+				Template Sunny_Soldier_Buff
+				Skill Hard
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_A"
+			Where spawnbot
+			WaitBeforeStarting 18
+			WaitBetweenSpawns 15
+			TotalCount 64
+			MaxActive 8
+			SpawnCount 8
+			TotalCurrency 150
+			RandomSpawn 1
+			TFBot
+			{
+				Template Sunny_Sniper_Huntsman
+				Skill Expert
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_Engy"
+			Where spawnbot_parachute
+			WaitBeforeStarting 50
+			TotalCount 2
+			MaxActive 2
+			SpawnCount 2
+			TotalCurrency 33
+			Support Limited
+			TFBot
+			{
+				Template Sunny_Engineer
+				TeleportWhere spawnbot
+				Attributes TeleportToHint
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_Engy1"
+			Where spawnbot_parachute
+			WaitForAllDead "W2_Engy"
+			WaitBeforeStarting 20
+			TotalCount 2
+			MaxActive 2
+			SpawnCount 2
+			TotalCurrency 33
+			Support Limited
+			TFBot
+			{
+				Template Sunny_Engineer
+				TeleportWhere spawnbot
+				Attributes TeleportToHint
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_Engy2"
+			Where spawnbot_parachute
+			WaitForAllDead "W2_Engy1"
+			WaitBeforeStarting 20
+			TotalCount 2
+			MaxActive 2
+			SpawnCount 2
+			TotalCurrency 34
+			Support Limited
+			TFBot
+			{
+				Template Sunny_Engineer
+				TeleportWhere spawnbot
+				Attributes TeleportToHint
+			}
+		}
 		WaveSpawn 
 		{
-			Name "W2_Tank_2"
-			WaitBeforeStarting	60
-			WaitBetweenSpawns	60
+			Name "W2_Tank2"
+			WaitBeforeStarting	90
+			WaitBetweenSpawns	5
 			WaitForAllSpawned	"W2_Tank"
 			TotalCount 	2
 			MaxActive	2
@@ -786,8 +872,8 @@ WaveSchedule
 			TotalCurrency	50
 			Tank
 			{
-				Health 15000
-				Speed 42
+				Health 13000
+				Speed 43
 				Name "Tank"
 				StartingPathTrackNode "tankpath_same"
 				OnBombDroppedOutput
@@ -799,9 +885,9 @@ WaveSchedule
 		}
 		WaveSpawn 
 		{
-			Name "W2_Tank_2"
-			WaitBeforeStarting	90
-			WaitBetweenSpawns	60
+			Name "W2_Tank2"
+			WaitBeforeStarting	95
+			WaitBetweenSpawns	5
 			WaitForAllSpawned	"W2_Tank"
 			TotalCount 	2
 			MaxActive	2
@@ -809,8 +895,8 @@ WaveSchedule
 			TotalCurrency	50
 			Tank
 			{
-				Health 15000
-				Speed 42
+				Health 13000
+				Speed 43
 				Name "Tank"
 				StartingPathTrackNode "tankpath_alt"
 				OnBombDroppedOutput
@@ -820,57 +906,5 @@ WaveSchedule
 				}
 			}
 		}
-		WaveSpawn
-		{
-			Name "W2_A"
-			Where spawnbot
-			Where spawnbot_flank
-			WaitBeforeStarting 8
-			WaitBetweenSpawns 8
-			TotalCount 27
-			MaxActive 3
-			SpawnCount 3
-			TotalCurrency 100
-			TFBot
-			{
-				Template Sunny_Soldier_Buff
-				Skill Hard
-			}
-		}
-		WaveSpawn
-		{
-			Name "W2_A"
-			Where spawnbot
-			Where spawnbot_flank
-			WaitBeforeStarting 18
-			WaitBetweenSpawns 15
-			TotalCount 64
-			MaxActive 8
-			SpawnCount 8
-			TotalCurrency 100
-			RandomSpawn 1
-			TFBot
-			{
-				Template Sunny_Sniper_Huntsman
-				Skill Expert
-			}
-		}
-		// WaveSpawn
-		// {
-			// Name "W2_A"
-			// Where spawnbot_parachute
-			// WaitBeforeStarting 90
-			// WaitBetweenSpawns 30
-			// TotalCount 8
-			// MaxActive 2
-			// SpawnCount 2
-			// TotalCurrency 100
-			// Support Limited
-			// TFBot
-			// {
-				// Template Sunny_Engineer
-				// Attributes TeleportToHint
-			// }
-		// }
 	}
 }

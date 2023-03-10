@@ -234,27 +234,55 @@ WaveSchedule
 				}
 			}
 		}
-		
+    }
+    Wave
+	{
+		InitWaveOutput
+		{
+			Target gamerules
+			Action RunScriptFile
+			Param "exp_sunny_side.nut"
+		}
+		StartWaveOutput
+		{
+			Target wave_start_endurance_relay
+			Action Trigger
+		}
+		DoneOutput
+		{
+			Target wave_finished_relay
+			Action Trigger
+		}
 		WaveSpawn
 		{
-			Name "W1_B"
-			WaitForAllDead "W1_A"
+			Name "W1_A"
 			Where spawnbot_tunnel
-			WaitBeforeStarting 5
+			WaitBetweenSpawns 1.25
+			TotalCount 22
+			MaxActive 22
+			SpawnCount 1
+			TotalCurrency 50
+			TFBot
+            {
+				Class Engineer
+				TeleportWhere spawnbot
+				Attributes TeleportToHint
+                Attributes AlwaysCrit
+            }
+		}
+		WaveSpawn
+		{
+			Name "W1_A"	
+			Where spawnbot_tunnel
+			WaitBetweenSpawns 1.25
 			TotalCount 2
 			MaxActive 2
-			SpawnCount 2
-			Squad
-			{
-				TFBot
-				{
-					Template Remorin_GSoldier
-				}
-				TFBot
-				{
-					Template Remorin_Medic_Shield
-				}
-			}
+			SpawnCount 1
+			TotalCurrency 50
+			TFBot
+            {
+				Class Scout
+            }
 		}
     }
 }
