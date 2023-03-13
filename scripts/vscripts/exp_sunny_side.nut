@@ -6,6 +6,33 @@ const POPULATOR = "point_populator_interface"
 
 function Init()
 {
+	// For gameplay purposes, always force this path on popfile load.
+	// This is for the 1st and 2nd wave.
+	EntFire("bombpath_arrows_clear_relay", "Trigger", null, 1)
+	EntFire("bombpath_right", "Trigger", null, 1.1)
+	
+	// Run any functions that should be ran on popfile init.
+	DoEngyHints()
+	InitBoss()
+	__CollectGameEventCallbacks(::BOSS)
+	
+	// Don't use in final version; this is just for internal amusement.
+	if( developer() )
+		DoRedBots()
+}
+
+/*****************************************************
+	ENGINEER HINTS
+	
+	Coastrock does not support engineer bots, so hints
+	are required to be made.
+
+	No popfile functions.
+	
+*****************************************************/
+
+function DoEngyHints()
+{
 	local EngyHints =
 	[
 		// Each entry is an 2D array with 2 more arrays inside
@@ -42,9 +69,9 @@ function Init()
 		],
 		// #5
 		[
-			[Vector(-526, -330, 320), QAngle(0,  30,0)],
-			[Vector(-656, -621, 320), QAngle(0,  65,0)],
-			[Vector(-636,  -18, 256), QAngle(0, 272,0)]
+			[Vector(-526, -330, 320), QAngle( 0,  30,0)],
+			[Vector(-740,  -71, 256), QAngle(-5,  60,0)],
+			[Vector(-636,  -18, 256), QAngle( 0, 272,0)]
 		],
 		// #6
 		[
@@ -93,16 +120,16 @@ function Init()
 			}
 		}
 	}
-	
-	// Force this path, we'll use this for the 1st and 2nd wave
-	EntFire("bombpath_arrows_clear_relay", "Trigger", null, 1)
-	EntFire("bombpath_right", "Trigger", null, 1.1)
-	
-	// Don't use in final version.
-	EnableRedBots()
 }
 
 /*****************************************************
+	WAVE BRREAKS
+	
+	A core trait of endurance missions is breaking itself
+	into parts using wave breaks.
+
+	Functions:
+	> StartWaveBreak(duration, music, pathrelay)
 	Starts a wave break. CALL FROM POPFILE.
 	
 	> duration	- Length of break. (Defaults to 35).
@@ -176,37 +203,66 @@ function StartWaveBreak(duration = 35, music = "music/mvm_start_mid_wave.wav", p
 }
 
 /*****************************************************
-	Collection of functions for switching a boss
-	bot's loadout, which is handy for boss patterns
-	or boss phases.
+	BOSS PATTERNS
 	
+	The boss behaviour featured prominently in Winterbridge
+	and Silent Sky, where bosses swap loadouts depending either
+	on health or a timer.
+
 	Functions:
-	1. OnGameEvent_post_inventory_application()
-	2. BossInit()
+	> RunBossLogic(phasecount, patterncount)
+	Runs through all bots and collect any with the boss tag.
+	
+	> phasecount - Amount of health phases to use.
+	> patterncount - Amount of loadouts per each phase.
+	
+	Boss bots need an "EventChangeAttributes" block with
+	attribute blocks for each phases and patterns you
+	will be using; running the boss logic with 2 phases
+	and 2 patterns will require these blocks inside every
+	boss bot:
+	
+	EventChangeAttributes
+	{
+		Default
+		{	
+		
+		}
+		Phase1Pattern2
+		{
+			
+		}
+		Phase1Pattern2
+		{
+			
+		}
+		Phase2Pattern1
+		{
+			
+		}
+	}
 	
 *****************************************************/
 
 const TAG_BOSS = "remorin_boss"
-ticker <- null
 ::BOSS <-
 {
 	// Intended format:
 	// [ mvmbot, lastupdatetime ]
-	bossbots = []
+	bossbots = [],
+	ticker = null
 }
 
 local TF_TEAM_PVE_DEFENDERS = Constants.ETFTeam.TF_TEAM_PVE_DEFENDERS
 local TF_TEAM_PVE_INVADERS = Constants.ETFTeam.TF_TEAM_PVE_INVADERS
 local MAX_PLAYERS = Constants.Server.MAX_PLAYERS
 
-// Collect any boss robot that spawns for later use
-function OnGameEvent_post_inventory_application( params )
+function RunBossLogic(phasecount, patterncount = 1)
 {
-	local player = GetPlayerFromUserID( params.userid )
-	if( player.IsFakeClient() )
-	{
-		EntFireByHandle(player, "RunScriptCode", "::BOSS.DoBossTag(self)", 0.1, player, player )
-	}
+	local scope = ::BOSS.ticker.GetScriptScope()
+	scope["bossphasecount"] = phasecount
+	scope["bosspatterncount"] = patterncount
+	scope["BossDoRun"] = true
 }
 
 ::BOSS.DoBossTag <- function(bot)
@@ -235,8 +291,18 @@ function OnGameEvent_post_inventory_application( params )
 	::BOSS.bossbots.clear()
 }
 
-// Remove any boss bots that have died - TODO
-function OnGameEvent_player_death( params )
+// Collect any boss robot that spawns for later use.
+::BOSS.OnGameEvent_post_inventory_application <- function( params )
+{
+	local player = GetPlayerFromUserID( params.userid )
+	if( player.IsFakeClient() )
+	{
+		EntFireByHandle(player, "RunScriptCode", "::BOSS.DoBossTag(self)", 0.1, player, player )
+	}
+}
+
+// Remove tags from any boss bots that have died.
+::BOSS.OnGameEvent_player_death <- function( params )
 {
 	local player = GetPlayerFromUserID( params.userid )
 	local scope = player.GetScriptScope()
@@ -256,21 +322,50 @@ function OnGameEvent_player_death( params )
 		}
 	}
 }
-// Reset all bots we remember as bosses and remove their tags
-function OnGameEvent_teamplay_round_win( params )
+// Clear the boss tag from all boss bots.
+::BOSS.OnGameEvent_teamplay_round_win <- function( params )
 {
 	::BOSS.ClearBossTags()
+}
+
+// We ought to clean our waste responsibly.
+::BOSS.OnGameEvent_teamplay_round_start <- function( params )
+{
+	// Not if its the mission we want
+	local popname = NetProps.GetPropString(Ent(39), "m_iszMvMPopfileName").slice(39,56)
+	if( popname == "exp_sunny_side_up" )
+		return;
+	
+	local bossevents =
+	[
+		"post_inventory_application",
+		"player_death",
+		"teamplay_round_win",
+		"teamplay_round_start"
+	]
+	
+	foreach( name in bossevents )
+	{
+		local callbacks = GameEventCallbacks[name]
+		for( local i = 0; i < callbacks.len(); i++ )
+		{
+			if( "ticker" in callbacks[i] )
+				delete GameEventCallbacks[name][i]
+			
+			break;
+		}
+	}
 }
 
 function InitBoss()
 {
 	::BOSS.ClearBossTags()
-
-	ticker = SpawnEntityFromTable("logic_relay",{
+	::BOSS.ticker = SpawnEntityFromTable("logic_relay",{
 		targetname = "remorin_bossupdate"
 	})
-	ticker.ValidateScriptScope()
-	local scope = ticker.GetScriptScope()
+	::BOSS.ticker.ValidateScriptScope()
+
+	local scope = ::BOSS.ticker.GetScriptScope()
 	scope["bossphasecount"] <- 4
 	scope["bosspatterncount"] <- 1
 	scope["bosschangetime"] <- 10
@@ -328,52 +423,36 @@ function InitBoss()
 		return 1.0
 	}
 	
-	AddThinkToEnt(ticker, "BossUpdate")
+	AddThinkToEnt(::BOSS.ticker, "BossUpdate")
 }
 
-// POPFILE Functions
-// -----------------
-function RunBossLogic(phasecount, patterncount = 1)
-{
-	local scope = ticker.GetScriptScope()
-	scope["bossphasecount"] = phasecount
-	scope["bosspatterncount"] = patterncount
-	scope["BossDoRun"] = true
-}
+/*****************************************************
+	RED DEFENSE BOTS
 
-// DON'T LOOK
-// ----------
-function EnableRedBots()
+	These bots allow for waves to be played without
+	opting to the boring way of godmode.
+	
+	No popfile functions.
+	
+*****************************************************/
+function DoRedBots()
 {
+	// Move out of spawn, you fools
 	local redflag = Entities.FindByName(null, "orin_redflag")
 	if( !redflag )
 	{
 		redflag = SpawnEntityFromTable("item_teamflag", {
 			targetname = "orin_redflag",
-			origin = Vector(-627, 1502, 64),
+			origin = Vector(3956, 366, 423),
 			TeamNum = 2,
 			GameType = 1,
 			"OnPickup#1": "!self,ForceResetSilent,,0,-1" 
 		})
 	}
 	
-	// Timing issue
-	// for( local i = 0; i < MAX_PLAYERS; i++ )
-	// {
-		// local player = GetPlayerFromUserID(i)
-		// if ( player && player.IsFakeClient() && player.GetTeam() == TF_TEAM_PVE_DEFENDERS )
-		// {
-			// local weapon = player.GetActiveWeapon()
-			// if ( weapon )
-			// {
-				// weapon.AddAttribute("damage bonus", 1.5, -1)
-				// weapon.AddAttribute("ammo regen", 1, -1)
-			// }
-		// }
-	// }
+	// Forget upgrades
+//	local objective = Entities.FindByClassname(null, "tf_objective_resource")
 }
 
-ClearGameEventCallbacks()
-Init()
-InitBoss()
-__CollectGameEventCallbacks(this)
+// Abracadabra.
+Init();

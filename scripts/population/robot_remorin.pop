@@ -3,10 +3,66 @@
 WaveSchedule
 {
 	// Orin:
-	// Most of what was here is dated, but I like the standards that it wants
-	// to establish, but sadly I cannot use all of them without being wasteful.
+	// Most of what was here is dated, but I like the standards that it
+	// wants to establish, but sadly I cannot use them without being wasteful:
+	//
+	// 1. Items bot will opportunistiscally use need a 34% increase in deploy time .
+	// - "deploy time increased" 1.34
 	// 
-	// See bottom of file for details.
+	// 2. Non-stock robots use the "UPGRADEABLE" version of their weapon, if reading their stats is interesting and brief for the reader.
+	//
+	// ++ ROBOTS ++
+	// ------------
+	// 1. Pyros
+	// - "airblast_pushback_no_viewpunch" 1
+	//
+	// 2. Sandman
+	// - "max health additive penalty" -0
+	//
+	// 3. Airblast resistances
+	// - Go to the "gCHAR_" templates.
+	//
+	// 4. Jumping Bots
+	// - "increased air control" 3.0
+	// - "cancel falling damage" 1
+	//
+	// 5. Giant Heater Heavy
+	// - "ring of fire while aiming" 18
+	//
+	// 6. Head scales for Gate Giants
+	// - GPyro: "head scale" 0.85
+	// - GDemo: "head scale" 0.88
+	// - GHeavy: "head scale" 0.7
+	//
+	// 7. Giant Bots
+	// - See templates
+	//
+	// 8. Rapid-firing bots
+	// - "mod no reload DISPLAY ONLY" 1
+	// - "reload time increased hidden" -0.1
+	// 
+	// 9. Super Scout
+	// - "move speed bonus"	1.3  // actual speed is only 1.3 in-game due to speed limit
+	//
+	// >> CUSTOM <<
+	//
+	// 1. Deflector Heavy (small)
+	// - A 20% damage penalty.
+	//
+	// 2. Dragon's Fury Pyros
+	// - MaxVisionRange 800
+	//
+	// 3. Ignite Bots
+	// - A damage penalty with a max of 30%
+	// - Wep: "attach particle effect" 2
+	//
+	// 4. Throwable Bots
+	// - Jar: "fire rate penalty" 2.5
+	// - Gas: "mult_item_meter_charge_rate" 0.1
+	//
+	// 5. Slow reloading bots
+	// - Use "reload time increased"
+	
 
 	Templates
 	{	
@@ -34,6 +90,57 @@ WaveSchedule
 				ItemName "The Sandman"
 				"max health additive penalty" -0
 			}
+		}
+		Remorin_Soldier_DirectHit {
+			Class Soldier
+			Name "Direct Hit Soldier"
+			ClassIcon soldier_directhit
+			Item "The Direct Hit"
+			Skill Expert
+			ItemAttributes {
+				ItemName "The Direct Hit"
+				"Projectile speed increased" 1.2
+			}
+		}
+		Remorin_Soldier_Charged {
+			Class Soldier
+			Name "Charged Soldier"
+			Item "The Original"
+			classicon soldier_crit
+			Skill Normal
+			ItemAttributes
+			{
+				ItemName "The Original"
+				"Projectile speed decreased"	0.5
+				"reload time increased HIDDEN"	-0.1
+				"mod no reload DISPLAY ONLY" 1
+				"fire rate penalty" 2
+				"damage bonus" 1.3
+			}
+		}
+		Remorin_Soldier_BlackBox_Burst
+        {
+            Class        Soldier
+            Name        "Armored Black Box Soldier"
+            ClassIcon        soldier_blackbox
+            Health        600
+            Item "The Black Box"
+            Skill        Hard
+            Attributes SpawnWithFullCharge
+            Scale        1.4
+            Attributes HoldFireUntilFullReload
+            ItemAttributes
+            {
+                ItemName "The Black Box"
+                "damage penalty" 0.33
+                "fire rate bonus" 0.3
+                "clip size upgrade atomic" 4
+                "faster reload rate" 0.5
+                "blast radius increased" 1.25
+                "Projectile speed decreased" 0.7
+                "projectile spread angle penalty" 2
+                "heal on hit for rapidfire" 200
+            }
 		}
 		Remorin_Pyro
 		{
@@ -112,6 +219,25 @@ WaveSchedule
 				"healing received bonus" 1.1
 			}	
 		}
+		Remorin_Medic_BigHeal
+		{
+		    Class Medic
+			ClassIcon medic
+			Name "Mega-heal Medic"
+		    Skill Normal	// Don't overheal anyone else, pocket your patient
+			WeaponRestrictions SecondaryOnly
+			Tag bot_squad_member
+			Item "The Quick-Fix"
+			Item "Titanium Tyrolean"
+			ItemAttributes
+			{
+			    ItemName "The Quick-Fix"
+				"ubercharge rate bonus" 0.0
+				"uber duration bonus" 0.0
+				"heal rate bonus" 2.0
+			}	
+		}
+		
 		Remorin_Medic_Shield // Would be better if they could be a squad leader with shield already out
 		{
 			Class Medic
@@ -356,6 +482,54 @@ WaveSchedule
 		//////////////////
 		// ++ SPECIAL ++
 		//////////////////
+		Remorin_GScout_BFB_Fast {
+            Class Scout
+            Name "Giant BFB Scout"
+            Item "Baby Face's Blaster"
+            Skill Normal
+			Health 1400
+			Attributes MiniBoss
+			ClassIcon scout_giant
+			WeaponRestrictions PrimaryOnly
+            ItemAttributes
+            {
+                ItemName "Baby Face's Blaster"
+                "set_item_texture_wear" 0.2
+                "reload time increased hidden" -0.1
+                "mod no reload DISPLAY ONLY" 1
+                "weapon spread bonus"    0.0001
+                "fire rate penalty"    1.5
+                "damage bonus"    1.0
+            }
+            template gCHAR_SCOUT
+			CharacterAttributes {
+				"move speed bonus" 0.95
+			}
+        }
+		Remorin_GSoldier_Triple_Shot {
+			Template gCHAR_SOLDIER
+			Class Soldier
+			Attributes HoldFireUntilFullReload
+			Name "Lieutenant Triple Shot"
+			ClassIcon soldier_burstfire
+			Skill Expert
+			Health 4200
+			Scale 1.7
+			Item "pyroland_rocketlauncher_bluemew"
+			Attributes MiniBoss
+			ItemAttributes {
+				ItemName "pyroland_rocketlauncher_bluemew"
+				"damage bonus" 1.25
+				"fire rate bonus" 0.115
+				"clip size penalty" 0.75
+				"faster reload rate" 0.48
+				"projectile spread angle penalty" 7
+				"projectile speed increased" 1.2
+			}
+			CharacterAttributes {
+				"move speed bonus" 0.5
+			}
+		}
 		Remorin_GSoldier_Rapid
 		{
 			Class Soldier
@@ -591,7 +765,6 @@ WaveSchedule
 				"damage force reduction" 0.6
 				"airblast vulnerability multiplier" 0.3
 				"airblast vertical vulnerability multiplier" 0.5
-				"override footstep sound set" 7
 			}
 		}
 		gCHAR_MINI
@@ -614,7 +787,6 @@ WaveSchedule
 				"damage force reduction" 0.0
 				"airblast vulnerability multiplier" 0.00
 				"airblast vertical vulnerability multiplier" 0.00
-			//	"override footstep sound set" 5
 				"rage giving scale"	0.4
 			}
 		}
@@ -690,66 +862,15 @@ WaveSchedule
 				ClassIcon	sign_d
 			}
 		}
+		Banner_Deploy {
+            CharacterAttributes {
+            	"deploy time increased" 1.34
+            }
+		}
+		Extended_Banner {
+			CharacterAttributes {
+            	"increase buff duration" 9.0
+            }
+		}
 	}
-	
-	///////////////////////////////////////////////////
-	//
-	// 1. Items bot will opportunistiscally use need a 34% increase in deploy time .
-	// - "deploy time increased" 1.34
-	// 
-	// 2. Non-stock robots use the "UPGRADEABLE" version of their weapon, if reading their stats is interesting and brief for the reader.
-	//
-	// ++ ROBOTS ++
-	// ------------
-	// 1. Pyros
-	// - "airblast_pushback_no_viewpunch" 1
-	//
-	// 2. Sandman
-	// - "max health additive penalty" -0
-	//
-	// 3. Airblast resistances
-	// - Go to the "gCHAR_" templates.
-	//
-	// 4. Jumping Bots
-	// - "increased air control" 3.0
-	// - "cancel falling damage" 1
-	//
-	// 5. Giant Heater Heavy
-	// - "ring of fire while aiming" 18
-	//
-	// 6. Head scales for Gate Giants
-	// - GPyro: "head scale" 0.85
-	// - GDemo: "head scale" 0.88
-	// - GHeavy: "head scale" 0.7
-	//
-	// 7. Giant Bots
-	// - See templates
-	//
-	// 8. Rapid-firing bots
-	// - "mod no reload DISPLAY ONLY" 1
-	// - "reload time increased hidden" -0.1
-	// 
-	// 9. Super Scout
-	// - "move speed bonus"	1.3  // actual speed is only 1.3 in-game due to speed limit
-	//
-	// >> CUSTOM <<
-	//
-	// 1. Deflector Heavy (small)
-	// - A 20% damage penalty.
-	//
-	// 2. Dragon's Fury Pyros
-	// - MaxVisionRange 800
-	//
-	// 3. Ignite Bots
-	// - A damage penalty with a max of 30%
-	// - Wep: "attach particle effect" 2
-	//
-	// 4. Throwable Bots
-	// - Jar: "fire rate penalty" 2.5
-	// - Gas: "mult_item_meter_charge_rate" 0.1
-	//
-	// 5. Slow reloading bots
-	// - Use "reload time increased"
-	//
-	///////////////////////////////////////////////////
 }
