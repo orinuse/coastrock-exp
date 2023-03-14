@@ -22,7 +22,7 @@ WaveSchedule
 		Sunny_Soldier
 		{
 			Class Soldier
-			Name "Pyrotechnician"
+			Name "Fireworks Technician"
 		}
 		Sunny_Soldier_Buff
 		{
@@ -88,7 +88,7 @@ WaveSchedule
 		}
 		Sunny_Medic_BigHeal
 		{
-			Template T_TFBot_Medic_Bigheal
+			Template Remorin_Medic_BigHeal
 			ClassIcon Medic
 		}
 		Sunny_Medic_Kritz
@@ -96,7 +96,7 @@ WaveSchedule
 			Class Medic
 			Health	150
 			ClassIcon	medic_kritz
-			Skill	Easy
+			Skill	Normal
 			Item	"The Kritzkrieg"
 			Item	"Titanium Tyrolean"
 			Name "Malpractice Doctor"
@@ -113,11 +113,11 @@ WaveSchedule
 				ItemName	"The Kritzkrieg"
 				"uber duration bonus" -200
 				"ubercharge rate bonus" 6
+				"heal rate bonus" 5
 			}
 			CharacterAttributes
 			{
 				"bot medic uber health threshold" 400
-				"heal rate bonus" 0.1
 			}
 			Tag bot_squad_member
 		}
@@ -162,131 +162,6 @@ WaveSchedule
 			Target wave_finished_relay
 			Action Trigger
 		}
-		// WaveSpawn
-		// {
-		// 	Name "Intro"
-		// 	WaitBeforeStarting 1
-		// 	TotalCount 0
-		// 	FirstSpawnOutput 
-		// 	{
-		// 		Target gamerules
-		// 		Action RunScriptCode
-		// 		Param "ChatPrint(`\x000722A1FFWelcome to the \x0007393232Gray Mann \x000722A1FFCoastrock Vacation Village!`)"
-		// 	}
-		// }
-		// WaveSpawn
-		// {
-		// 	Name "Intro"
-		// 	WaitBeforeStarting 4
-		// 	TotalCount 0
-		// 	FirstSpawnOutput 
-		// 	{
-		// 		Target gamerules
-		// 		Action RunScriptCode
-		// 		Param "ChatPrint(`\x000722A1FFIn this facility, we have a lot of entertainment!`)"
-		// 	}
-		// }
-		// WaveSpawn
-		// {
-		// 	Name "Intro"
-		// 	WaitBeforeStarting 8
-		// 	TotalCount 0
-		// 	FirstSpawnOutput 
-		// 	{
-		// 		Target gamerules
-		// 		Action RunScriptCode
-		// 		Param "ChatPrint(`\x000722A1FFsuch as the water park...`)"
-		// 	}
-		// }
-		// WaveSpawn
-		// {
-		// 	Name "Intro"
-		// 	WaitBeforeStarting 12
-		// 	TotalCount 0
-		// 	FirstSpawnOutput 
-		// 	{
-		// 		Target gamerules
-		// 		Action RunScriptCode
-		// 		Param "ChatPrint(`\x000722A1FFnice cafe...`)"
-		// 	}
-		// }
-		// WaveSpawn
-		// {
-		// 	Name "Intro"
-		// 	WaitBeforeStarting 16
-		// 	TotalCount 0
-		// 	FirstSpawnOutput 
-		// 	{
-		// 		Target gamerules
-		// 		Action RunScriptCode
-		// 		Param "ChatPrint(`\x0007FF0000and deadly killing robot!`)"
-		// 	}
-		// 	FirstSpawnWarningSound "vo/mvm/norm/Heavy_mvm_battlecry04.mp3"
-		// }
-		// WaveSpawn
-		// {
-		// 	Name "Intro"
-		// 	WaitBeforeStarting 16.2
-		// 	TotalCount 0
-		// 	FirstSpawnWarningSound "vo/mvm/norm/Heavy_mvm_battlecry05.mp3"
-		// }
-		// WaveSpawn
-		// {
-		// 	Name "Intro"
-		// 	WaitBeforeStarting 16.5
-		// 	TotalCount 0
-		// 	FirstSpawnWarningSound "vo/mvm/norm/Heavy_mvm_battlecry06.mp3"
-		// }
-		// WaveSpawn
-		// {
-		// 	Name "Intro"
-		// 	WaitBeforeStarting 16.7
-		// 	TotalCount 0
-		// 	FirstSpawnWarningSound "vo/mvm/norm/Demoman_mvm_battlecry05.mp3"
-		// }
-		// WaveSpawn
-		// {
-		// 	Name "Intro_Last"
-		// 	WaitBeforeStarting 20
-		// 	TotalCount 0
-		// 	FirstSpawnOutput 
-		// 	{
-		// 		Target gamerules
-		// 		Action RunScriptCode
-		// 		Param "ChatPrint(`\x000722A1FFPlease do enjoy your stay!`)"
-		// 	}
-		// }
-		WaveSpawn {
-			Name "W1 Giant Pyro"
-			WaitForAllDead "Intro"
-			Where spawnbot_tunnel
-			Where spawnbot_parachute
-			WaitBeforeStarting 25
-			WaitBetweenSpawns 25
-			TotalCount 9
-			MaxActive 9
-			SpawnCount 3
-			TotalCurrency 100
-			Squad {
-				TFBot {
-					Template gCHAR_PYRO
-					Class Pyro
-					ClassIcon Pyro_Giant
-					Skill Easy
-					Attributes MiniBoss
-					Attributes AlwaysCrit
-					Attributes AlwaysFireWeapon
-					Health 3200
-					Scale 1.7
-				}
-				TFBot {
-					Template Remorin_Medic_BigHeal
-				}
-				TFBot {
-					Template Remorin_Medic_BigHeal
-				}
-			}
-		}
 		WaveSpawn {
 			Name "W1 Scout + Soldier"
 			WaitForAllDead "Intro"
@@ -305,6 +180,29 @@ WaveSchedule
 				TFBot {
 					Template Sunny_Soldier
 					Skill Easy
+				}
+			}
+		}
+		WaveSpawn {
+			Name "W1 Giant Pyro"
+			Where spawnbot_tunnel
+			Where spawnbot_parachute
+			WaitBeforeStarting 25
+			WaitBetweenSpawns 25
+			TotalCount 9
+			MaxActive 9
+			SpawnCount 3
+			TotalCurrency 100
+			Squad {
+				TFBot {
+					Template Remorin_GPyro
+					Attributes AlwaysFireWeapon
+				}
+				TFBot {
+					Template Sunny_Medic_Kritz
+				}
+				TFBot {
+					Template Sunny_Medic_Kritz
 				}
 			}
 		}
@@ -372,12 +270,7 @@ WaveSchedule
 			SpawnCount	1
 			TotalCurrency	250
 			TFBot {
-				Template T_TFBot_Giant_Scout_Fast
-				WeaponRestrictions	SecondaryOnly
-				Item "pretty boy's pocket pistol"
-				CharacterAttributes {
-					"move speed bonus" 1.05
-				}
+				Template Remorin_GScout_BFB_Fast
 			}
 		}
 		WaveSpawn {
@@ -473,40 +366,19 @@ WaveSchedule
 			TotalCurrency 200
 			Squad {
 				TFBot {
-					Template gCHAR_SOLDIER
-					Class Soldier
-					Attributes HoldFireUntilFullReload
-					Name "Lieutenant Triple Shot"
-					ClassIcon soldier_burstfire
-					Skill Expert
-					Health 4200
-					Scale 1.7
-					Item "pyroland_rocketlauncher_bluemew"
-					Attributes MiniBoss
-					ItemAttributes {
-						ItemName "pyroland_rocketlauncher_bluemew"
-						"damage bonus" 1.25
-						"fire rate bonus" 0.115
-						"clip size penalty" 0.75
-						"faster reload rate" 0.48
-						"projectile spread angle penalty" 7
-						"projectile speed increased" 1.2
-					}
-					CharacterAttributes {
-						"move speed bonus" 0.5
-					}
+					Template Remorin_GSoldier_Triple_Shot
 				}
 				TFBot {
-					Template Sunny_Medic_Krit_Inf
+					Template Sunny_Medic_Kritz
 				}
 				TFBot {
-					Template Sunny_Medic_Krit_Inf
+					Template Sunny_Medic_Kritz
 				}
 				TFBot {
-					Template Sunny_Medic_Krit_Inf
+					Template Sunny_Medic_Kritz
 				}
 				TFBot {
-					Template Sunny_Medic_Krit_Inf
+					Template Sunny_Medic_Kritz
 				}
 				TFBot {
 					Template Sunny_Medic_QuickUber

@@ -435,6 +435,8 @@ function InitBoss()
 	No popfile functions.
 	
 *****************************************************/
+::REDBOTS <- { bots = [], stats = null, updatetime = 1 }
+
 function DoRedBots()
 {
 	// Move out of spawn, you fools
@@ -450,8 +452,101 @@ function DoRedBots()
 		})
 	}
 	
-	// Forget upgrades
-//	local objective = Entities.FindByClassname(null, "tf_objective_resource")
+	// Collect the red bots
+	for( local i = 0; i < MAX_PLAYERS; i++ )
+	{
+		local player = GetPlayerFromUserID( i )
+		if( !player )
+			continue;
+		
+		if( player.GetTeam() == TF_TEAM_PVE_DEFENDERS && player.IsFakeClient() )
+		{
+			::REDBOTS.bots.append( player )
+		}
+	}
+	
+	::REDBOTS.stats <- Entities.FindByClassname(null, "tf_objective_resource")
+	__CollectGameEventCallbacks(::REDBOTS)
+}
+
+::REDBOTS.OnGameEvent_player_spawn <- function( params )
+{
+	local plr = GetPlayerFromUserID( params.userid )
+	if( plr.GetTeam() == TF_TEAM_PVE_DEFENDERS && plr.IsFakeClient() )
+	{
+		// Bounce out if we only recently applied attributes
+		if( Time() < ::REDBOTS.updatetime + 10 )
+			return;
+		
+		local dosh = NetProps.GetPropInt(::REDBOTS.stats, "m_runningTotalWaveStats.nCreditsDropped")
+		
+		foreach( player in ::REDBOTS.bots )
+		{
+			player.ValidateScriptScope()
+			local classnum = NetProps.GetPropInt(player, "m_PlayerClass")
+			
+			if( classnum == Constants.ETFClass.TF_CLASS_MEDIC )
+			{
+				EntFire("!activator", "RunScriptCode", "weapon <- NetProps.GetPropEntityArray(self, `m_hMyWeapons`, 1)", 1, player)
+				EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`generate rage on heal`, 2, -1)", 2, player)
+				EntFire("!activator", "RunScriptCode", "self.AddBotAttribute(Constants.FTFBotAttributeType.PROJECTILE_SHIELD)", 2, player)
+				EntFire("!activator", "RunScriptCode", "self.AddBotAttribute(Constants.FTFBotAttributeType.SPAWN_WITH_FULL_CHARGE)", 2, player)
+			}
+			else if( classnum == Constants.ETFClass.TF_CLASS_ENGINEER )
+			{
+				EntFire("!activator", "RunScriptCode", "weapon <- NetProps.GetPropEntityArray(self, `m_hMyWeapons`, 3)", 1, player)
+				EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`engy building health bonus`, 3, -1)", 2, player)
+				EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`metal regen`, 200, -1)", 2, player)
+				EntFire("!activator", "RunScriptCode", "self.AddBotAttribute(Constants.FTFBotAttributeType.TELEPORT_TO_HINT)", 2, player)
+			}
+			else if( classnum == Constants.ETFClass.TF_CLASS_HEAVYWEAPONS )
+			{
+				EntFire("!activator", "RunScriptCode", "weapon <- NetProps.GetPropEntityArray(self, `m_hMyWeapons`, 0)", 1, player)
+				EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`fire rate bonus`, 0.79, -1)", 2, player)
+				EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`ammo regen`, 1, -1)", 2, player)
+			}
+			else
+			{
+				EntFire("!activator", "RunScriptCode", "weapon <- NetProps.GetPropEntityArray(self, `m_hMyWeapons`, 0)", 1, player)
+				EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`damage bonus`, 1.5, -1)", 2, player)
+				EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`ammo regen`, 1, -1)", 2, player)
+			}
+			
+			if( dosh > 750 )
+			{
+				EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`faster reload rate`, 0.4, -1)", 2, player)
+			}
+		}
+		
+		::REDBOTS.updatetime = Time()
+	}
+}
+
+// We ought to clean our waste responsibly.
+::REDBOTS.OnGameEvent_teamplay_round_start <- function( params )
+{
+	// Not if its the mission we want
+	local popname = NetProps.GetPropString(Ent(39), "m_iszMvMPopfileName").slice(39,56)
+	if( popname == "exp_sunny_side_up" )
+		return;
+	
+	local bossevents =
+	[
+		"teamplay_round_start",
+		"player_spawn"
+	]
+	
+	foreach( name in bossevents )
+	{
+		local callbacks = GameEventCallbacks[name]
+		for( local i = 0; i < callbacks.len(); i++ )
+		{
+			if( "stats" in callbacks[i] )
+				delete GameEventCallbacks[name][i]
+			
+			break;
+		}
+	}
 }
 
 // Abracadabra.
