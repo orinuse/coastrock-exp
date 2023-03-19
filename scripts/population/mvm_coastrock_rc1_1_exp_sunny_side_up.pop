@@ -14,9 +14,9 @@ WaveSchedule
 		Sunny_Scout
 		{
 			Class Scout
-			Name "Part-time Delivery Boy"
+			Name "Delivery Boy"
 			Item "Fast Food"
-			Item "Bottle Cap"
+			Item "Soda Specs"
 			Skill Normal
 		}
 		Sunny_Soldier
@@ -489,6 +489,21 @@ WaveSchedule
 			{
 				Template Sunny_Sniper_Huntsman
 				Skill Expert
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_Giant"
+			Where spawnbot_tunnel
+			WaitBeforeStarting 110
+			WaitBetweenSpawns 40
+			TotalCount 2
+			MaxActive 2
+			SpawnCount 1
+			TotalCurrency 50
+			TFBot
+			{
+				Template Remorin_GSoldier_Burst
 			}
 		}
 		WaveSpawn

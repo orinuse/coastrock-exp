@@ -400,31 +400,40 @@ WaveSchedule
 		//////////////////
 		Remorin_GScout_BFB_Fast {
             Class Scout
-            Name "Big Bad Blaster"
+            Name "Giant Runaway Rascal"
             Item "Baby Face's Blaster"
             Skill Expert
 			Health 1600
 			Attributes MiniBoss
-			ClassIcon scout_giant
+			ClassIcon scout_giant // TODO: bfb icon
+			Item "Summer Shades"
+			Item "Pest's Pads"
 			WeaponRestrictions PrimaryOnly
             ItemAttributes
             {
                 ItemName "Baby Face's Blaster"
                 "weapon spread bonus"    0.2
-                "fire rate penalty"    1.5
-				"damage blast push" 5
+                "fire rate penalty"    2
+				"mod no reload DISPLAY ONLY" 1
+				"reload time increased hidden" 0.01
+				"damage penalty" 0.8
 				"hype resets on jump" 0
 				"lose hype on take damage" 1
-				"move speed penalty" 0
+				"move speed penalty" 0.8
 				"killstreak tier" 2
 				"killstreak idleeffect" 6
             }
+			ItemAttributes
+			{
+				ItemName "Pest's Pads"
+				"item style override" 2
+			}
             Template gCHAR_SCOUT
         }
 		Remorin_GSoldier_Triple_Shot {
 			Class Soldier
 			Attributes HoldFireUntilFullReload
-			Name "Tri-Shot Lieutenant"
+			Name "Tri-shots Lieutenant"
 			ClassIcon soldier_burstfire
 			Skill Expert
 			Health 4200
@@ -452,7 +461,6 @@ WaveSchedule
 			Tag bot_giant
 			Attributes MiniBoss
 			Item "Upgradeable TF_WEAPON_ROCKETLAUNCHER"
-			Item "Full Metal Drill Hat"
 			ItemAttributes
 			{
 				ItemName "Upgradeable TF_WEAPON_ROCKETLAUNCHER"

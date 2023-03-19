@@ -6,15 +6,17 @@ const POPULATOR = "point_populator_interface"
 
 function Init()
 {
+	// Run any functions that should be ran on popfile init.
+	InitFlankers()
+	InitBoss()
+	DoEngyHints()
+	__CollectGameEventCallbacks(::BOSS)
+	
 	// For gameplay purposes, always force this path on popfile load.
 	// This is for the 1st and 2nd wave.
 	EntFire("bombpath_arrows_clear_relay", "Trigger", null, 1)
+	EntFire("bombpath_clearall_relay", "Trigger", null, 1)
 	EntFire("bombpath_right", "Trigger", null, 1.1)
-	
-	// Run any functions that should be ran on popfile init.
-	DoEngyHints()
-	InitBoss()
-	__CollectGameEventCallbacks(::BOSS)
 	
 	// Don't use in final version; this is just for internal amusement.
 	if( developer() )
@@ -120,6 +122,99 @@ function DoEngyHints()
 			}
 		}
 	}
+}
+
+/*****************************************************
+	FLANKER PATHS
+	
+`	Little role is given to the "fkanker" tag, and some
+	paths that should be flanker-only are free to be
+	used by non-flankers on "SeekAndDestroy" behaviour.
+
+	No popfile functions.
+	
+*****************************************************/
+
+function InitFlankers()
+{
+	// Handle mapper-placed nav entities we don't like.
+	for ( local ent; ent = Entities.FindByClassname(ent, "func_nav*"); )
+	{
+		// "nav_flankbot_right"
+		local hammerid = NetProps.GetPropInt(ent, "m_iHammerID")
+		if( hammerid == 7981 )
+			ent.Kill()
+	}
+	for ( local ent; ent = Entities.FindByClassname(ent, "func_nav_avoid"); )
+	{
+		// Unnamed nav_avoid @ left of hatch
+		local hammerid = NetProps.GetPropInt(ent, "m_iHammerID")
+		if( hammerid == 325017 )
+		{
+			ent.KeyValueFromInt("team", 3)
+			ent.KeyValueFromString("tags", "common bomb_carrier giant")
+		}
+		else
+		{
+			ent.KeyValueFromInt("team", 3)
+		}
+	}
+	
+	// Our nav entities, according to our LMP file:
+	local NavEnts =
+	[
+		// Each entry is an 2D array, with another array and a dictionary inside.
+		// 1st is the bbox min and max respective, whereas 2nd is the keyvalues.
+		
+		// AVOIDS
+		// #0
+		[
+			[Vector(-144,-306,-128), Vector(144,306,128)],
+			{
+				classname = "func_nav_avoid",
+				origin = Vector(-288, -712, 192),
+				targetname = "orin_flank_avoid",
+				tags = "common bomb_carrier"
+			}
+		],
+		
+		// PREFERS
+		// #0
+		[
+			[Vector(-160,-432,-160), Vector(160,432,160)],
+			{
+				classname = "func_nav_prefer",
+				origin = Vector(-672, -368, 400),
+				targetname = "orin_flank_prefer",
+				tags = "flankbot"
+			}
+		],
+		// #1
+		[
+			[Vector(-1416,-188,-128), Vector(1416,188,128)],
+			{
+				classname = "func_nav_prefer",
+				origin = Vector(568, -928, 432),
+				targetname = "orin_flank_prefer",
+				tags = "flankbot"
+			}
+		]
+	]
+	
+	for( local i = 0; i < NavEnts.len(); i++ )
+	{
+		local mins = NavEnts[i][0][0]
+		local maxs = NavEnts[i][0][1]
+		local kvs  = NavEnts[i][1]
+
+		local prefer = SpawnEntityFromTable(kvs.classname, kvs)
+		prefer.SetSize(mins, maxs)
+		prefer.SetSolid(2)
+	}
+	
+	// Finalise it all.
+	SpawnEntityFromTable("tf_point_nav_interface", {targetname = "nav_interface"} )
+	EntFire("nav_interface", "RecomputeBlockers")
 }
 
 /*****************************************************
@@ -435,7 +530,7 @@ function InitBoss()
 	No popfile functions.
 	
 *****************************************************/
-::REDBOTS <- { bots = [], stats = null, updatetime = 1 }
+::REDBOTS <- { stats = null }
 
 function DoRedBots()
 {
@@ -452,73 +547,74 @@ function DoRedBots()
 		})
 	}
 	
-	// Collect the red bots
-	for( local i = 0; i < MAX_PLAYERS; i++ )
-	{
-		local player = GetPlayerFromUserID( i )
-		if( !player )
-			continue;
-		
-		if( player.GetTeam() == TF_TEAM_PVE_DEFENDERS && player.IsFakeClient() )
-		{
-			::REDBOTS.bots.append( player )
-		}
-	}
-	
 	::REDBOTS.stats <- Entities.FindByClassname(null, "tf_objective_resource")
 	__CollectGameEventCallbacks(::REDBOTS)
 }
 
 ::REDBOTS.OnGameEvent_player_spawn <- function( params )
 {
-	local plr = GetPlayerFromUserID( params.userid )
-	if( plr.GetTeam() == TF_TEAM_PVE_DEFENDERS && plr.IsFakeClient() )
+	local player = GetPlayerFromUserID( params.userid )
+	if( player.GetTeam() == TF_TEAM_PVE_DEFENDERS && player.IsFakeClient() )
 	{
-		// Bounce out if we only recently applied attributes
-		if( Time() < ::REDBOTS.updatetime + 10 )
-			return;
-		
 		local dosh = NetProps.GetPropInt(::REDBOTS.stats, "m_runningTotalWaveStats.nCreditsDropped")
+		local classnum = NetProps.GetPropInt(player, "m_PlayerClass")
+		player.ValidateScriptScope()
 		
-		foreach( player in ::REDBOTS.bots )
+		// Good enough for now
+		if( classnum == Constants.ETFClass.TF_CLASS_SOLDIER )
 		{
-			player.ValidateScriptScope()
-			local classnum = NetProps.GetPropInt(player, "m_PlayerClass")
+			EntFire("!activator", "RunScriptCode", "weapon <- NetProps.GetPropEntityArray(self, `m_hMyWeapons`, 0)", 1, player)
+			EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`rocket specialist`, 1, -1)", 2, player)
+			EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`faster reload rate`, 0.6, -1)", 2, player)
+			EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`fire rate bonus`, 0.9, -1)", 2, player)
 			
-			if( classnum == Constants.ETFClass.TF_CLASS_MEDIC )
-			{
-				EntFire("!activator", "RunScriptCode", "weapon <- NetProps.GetPropEntityArray(self, `m_hMyWeapons`, 1)", 1, player)
-				EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`generate rage on heal`, 2, -1)", 2, player)
-				EntFire("!activator", "RunScriptCode", "self.AddBotAttribute(Constants.FTFBotAttributeType.PROJECTILE_SHIELD)", 2, player)
-				EntFire("!activator", "RunScriptCode", "self.AddBotAttribute(Constants.FTFBotAttributeType.SPAWN_WITH_FULL_CHARGE)", 2, player)
-			}
-			else if( classnum == Constants.ETFClass.TF_CLASS_ENGINEER )
-			{
-				EntFire("!activator", "RunScriptCode", "weapon <- NetProps.GetPropEntityArray(self, `m_hMyWeapons`, 3)", 1, player)
-				EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`engy building health bonus`, 3, -1)", 2, player)
-				EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`metal regen`, 200, -1)", 2, player)
-				EntFire("!activator", "RunScriptCode", "self.AddBotAttribute(Constants.FTFBotAttributeType.TELEPORT_TO_HINT)", 2, player)
-			}
-			else if( classnum == Constants.ETFClass.TF_CLASS_HEAVYWEAPONS )
-			{
-				EntFire("!activator", "RunScriptCode", "weapon <- NetProps.GetPropEntityArray(self, `m_hMyWeapons`, 0)", 1, player)
-				EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`fire rate bonus`, 0.79, -1)", 2, player)
-				EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`ammo regen`, 1, -1)", 2, player)
-			}
-			else
-			{
-				EntFire("!activator", "RunScriptCode", "weapon <- NetProps.GetPropEntityArray(self, `m_hMyWeapons`, 0)", 1, player)
-				EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`damage bonus`, 1.5, -1)", 2, player)
-				EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`ammo regen`, 1, -1)", 2, player)
-			}
+			// not good for tanks
+			/* local randnum = RandomInt(0,2)
+			if( randnum == 0 )
+				player.GenerateAndWearItem("The Buff Banner")
+			else if( randnum == 1 )
+				player.GenerateAndWearItem("The Concheror")
+			else if( randnum == 2 )
+				player.GenerateAndWearItem("The Battalion's Backup")
 			
-			if( dosh > 750 )
-			{
-				EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`faster reload rate`, 0.4, -1)", 2, player)
-			}
+			player.AddCustomAttribute("increase buff duration", 1.5, -1)
+			player.AddCustomAttribute("deploy time increased", 1.34, -1) */
+		}
+		else if( classnum == Constants.ETFClass.TF_CLASS_HEAVYWEAPONS )
+		{
+			EntFire("!activator", "RunScriptCode", "weapon <- NetProps.GetPropEntityArray(self, `m_hMyWeapons`, 0)", 1, player)
+			EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`fire rate bonus`, 0.79, -1)", 2, player)
+			EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`ammo regen`, 1, -1)", 2, player)
+		}
+		else if( classnum == Constants.ETFClass.TF_CLASS_ENGINEER )
+		{
+			EntFire("!activator", "RunScriptCode", "weapon <- NetProps.GetPropEntityArray(self, `m_hMyWeapons`, 3)", 1, player)
+			EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`engy building health bonus`, 3, -1)", 2, player)
+			EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`metal regen`, 200, -1)", 2, player)
+		}
+		else if( classnum == Constants.ETFClass.TF_CLASS_MEDIC )
+		{
+			EntFire("!activator", "RunScriptCode", "weapon <- NetProps.GetPropEntityArray(self, `m_hMyWeapons`, 1)", 1, player)
+			EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`generate rage on heal`, 2, -1)", 2, player)
+			EntFire("!activator", "RunScriptCode", "self.AddBotAttribute(Constants.FTFBotAttributeType.PROJECTILE_SHIELD)", 2, player)
+			EntFire("!activator", "RunScriptCode", "self.AddBotAttribute(Constants.FTFBotAttributeType.SPAWN_WITH_FULL_CHARGE)", 2, player)
+		}
+		else
+		{
+			EntFire("!activator", "RunScriptCode", "weapon <- NetProps.GetPropEntityArray(self, `m_hMyWeapons`, 0)", 1, player)
+			EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`damage bonus`, 1.5, -1)", 2, player)
+			EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`ammo regen`, 1, -1)", 2, player)
 		}
 		
-		::REDBOTS.updatetime = Time()
+		// Good enough for now
+		if ( dosh > 1200 )
+		{
+			player.AddCustomAttribute("dmg taken from blast reduced", 0.6, -1)
+		}
+		else if( dosh > 600 )
+		{
+			player.AddCustomAttribute("dmg taken from bullets reduced", 0.6, -1)
+		}
 	}
 }
 
