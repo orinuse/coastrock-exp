@@ -10,7 +10,6 @@ function Init()
 	InitFlankers()
 	InitBoss()
 	DoEngyHints()
-	__CollectGameEventCallbacks(::BOSS)
 	
 	// For gameplay purposes, always force this path on popfile load.
 	// This is for the 1st and 2nd wave.
@@ -135,6 +134,8 @@ function DoEngyHints()
 	
 *****************************************************/
 
+::FLANKERS <- { ref = "FLANKERS" }
+
 function InitFlankers()
 {
 	// Handle mapper-placed nav entities we don't like.
@@ -169,12 +170,52 @@ function InitFlankers()
 		// AVOIDS
 		// #0
 		[
-			[Vector(-144,-306,-128), Vector(144,306,128)],
+			[Vector(-320,-528,-32), Vector(320,528,32)],
+			{
+				classname = "func_nav_avoid",
+				origin = Vector(960, 1056, 32),
+				targetname = "nav_avoid_left",
+				tags = "common bomb_carrier"
+			}
+		],
+		// #1
+		[
+			[Vector(-208,-72,-128), Vector(208,72,128)],
 			{
 				classname = "func_nav_avoid",
 				origin = Vector(-288, -712, 192),
-				targetname = "orin_flank_avoid",
+				targetname = "orin_avoid",
 				tags = "common bomb_carrier"
+			}
+		],
+		// #2
+		[
+			[Vector(-232,-296,-120), Vector(232,296,120)],
+			{
+				classname = "func_nav_avoid",
+				origin = Vector(440, -392, 184),
+				targetname = "orin_flank_avoid",
+				tags = "flankbot"
+			}
+		],
+		// #3
+		[
+			[Vector(-160,-352,-144), Vector(160,352,144)],
+			{
+				classname = "func_nav_avoid",
+				origin = Vector(-352, 416, 144),
+				targetname = "orin_flank_avoid_right",
+				tags = "flankbot"
+			}
+		],
+		// #4
+		[
+			[Vector(-320,-528,-32), Vector(320,528,32)],
+			{
+				classname = "func_nav_avoid",
+				origin = Vector(960, 1056, 32),
+				targetname = "orin_flank_avoid_left",
+				tags = "flankbot"
 			}
 		],
 		
@@ -198,6 +239,66 @@ function InitFlankers()
 				targetname = "orin_flank_prefer",
 				tags = "flankbot"
 			}
+		],
+		// #2
+		[
+			[Vector(-344,-423.5,-144), Vector(344,423.5,144)],
+			{
+				classname = "func_nav_prefer",
+				origin = Vector(-136, -360, 208),
+				targetname = "orin_flank_prefer",
+				tags = "flankbot"
+			}
+		],
+		// #3
+		[
+			[Vector(-160,-352,-144), Vector(160,352,144)],
+			{
+				classname = "func_nav_prefer",
+				origin = Vector(-352, 416, 144),
+				targetname = "orin_flank_prefer_left",
+				tags = "flankbot"
+			}
+		],
+		// #4
+		[
+			[Vector(-224,-320,-208), Vector(224,320,208)],
+			{
+				classname = "func_nav_prefer",
+				origin = Vector(432, 464, 16),
+				targetname = "orin_flank_prefer_right",
+				tags = "flankbot"
+			}
+		],
+		// #5
+		[
+			[Vector(-520,-360,-167.5), Vector(520,360,167.5)],
+			{
+				classname = "func_nav_prefer",
+				origin = Vector(-328, 424, -120),
+				targetname = "orin_flank_prefer_right",
+				tags = "flankbot"
+			}
+		],
+		// #6
+		[
+			[Vector(-224,-408,-240), Vector(224,408,240)],
+			{
+				classname = "func_nav_prefer",
+				origin = Vector(-1072, 104, 48),
+				targetname = "orin_flank_prefer_right",
+				tags = "flankbot"
+			}
+		],
+		// #7
+		[
+			[Vector(-384,-168,-112), Vector(384,168,112)],
+			{
+				classname = "func_nav_prefer",
+				origin = Vector(-896, -472, 176),
+				targetname = "orin_flank_prefer_right",
+				tags = "flankbot"
+			}
 		]
 	]
 	
@@ -210,11 +311,72 @@ function InitFlankers()
 		local prefer = SpawnEntityFromTable(kvs.classname, kvs)
 		prefer.SetSize(mins, maxs)
 		prefer.SetSolid(2)
+		
+		if( developer() )
+		{
+			if( kvs.classname == "func_nav_avoid" )
+				DebugDrawBox( kvs.origin, mins, maxs, 200, 0, 0, 50, 300 )
+			else if( kvs.classname == "func_nav_prefer" )
+				DebugDrawBox( kvs.origin, mins, maxs, 0, 200, 0, 50, 300 )
+			
+			local name = format("%s (#%i)", "targetname" in kvs ? kvs.targetname : kvs.classname, i )
+			DebugDrawText( kvs.origin, name, false, 300 )
+		}
 	}
 	
 	// Finalise it all.
-	SpawnEntityFromTable("tf_point_nav_interface", {targetname = "nav_interface"} )
-	EntFire("nav_interface", "RecomputeBlockers")
+	local bombpath_left  = Entities.FindByName(null, "bombpath_left")
+	local bombpath_right = Entities.FindByName(null, "bombpath_right")
+	local bombpath_clearall_relay = Entities.FindByName(null, "bombpath_clearall_relay")
+	
+	EntityOutputs.AddOutput(bombpath_left, "OnTrigger", "orin_flank_prefer_left", "Enable", null, 0, -1)
+	EntityOutputs.AddOutput(bombpath_left, "OnTrigger", "orin_flank_avoid_left", "Enable", null, 0, -1)
+	EntityOutputs.AddOutput(bombpath_right, "OnTrigger", "orin_flank_prefer_right", "Enable", null, 0, -1)
+	EntityOutputs.AddOutput(bombpath_right, "OnTrigger", "orin_flank_avoid_right", "Enable", null, 0, -1)
+	
+	EntityOutputs.AddOutput(bombpath_clearall_relay, "OnTrigger", "orin_flank_avoid_left", "Disable", null, 0, -1)
+	EntityOutputs.AddOutput(bombpath_clearall_relay, "OnTrigger", "orin_flank_avoid_right", "Disable", null, 0, -1)
+	EntityOutputs.AddOutput(bombpath_clearall_relay, "OnTrigger", "orin_flank_prefer_left", "Disable", null, 0, -1)
+	EntityOutputs.AddOutput(bombpath_clearall_relay, "OnTrigger", "orin_flank_prefer_right", "Disable", null, 0, -1)
+	
+	__CollectGameEventCallbacks(::FLANKERS)
+}
+
+::FLANKERS.OnGameEvent_mvm_begin_wave <- function( params )
+{
+	DebugDrawClear()
+}
+
+::FLANKERS.OnGameEvent_teamplay_round_start <- function( params )
+{
+	// Not if its the mission we want
+	local popname = NetProps.GetPropString(Ent(39), "m_iszMvMPopfileName").slice(39,56)
+	if( popname == "exp_sunny_side_up" )
+	{
+		DebugDrawClear()
+		return;
+	}
+	
+	DebugDrawClear()
+	printl("yeay")
+	
+	local events =
+	[
+		"mvm_begin_wave",
+		"teamplay_round_start"
+	]
+	
+	foreach( name in events )
+	{
+		local callbacks = GameEventCallbacks[name]
+		for( local i = 0; i < callbacks.len(); i++ )
+		{
+			if( "ref" in callbacks[i] && callbacks[i]["ref"] == "FLANKERS" )
+				delete GameEventCallbacks[name][i]
+			
+			break;
+		}
+	}
 }
 
 /*****************************************************
@@ -342,6 +504,8 @@ function StartWaveBreak(duration = 35, music = "music/mvm_start_mid_wave.wav", p
 const TAG_BOSS = "remorin_boss"
 ::BOSS <-
 {
+	ref = "BOSS",
+	
 	// Intended format:
 	// [ mvmbot, lastupdatetime ]
 	bossbots = [],
@@ -429,9 +593,11 @@ function RunBossLogic(phasecount, patterncount = 1)
 	// Not if its the mission we want
 	local popname = NetProps.GetPropString(Ent(39), "m_iszMvMPopfileName").slice(39,56)
 	if( popname == "exp_sunny_side_up" )
+	{
 		return;
+	}
 	
-	local bossevents =
+	local events =
 	[
 		"post_inventory_application",
 		"player_death",
@@ -439,12 +605,12 @@ function RunBossLogic(phasecount, patterncount = 1)
 		"teamplay_round_start"
 	]
 	
-	foreach( name in bossevents )
+	foreach( name in events )
 	{
 		local callbacks = GameEventCallbacks[name]
 		for( local i = 0; i < callbacks.len(); i++ )
 		{
-			if( "ticker" in callbacks[i] )
+			if( "ref" in callbacks[i] && callbacks[i]["ref"] == "BOSS" )
 				delete GameEventCallbacks[name][i]
 			
 			break;
@@ -519,6 +685,7 @@ function InitBoss()
 	}
 	
 	AddThinkToEnt(::BOSS.ticker, "BossUpdate")
+	__CollectGameEventCallbacks(::BOSS)
 }
 
 /*****************************************************
@@ -530,7 +697,7 @@ function InitBoss()
 	No popfile functions.
 	
 *****************************************************/
-::REDBOTS <- { stats = null }
+::REDBOTS <- { stats = null, ref = "REDBOTS" }
 
 function DoRedBots()
 {
@@ -624,20 +791,22 @@ function DoRedBots()
 	// Not if its the mission we want
 	local popname = NetProps.GetPropString(Ent(39), "m_iszMvMPopfileName").slice(39,56)
 	if( popname == "exp_sunny_side_up" )
+	{
 		return;
+	}
 	
-	local bossevents =
+	local events =
 	[
 		"teamplay_round_start",
 		"player_spawn"
 	]
 	
-	foreach( name in bossevents )
+	foreach( name in events )
 	{
 		local callbacks = GameEventCallbacks[name]
 		for( local i = 0; i < callbacks.len(); i++ )
 		{
-			if( "stats" in callbacks[i] )
+			if( "ref" in callbacks[i] && callbacks[i]["ref"] == "REDBOTS" )
 				delete GameEventCallbacks[name][i]
 			
 			break;

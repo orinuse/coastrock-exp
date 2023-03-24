@@ -126,6 +126,40 @@ WaveSchedule
 			Template T_TFBot_Medic_QuickUber
 			Name "Therapeutic Medic"
 		}
+
+		Sunny_MGScout_BFB {
+            Class Scout
+            Name "Runaway Rascal"
+            Item "Baby Face's Blaster"
+            Skill Expert
+			Health 650
+			Scale 1.4
+			Attributes MiniBoss
+			ClassIcon scout_bfb_nys // TODO: bfb icon
+			Item "Summer Shades"
+			Item "Pest's Pads"
+			WeaponRestrictions PrimaryOnly
+            ItemAttributes
+            {
+                ItemName "Baby Face's Blaster"
+                "weapon spread bonus"    0.2
+                "fire rate penalty"    2
+				"mod no reload DISPLAY ONLY" 1
+				"reload time increased hidden" 0.01
+				"damage penalty" 0.8
+				"hype resets on jump" 0
+				"lose hype on take damage" 1
+				"move speed penalty" 1
+				"killstreak tier" 2
+				"killstreak idleeffect" 6
+            }
+			ItemAttributes
+			{
+				ItemName "Pest's Pads"
+				"item style override" 2
+			}
+            Template gCHAR_MINI
+        }
 	}
     Mission
 	{
@@ -265,12 +299,12 @@ WaveSchedule
 			WaitBeforeStarting	15
 			WaitBetweenSpawns	20
 			Where spawnbot_tunnel
-			TotalCount	6
-			MaxActive	1
-			SpawnCount	1
+			TotalCount	18
+			MaxActive	3
+			SpawnCount	3
 			TotalCurrency	250
 			TFBot {
-				Template Remorin_GScout_BFB_Fast
+				Template Sunny_MGScout_BFB
 			}
 		}
 		WaveSpawn {
@@ -603,6 +637,71 @@ WaveSchedule
 					Target boss_deploy_relay
 					Action Trigger
 				}
+			}
+		}
+	}
+	Wave
+	{
+		InitWaveOutput
+		{
+			Target gamerules
+			Action RunScriptFile
+			Param "exp_sunny_side.nut"
+		}
+		StartWaveOutput
+		{
+			Target wave_start_endurance_relay
+			Action Trigger
+		}
+		DoneOutput
+		{
+			Target wave_finished_relay
+			Action Trigger
+		}
+		WaveSpawn {
+			Name "W1 Demoman"
+			WaitBetweenSpawns	2
+			Where spawnbot
+			Where spawnbot_parachute
+			TotalCount	4
+			MaxActive	4
+			SpawnCount	2
+			TotalCurrency	100
+			TFBot {
+				Template Sunny_Demoman
+				Skill Hard
+			}
+		}
+		WaveSpawn {
+			Name "W1 Demoman 2"
+			WaitForAllSpawned "W1 Demoman"
+			WaitBeforeStarting	8
+			WaitBetweenSpawns	2
+			Where spawnbot
+			Where spawnbot_parachute
+			TotalCount	32
+			MaxActive	8
+			SpawnCount	2
+			TotalCurrency	100
+			TFBot {
+				Template Sunny_Demoman
+				Skill Hard
+			}
+		}
+		WaveSpawn {
+			Name "W1 Extended Conch Soldier Flank"
+			WaitForAllSpawned "W1 Demoman"
+			Where spawnbot_flank
+			WaitBeforeStarting	16
+			WaitBetweenSpawns	10
+			TotalCount	18
+			MaxActive	6
+			SpawnCount	2
+			TotalCurrency	30
+			TFBot {
+				Template T_TFBot_Soldier_Extended_Concheror
+				BehaviorModifiers Push
+				Tag flankbot
 			}
 		}
 	}
