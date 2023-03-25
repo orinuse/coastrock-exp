@@ -312,7 +312,8 @@ function InitFlankers()
 		prefer.SetSize(mins, maxs)
 		prefer.SetSolid(2)
 		
-		if( developer() )
+		// Show the brushes when I/O dev mode (2) is active
+		if( developer() > 1 )
 		{
 			if( kvs.classname == "func_nav_avoid" )
 				DebugDrawBox( kvs.origin, mins, maxs, 200, 0, 0, 50, 300 )
@@ -728,12 +729,35 @@ function DoRedBots()
 		player.ValidateScriptScope()
 		
 		// Good enough for now
-		if( classnum == Constants.ETFClass.TF_CLASS_SOLDIER )
+		if( classnum == Constants.ETFClass.TF_CLASS_SCOUT )
+		{
+			EntFire("!activator", "RunScriptCode", "weapon <- NetProps.GetPropEntityArray(self, `m_hMyWeapons`, 0)", 1, player)
+			EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`projectile penetration`, 1, -1)", 2, player)
+			EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`faster reload rate`, 0.6, -1)", 2, player)
+			EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`fire rate bonus`, 0.9, -1)", 2, player)
+			
+			// not good for tanks
+			/* local randnum = RandomInt(0,2)
+			if( randnum == 0 )
+				player.GenerateAndWearItem("The Buff Banner")
+			else if( randnum == 1 )
+				player.GenerateAndWearItem("The Concheror")
+			else if( randnum == 2 )
+				player.GenerateAndWearItem("The Battalion's Backup")
+			
+			player.AddCustomAttribute("increase buff duration", 1.5, -1)
+			player.AddCustomAttribute("deploy time increased", 1.34, -1) */
+		}
+		else if( classnum == Constants.ETFClass.TF_CLASS_SOLDIER )
 		{
 			EntFire("!activator", "RunScriptCode", "weapon <- NetProps.GetPropEntityArray(self, `m_hMyWeapons`, 0)", 1, player)
 			EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`rocket specialist`, 1, -1)", 2, player)
 			EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`faster reload rate`, 0.6, -1)", 2, player)
 			EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`fire rate bonus`, 0.9, -1)", 2, player)
+			EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`restore health on kill`, 25, -1)", 2, player)
+			player.AddCustomAttribute("move speed bonus", 1.2, -1)
+			player.AddCustomAttribute("dmg taken from blast reduced", 0.8, -1)
+			player.AddCustomAttribute("dmg taken from bullets reduced", 0.8, -1)
 			
 			// not good for tanks
 			/* local randnum = RandomInt(0,2)

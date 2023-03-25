@@ -461,7 +461,6 @@ WaveSchedule
 				"fire rate bonus" 0.1
 				"clip size upgrade atomic" 5.0
 				"Projectile speed decreased" 0.65
-				"gesture speed increase" 3
 				"killstreak tier" 2
 				"killstreak idleeffect" 6
 			}
@@ -640,6 +639,8 @@ WaveSchedule
 				"damage force reduction" 0.8
 				"airblast vulnerability multiplier" 0.5
 				"airblast vertical vulnerability multiplier" 0.75
+				"head scale" 0.7
+				"voice pitch scale" 0.95
 			}
 		}
 		gCHAR_BOSS
