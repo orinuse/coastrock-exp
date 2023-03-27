@@ -3,10 +3,24 @@
 	
 const GAMERULES = "tf_gamerules"
 const POPULATOR = "point_populator_interface"
+const POPFILE   = "exp_sunny_side_up"
+
+local TF_TEAM_PVE_DEFENDERS = Constants.ETFTeam.TF_TEAM_PVE_DEFENDERS
+local TF_TEAM_PVE_INVADERS = Constants.ETFTeam.TF_TEAM_PVE_INVADERS
+local MAX_PLAYERS = Constants.Server.MAX_PLAYERS
+
+::ORIN <- {}
+::OBJECTIVE <- null
+::POPNAME <- null
 
 function Init()
 {
+	::OBJECTIVE <- Entities.FindByClassname(null, "tf_objective_resource")
+	local popname =  NetProps.GetPropString(::OBJECTIVE, "m_iszMvMPopfileName")
+	::POPNAME <- popname.slice(39,popname.len()-4)
+	
 	// Run any functions that should be ran on popfile init.
+	InitTags()
 	InitFlankers()
 	InitBoss()
 	DoEngyHints()
@@ -20,6 +34,25 @@ function Init()
 	// Don't use in final version; this is just for internal amusement.
 	if( developer() )
 		DoRedBots()
+}
+
+// This is for removing game events when the mission has changed
+::ORIN.CheckEvents <- function(ref, eventary)
+{
+	if( ::POPNAME == POPFILE )
+		return;
+	
+	foreach( name in eventary )
+	{
+		local callbacks = GameEventCallbacks[name]
+		for( local i = 0; i < callbacks.len(); i++ )
+		{
+			if( "ref" in callbacks[i] && callbacks[i]["ref"] == ref )
+			{
+				GameEventCallbacks[name].remove(i)
+			}
+		}
+	}
 }
 
 /*****************************************************
@@ -70,9 +103,9 @@ function DoEngyHints()
 		],
 		// #5
 		[
-			[Vector(-526, -330, 320), QAngle( 0,  30,0)],
-			[Vector(-740,  -71, 256), QAngle(-5,  60,0)],
-			[Vector(-636,  -18, 256), QAngle( 0, 272,0)]
+			[Vector(-526, -330, 320), QAngle(0,  30,0)],
+			[Vector(-740,  -71, 256), QAngle(0,  60,0)],
+			[Vector(-636,  -18, 256), QAngle(0, 272,0)]
 		],
 		// #6
 		[
@@ -95,11 +128,11 @@ function DoEngyHints()
 		
 		for( local j = 0; j < sentry_hintcount; j++ )
 		{
-			local mult = j > 0 ? j * 2 : 0;
+			local step = j > 0 ? j * 2 : 0;
 			SpawnEntityFromTable("bot_hint_sentrygun", {
 				targetname = "remorin_hint_engy"+i,
-				origin = EngyHints[i][0][0+mult],
-				angles = EngyHints[i][0][1+mult]
+				origin = EngyHints[i][0][0+step],
+				angles = EngyHints[i][0][1+step]
 			})
 		}
 		SpawnEntityFromTable("bot_hint_engineer_nest", {
@@ -350,34 +383,13 @@ function InitFlankers()
 
 ::FLANKERS.OnGameEvent_teamplay_round_start <- function( params )
 {
-	// Not if its the mission we want
-	local popname = NetProps.GetPropString(Ent(39), "m_iszMvMPopfileName").slice(39,56)
-	if( popname == "exp_sunny_side_up" )
-	{
-		DebugDrawClear()
-		return;
-	}
-	
-	DebugDrawClear()
-	printl("yeay")
-	
 	local events =
 	[
 		"mvm_begin_wave",
 		"teamplay_round_start"
 	]
-	
-	foreach( name in events )
-	{
-		local callbacks = GameEventCallbacks[name]
-		for( local i = 0; i < callbacks.len(); i++ )
-		{
-			if( "ref" in callbacks[i] && callbacks[i]["ref"] == "FLANKERS" )
-				delete GameEventCallbacks[name][i]
-			
-			break;
-		}
-	}
+
+	::ORIN.CheckEvents("FLANKERS", events)
 }
 
 /*****************************************************
@@ -461,6 +473,82 @@ function StartWaveBreak(duration = 35, music = "music/mvm_start_mid_wave.wav", p
 }
 
 /*****************************************************
+	BOT TAGS
+
+	A cute interface for storing robots with bot tags
+	that we care for.
+	
+*****************************************************/
+::TAGS <- { ref = "TAGS" }
+
+function InitTags()
+{
+	__CollectGameEventCallbacks(::TAGS)
+}
+
+::TAGS.RegisterBot <- function(bot, tagname, ary)
+{
+	if( bot.IsFakeClient() )
+	{
+		bot.ValidateScriptScope()
+		local scope = bot.GetScriptScope()
+		if( bot.HasBotTag( tagname ) && !(tagname in scope) )
+		{
+			scope[tagname] <- true
+			ary.append( [bot, Time()] )
+		}
+	}
+}
+
+// Remove dead tagged bots from our arrays.
+::TAGS.UnregisterBot <- function(bot, tagname, ary)
+{
+	bot.ValidateScriptScope()
+	local scope = bot.GetScriptScope()
+	if( bot.IsFakeClient() && (tagname in scope) )
+	{
+		for( local i = 0; i < ary.len(); i++ )
+		{
+			local ary_player = ary[i][0]
+			if ( bot == ary_player )
+			{
+				if( tagname in scope )
+					delete scope[tagname]
+
+				ary.remove( i )
+			}
+		}
+	}
+}
+
+// For round ends.
+::TAGS.ClearBots <- function(tagname, ary)
+{
+	for( local i = 0; i < MAX_PLAYERS; i++ )
+	{
+		local player = GetPlayerFromUserID(i)
+		if ( player && player.IsFakeClient() )
+		{
+			local scope = player.GetScriptScope()
+			if( tagname in scope )
+				delete scope[tagname]
+		}
+	}
+	ary.clear()
+}
+
+// We ought to clean our waste responsibly.
+::TAGS.OnGameEvent_teamplay_round_start <- function( params )
+{
+	local events =
+	[
+		"teamplay_round_start"
+	]
+
+	::ORIN.CheckEvents("BOSS", events)
+}
+
+/*****************************************************
 	BOSS PATTERNS
 	
 	The boss behaviour featured prominently in Winterbridge
@@ -501,133 +589,35 @@ function StartWaveBreak(duration = 35, music = "music/mvm_start_mid_wave.wav", p
 	}
 	
 *****************************************************/
-
-const TAG_BOSS = "remorin_boss"
 ::BOSS <-
 {
 	ref = "BOSS",
+	TAG = "orin_boss",
 	
 	// Intended format:
 	// [ mvmbot, lastupdatetime ]
-	bossbots = [],
-	ticker = null
+	BOTS = [],
+	thinker = null
 }
 
-local TF_TEAM_PVE_DEFENDERS = Constants.ETFTeam.TF_TEAM_PVE_DEFENDERS
-local TF_TEAM_PVE_INVADERS = Constants.ETFTeam.TF_TEAM_PVE_INVADERS
-local MAX_PLAYERS = Constants.Server.MAX_PLAYERS
-
-function RunBossLogic(phasecount, patterncount = 1)
+function RunBossLogic(phasecount, patterncount = 1, changetime = 10)
 {
-	local scope = ::BOSS.ticker.GetScriptScope()
+	local scope = ::BOSS.thinker.GetScriptScope()
 	scope["bossphasecount"] = phasecount
 	scope["bosspatterncount"] = patterncount
+	scope["bosschangetime"] = changetime
 	scope["BossDoRun"] = true
-}
-
-::BOSS.DoBossTag <- function(bot)
-{
-	bot.ValidateScriptScope()
-	local scope = bot.GetScriptScope()
-	if( bot.HasBotTag( TAG_BOSS ) && !("TagAppended" in scope) )
-	{
-		scope["TagAppended"] <- true
-		::BOSS.bossbots.append( [bot, Time()] )
-	}
-}
-
-::BOSS.ClearBossTags <- function()
-{
-	for( local i = 0; i < MAX_PLAYERS; i++ )
-	{
-		local player = GetPlayerFromUserID(i)
-		if ( player && player.IsFakeClient() )
-		{
-			local scope = player.GetScriptScope()
-			if( "TagAppended" in scope )
-				delete scope["TagAppended"]
-		}
-	}
-	::BOSS.bossbots.clear()
-}
-
-// Collect any boss robot that spawns for later use.
-::BOSS.OnGameEvent_post_inventory_application <- function( params )
-{
-	local player = GetPlayerFromUserID( params.userid )
-	if( player.IsFakeClient() )
-	{
-		EntFireByHandle(player, "RunScriptCode", "::BOSS.DoBossTag(self)", 0.1, player, player )
-	}
-}
-
-// Remove tags from any boss bots that have died.
-::BOSS.OnGameEvent_player_death <- function( params )
-{
-	local player = GetPlayerFromUserID( params.userid )
-	local scope = player.GetScriptScope()
-	if( player.IsFakeClient() && ("TagAppended" in scope) )
-	{
-		for( local i = 0; i < ::BOSS.bossbots.len(); i++ )
-		{
-			local ary_player = ::BOSS.bossbots[i][0]
-			if ( player == ary_player )
-			{
-				local scope = player.GetScriptScope()
-				if( "TagAppended" in scope )
-					delete scope["TagAppended"]
-
-				::BOSS.bossbots.remove( i )
-			}
-		}
-	}
-}
-// Clear the boss tag from all boss bots.
-::BOSS.OnGameEvent_teamplay_round_win <- function( params )
-{
-	::BOSS.ClearBossTags()
-}
-
-// We ought to clean our waste responsibly.
-::BOSS.OnGameEvent_teamplay_round_start <- function( params )
-{
-	// Not if its the mission we want
-	local popname = NetProps.GetPropString(Ent(39), "m_iszMvMPopfileName").slice(39,56)
-	if( popname == "exp_sunny_side_up" )
-	{
-		return;
-	}
-	
-	local events =
-	[
-		"post_inventory_application",
-		"player_death",
-		"teamplay_round_win",
-		"teamplay_round_start"
-	]
-	
-	foreach( name in events )
-	{
-		local callbacks = GameEventCallbacks[name]
-		for( local i = 0; i < callbacks.len(); i++ )
-		{
-			if( "ref" in callbacks[i] && callbacks[i]["ref"] == "BOSS" )
-				delete GameEventCallbacks[name][i]
-			
-			break;
-		}
-	}
 }
 
 function InitBoss()
 {
-	::BOSS.ClearBossTags()
-	::BOSS.ticker = SpawnEntityFromTable("logic_relay",{
+	::TAGS.ClearBots(::BOSS.TAG, ::BOSS.BOTS)
+	::BOSS.thinker = SpawnEntityFromTable("logic_relay",{
 		targetname = "remorin_bossupdate"
 	})
-	::BOSS.ticker.ValidateScriptScope()
+	::BOSS.thinker.ValidateScriptScope()
 
-	local scope = ::BOSS.ticker.GetScriptScope()
+	local scope = ::BOSS.thinker.GetScriptScope()
 	scope["bossphasecount"] <- 4
 	scope["bosspatterncount"] <- 1
 	scope["bosschangetime"] <- 10
@@ -639,9 +629,9 @@ function InitBoss()
 		if ( !("BossDoRun" in scope) || !scope["BossDoRun"] )
 			return;
 		
-		for( local i = 0; i < ::BOSS.bossbots.len(); i++ )
+		for( local i = 0; i < ::BOSS.BOTS.len(); i++ )
 		{
-			local ary = ::BOSS.bossbots[i]
+			local ary = ::BOSS.BOTS[i]
 			local bot = ary[0]
 			local lastchangetime = ary[1]
 			
@@ -673,9 +663,10 @@ function InitBoss()
 							loadout = format( "Phase%iPattern%i", this["bossphasecount"]+1 - j, choice )
 						}
 						EntFire( POPULATOR, "ChangeBotAttributes", loadout)
+						printl(loadout)
 						
 						scope["bosslastchoice"] = choice
-						::BOSS.bossbots[i][1] = Time()
+						::BOSS.BOTS[i][1] = Time()
 						break;
 					}
 				}
@@ -685,8 +676,108 @@ function InitBoss()
 		return 1.0
 	}
 	
-	AddThinkToEnt(::BOSS.ticker, "BossUpdate")
+	AddThinkToEnt(::BOSS.thinker, "BossUpdate")
 	__CollectGameEventCallbacks(::BOSS)
+}
+
+// Collect any boss robot that spawns for later use.
+::BOSS.OnGameEvent_post_inventory_application <- function( params )
+{
+	local player = GetPlayerFromUserID( params.userid )
+	if( player.IsFakeClient() )
+	{
+		EntFireByHandle(player, "RunScriptCode", "::TAGS.RegisterBot(self, ::BOSS.TAG, ::BOSS.BOTS)", 0.1, player, player )
+	}
+}
+
+// Remove tags from any boss bots that have died.
+::BOSS.OnGameEvent_player_death <- function( params )
+{
+	local player = GetPlayerFromUserID( params.userid )
+	::TAGS.UnregisterBot(player, ::BOSS.TAG, ::BOSS.BOTS)
+}
+
+// Clear the boss tag from all boss bots.
+::BOSS.OnGameEvent_teamplay_round_win <- function( params )
+{
+	::TAGS.ClearBots(::BOSS.TAG, ::BOSS.BOTS)
+	local scope = ::BOSS.thinker.GetScriptScope()
+	scope["BossDoRun"] = false
+}
+
+// We ought to clean our waste responsibly.
+::BOSS.OnGameEvent_teamplay_round_start <- function( params )
+{
+	local events =
+	[
+		"post_inventory_application",
+		"player_death",
+		"teamplay_round_win",
+		"teamplay_round_start"
+	]
+
+	::ORIN.CheckEvents("BOSS", events)
+}
+
+/*****************************************************
+	PROJECTILE SHIELD
+
+	Shield Medics aren't taken seriously unless they're
+	a squad leader, however during this they do not
+	activate their projectile shield unless forced to.
+	
+	No popfile functions.
+	
+*****************************************************/
+::SHIELD <-
+{
+	ref = "SHIELD",
+	TAG = "orin_shield",
+	
+	// Intended format:
+	// [ mvmbot, lastupdatetime ]
+	BOTS = [],
+	thinker = null
+}
+
+function InitShield()
+{
+	// TBA
+	__CollectGameEventCallbacks(::SHIELD)
+}
+
+::SHIELD.OnGameEvent_post_inventory_application <- function( params )
+{
+	local player = GetPlayerFromUserID( params.userid )
+	if( player.IsFakeClient() )
+	{
+		EntFireByHandle(player, "RunScriptCode", "::TAGS.RegisterBot(self, ::SHIELD.TAG, ::SHIELD.BOTS)", 0.1, player, player )
+	}
+}
+
+::SHIELD.OnGameEvent_player_death <- function( params )
+{
+	local player = GetPlayerFromUserID( params.userid )
+	::TAGS.UnregisterBot(player, ::SHIELD.TAG, ::SHIELD.BOTS)
+}
+
+::SHIELD.OnGameEvent_teamplay_round_win <- function( params )
+{
+	::TAGS.ClearBots(::SHIELD.TAG, ::SHIELD.BOTS)
+}
+
+// We ought to clean our waste responsibly.
+::SHIELD.OnGameEvent_teamplay_round_start <- function( params )
+{	
+	local events =
+	[
+		"post_inventory_application",
+		"player_death",
+		"teamplay_round_win",
+		"teamplay_round_start"
+	]
+	
+	::ORIN.CheckEvents("SHIELD", events)
 }
 
 /*****************************************************
@@ -698,7 +789,7 @@ function InitBoss()
 	No popfile functions.
 	
 *****************************************************/
-::REDBOTS <- { stats = null, ref = "REDBOTS" }
+::REDBOTS <- { ref = "REDBOTS" }
 
 function DoRedBots()
 {
@@ -714,8 +805,7 @@ function DoRedBots()
 			"OnPickup#1": "!self,ForceResetSilent,,0,-1" 
 		})
 	}
-	
-	::REDBOTS.stats <- Entities.FindByClassname(null, "tf_objective_resource")
+
 	__CollectGameEventCallbacks(::REDBOTS)
 }
 
@@ -724,7 +814,7 @@ function DoRedBots()
 	local player = GetPlayerFromUserID( params.userid )
 	if( player.GetTeam() == TF_TEAM_PVE_DEFENDERS && player.IsFakeClient() )
 	{
-		local dosh = NetProps.GetPropInt(::REDBOTS.stats, "m_runningTotalWaveStats.nCreditsDropped")
+		local dosh = NetProps.GetPropInt(::OBJECTIVE, "m_runningTotalWaveStats.nCreditsDropped")
 		local classnum = NetProps.GetPropInt(player, "m_PlayerClass")
 		player.ValidateScriptScope()
 		
@@ -812,30 +902,13 @@ function DoRedBots()
 // We ought to clean our waste responsibly.
 ::REDBOTS.OnGameEvent_teamplay_round_start <- function( params )
 {
-	// Not if its the mission we want
-	local popname = NetProps.GetPropString(Ent(39), "m_iszMvMPopfileName").slice(39,56)
-	if( popname == "exp_sunny_side_up" )
-	{
-		return;
-	}
-	
 	local events =
 	[
 		"teamplay_round_start",
 		"player_spawn"
 	]
-	
-	foreach( name in events )
-	{
-		local callbacks = GameEventCallbacks[name]
-		for( local i = 0; i < callbacks.len(); i++ )
-		{
-			if( "ref" in callbacks[i] && callbacks[i]["ref"] == "REDBOTS" )
-				delete GameEventCallbacks[name][i]
-			
-			break;
-		}
-	}
+
+	::ORIN.CheckEvents("REDBOTS", events)
 }
 
 // Abracadabra.

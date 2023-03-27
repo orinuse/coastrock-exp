@@ -52,15 +52,15 @@ WaveSchedule
             {
                 Target gamerules
                 Action RunScriptCode
-                Param "RunBossLogic(2,3)"
+                Param "RunBossLogic(2,3,5)"
             }
 			TFBot
 			{
 				Class Sniper
-				Health 3300
-				Name "Super Awesome Name"
+				Health 12000
+				Name "The Pirate from Space"
 				ClassIcon sniper_bow
-				Tag remorin_boss
+				Tag orin_boss
 				BehaviorModifiers Push
 
 				EventChangeAttributes
@@ -68,7 +68,7 @@ WaveSchedule
 					Default
 					{
 						Skill Expert
-						Tag remorin_boss
+						Tag orin_boss
 						Tag bot_giant
 						Item "The Fortified Compound"
 						Item "Sniper's Snipin' Glass"
@@ -100,7 +100,7 @@ WaveSchedule
 					Phase1Pattern2
 					{
 						Skill Expert
-						Tag remorin_boss
+						Tag orin_boss
 						Tag bot_giant
 						Item "The Fortified Compound"
 						Item "Sniper's Snipin' Glass"
@@ -134,7 +134,7 @@ WaveSchedule
 					Phase1Pattern3
 					{
 						Skill Expert
-						Tag remorin_boss
+						Tag orin_boss
 						Tag bot_giant
 						Item "The Fortified Compound"
 						Item "Sniper's Snipin' Glass"
@@ -162,7 +162,7 @@ WaveSchedule
 					Phase2Pattern1
 					{
 						Skill Normal
-						Tag remorin_boss
+						Tag orin_boss
 						Tag bot_giant
 						WeaponRestrictions	SecondaryOnly
 						Attributes	"AlwaysFireWeapon"
@@ -186,7 +186,7 @@ WaveSchedule
 					Phase2Pattern2
 					{
 						Skill Normal
-						Tag remorin_boss
+						Tag orin_boss
 						Tag bot_giant
 						Item "The Bushwacka"
 						WeaponRestrictions MeleeOnly
@@ -210,7 +210,7 @@ WaveSchedule
 					Phase2Pattern3
 					{
 						Skill Normal
-						Tag remorin_boss
+						Tag orin_boss
 						Tag bot_giant
 						Item "The Bushwacka"
 						WeaponRestrictions MeleeOnly
@@ -257,9 +257,9 @@ WaveSchedule
 		{
 			Name "W1_A"
 			Where spawnbot_tunnel
-			WaitBetweenSpawns 1.25
-			TotalCount 22
-			MaxActive 22
+			WaitBetweenSpawns 5
+			TotalCount 10
+			MaxActive 10
 			SpawnCount 1
 			TotalCurrency 50
 			TFBot
@@ -267,21 +267,21 @@ WaveSchedule
 				Class Engineer
 				TeleportWhere spawnbot
 				Attributes TeleportToHint
-                Attributes AlwaysCrit
             }
 		}
 		WaveSpawn
 		{
 			Name "W1_A"	
-			Where spawnbot_tunnel
-			WaitBetweenSpawns 1.25
-			TotalCount 2
-			MaxActive 2
+			Where spawnbot
+			WaitBetweenSpawnsAfterDeath 8
+			TotalCount 1
+			MaxActive 1
 			SpawnCount 1
 			TotalCurrency 50
+			Support 1
 			TFBot
             {
-				Class Scout
+				Template Remorin_Scout_Sandman
             }
 		}
     }
