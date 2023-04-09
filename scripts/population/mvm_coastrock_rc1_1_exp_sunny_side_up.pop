@@ -34,7 +34,7 @@ WaveSchedule
 		{
 			Template T_TFBot_Soldier_Extended_Battalion
 	
-			Name "Back-works Man"
+			Name "Nav-works Man"
 		}
 		Sunny_Pyro
 		{
@@ -160,6 +160,7 @@ WaveSchedule
 		Sunny_MGMedic_Shield {
 			Health 650
 			Scale 1.3
+			Tag orin_shield
 			Template Remorin_Medic_Shield
             Template gCHAR_MINI
 		}
@@ -308,6 +309,8 @@ WaveSchedule
 			TotalCurrency	250
 			TFBot {
 				Template Sunny_MGScout_BFB
+				BehaviorModifiers Push
+				Tag flankbot
 			}
 		}
 		WaveSpawn {
@@ -319,7 +322,7 @@ WaveSchedule
 			TotalCount	60
 			MaxActive	10
 			SpawnCount	5
-			TotalCurrency	70
+			TotalCurrency	100
 			Squad {
 				TFBot {
 					Template T_TFBot_Soldier_Extended_Buff_Banner
@@ -338,65 +341,46 @@ WaveSchedule
 				}
 			}
 		}
-		WaveSpawn {
-			Name "W1 Extended Conch Soldier Flank"
-			WaitForAllDead "W1 Demoman"
-			Where spawnbot_flank
-			WaitBeforeStarting	8
-			WaitBetweenSpawns	10
-			TotalCount	18
-			MaxActive	6
-			SpawnCount	2
-			TotalCurrency	30
-			TFBot {
-				Template T_TFBot_Soldier_Extended_Concheror
-				Attributes IgnoreFlag
-				BehaviorModifiers Push
-			}
-		}
-		WaveSpawn {
-			Name "W1 Soldier + Demoman"
-			WaitForAllDead "W1 Pyro + Extended Buff Soldier"
-			Where spawnbot_flank
-			WaitBeforeStarting	3
-			WaitBetweenSpawns	7
-			DoneOutput {
-				Target intel_endurance
-				Action ForceReset
-			}
-			TotalCount	49
-			MaxActive	14
-			SpawnCount	7
-			TotalCurrency	150
-			Squad {
-				TFBot {
-					Template T_TFBot_Soldier_Extended_Buff_Banner
-				}
-				TFBot {
-					Template T_TFBot_Soldier_Extended_Concheror
-				}
-				TFBot {
-					Template Sunny_Demoman
-				}
-				TFBot {
-					Template Sunny_Soldier
-				}
-				TFBot {
-					Template Sunny_Demoman
-				}
-				TFBot {
-					Template Sunny_Soldier
-				}
-				TFBot {
-					Template Sunny_Demoman
-				}
-			}
+		// WaveSpawn {
+			// Name "W1 Soldier + Demoman"
+			// WaitForAllDead "W1 Pyro + Extended Buff Soldier"
+			// Where spawnbot_flank
+			// WaitBeforeStarting	3
+			// WaitBetweenSpawns	7
+			// DoneOutput {
+				// Target intel_endurance
+				// Action ForceReset
+			// }
+			// TotalCount	36
+			// MaxActive	12
+			// SpawnCount	6
+			// TotalCurrency	150
+			// Squad {
+				// TFBot {
+					// Template T_TFBot_Soldier_Extended_Buff_Banner
+				// }
+				// TFBot {
+					// Template Sunny_Demoman
+				// }
+				// TFBot {
+					// Template Sunny_Soldier
+				// }
+				// TFBot {
+					// Template Sunny_Demoman
+				// }
+				// TFBot {
+					// Template Sunny_Soldier
+				// }
+				// TFBot {
+					// Template Sunny_Demoman
+				// }
+			// }
 
-		}
+		// }
 		WaveSpawn {
 			Name "W1 Giant Burst Fire Soldier"
-			WaitForAllDead "W1 Soldier + Demoman"
-			Where spawnbot_tunnel
+			// WaitForAllDead "W1 Soldier + Demoman"
+			WaitForAllDead "W1 Pyro + Extended Buff Soldier"
 			WaitBeforeStarting	7
 			TotalCount	9
 			SpawnCount	9
@@ -451,6 +435,10 @@ WaveSchedule
 			Action Trigger
 		}
 		
+		// ----------
+		// -- $500 --
+		// ----------
+		
 		// Non-stop Tanks
 		WaveSpawn 
 		{
@@ -504,7 +492,7 @@ WaveSchedule
 			TotalCount 27
 			MaxActive 3
 			SpawnCount 3
-			TotalCurrency 50
+			TotalCurrency 100
 			TFBot
 			{
 				Template Sunny_Soldier_Backup
@@ -533,46 +521,11 @@ WaveSchedule
 			Name "W2_Engy"
 			Where spawnbot_parachute
 			WaitBeforeStarting 50
-			TotalCount 2
+			WaitBetweenSpawnsAfterDeath 20
+			TotalCount 6
 			MaxActive 2
 			SpawnCount 2
-			TotalCurrency 33
-			Support Limited
-			TFBot
-			{
-				Template Sunny_Engineer
-				TeleportWhere spawnbot
-				Attributes TeleportToHint
-			}
-		}
-		WaveSpawn
-		{
-			Name "W2_Engy1"
-			Where spawnbot_parachute
-			WaitForAllDead "W2_Engy"
-			WaitBeforeStarting 20
-			TotalCount 2
-			MaxActive 2
-			SpawnCount 2
-			TotalCurrency 33
-			Support Limited
-			TFBot
-			{
-				Template Sunny_Engineer
-				TeleportWhere spawnbot
-				Attributes TeleportToHint
-			}
-		}
-		WaveSpawn
-		{
-			Name "W2_Engy2"
-			Where spawnbot_parachute
-			WaitForAllDead "W2_Engy1"
-			WaitBeforeStarting 20
-			TotalCount 2
-			MaxActive 2
-			SpawnCount 2
-			TotalCurrency 34
+			TotalCurrency 50
 			Support Limited
 			TFBot
 			{
@@ -582,16 +535,84 @@ WaveSchedule
 			}
 		}
 		
-		// -------
-		// --   --
-		// -------
+		// ----------
+		// -- $450 --
+		// ----------
+		WaveSpawn
+		{
+			Name "W2_B1"
+			Where spawnbot
+			WaitBeforeStarting 15
+			WaitBetweenSpawns 12
+			WaitForAllSpawned	"W2_A"
+			WaitForAllDead		"W2_Tank"
+			TotalCount 10
+			MaxActive 10
+			SpawnCount 10
+			TotalCurrency 50
+			Squad
+			{
+				FormationSize 100
+				ShouldPreserveSquad 1
+				TFBot
+				{
+					Template T_TFBot_Sniper_Huntsman
+					Skill Expert
+				}
+				TFBot
+				{
+					Template Sunny_Medic_QuickUber
+				}
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_B"
+			Where spawnbot
+			WaitBeforeStarting 6
+			WaitBetweenSpawns 12
+			WaitForAllDead	"W2_B1"
+			TotalCount 30
+			MaxActive 10
+			SpawnCount 10
+			TotalCurrency 150
+			Squad
+			{
+				FormationSize 100
+				ShouldPreserveSquad 1
+				TFBot
+				{
+					Template T_TFBot_Sniper_Huntsman
+					Skill Expert
+				}
+				TFBot
+				{
+					Template Sunny_Medic_QuickUber
+				}
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_B"
+			Where spawnbot_parachute
+			WaitBeforeStarting 13
+			WaitBetweenSpawns 12
+			WaitForAllDead	"W2_B1"
+			TotalCount 5
+			MaxActive 2
+			SpawnCount 1
+			TotalCurrency 50
+			TFBot
+			{
+				Template Sunny_Soldier_Backup
+			}
+		}
 		WaveSpawn 
 		{
 			Name "W2_B"
-			WaitBeforeStarting	90
-			WaitBetweenSpawns	5
-			WaitForAllSpawned	"W2_Tank"
-			WaitForAllDead		"W2_A"
+			WaitBeforeStarting	5
+			WaitBetweenSpawns	45
+			WaitForAllSpawned	"W2_B1"
 			TotalCount 	2
 			MaxActive	2
 			SpawnCount	1
@@ -612,10 +633,9 @@ WaveSchedule
 		WaveSpawn 
 		{
 			Name "W2_B"
-			WaitBeforeStarting	95
-			WaitBetweenSpawns	5
-			WaitForAllSpawned	"W2_Tank"
-			WaitForAllDead		"W2_A"
+			WaitBeforeStarting	25
+			WaitBetweenSpawns	45
+			WaitForAllSpawned	"W2_B1"
 			TotalCount 	2
 			MaxActive	2
 			SpawnCount	1
@@ -637,16 +657,17 @@ WaveSchedule
 		{
 			Name "W2_B"
 			Where spawnbot_tunnel
-			WaitForAllSpawned	"W2_Tank"
-			WaitForAllDead		"W2_A"
-			WaitBeforeStarting 110
-			WaitBetweenSpawns 40
-			TotalCount 10
+			WaitForAllSpawned	"W2_B1"
+			WaitBeforeStarting 15
+			WaitBetweenSpawns  45
+			TotalCount 15
 			MaxActive 10
 			SpawnCount 5
-			TotalCurrency 50
+			TotalCurrency 100
 			Squad
 			{
+				FormationSize 75
+				ShouldPreserveSquad 1
 				TFBot
 				{
 					Template Sunny_MGMedic_Shield
@@ -667,6 +688,26 @@ WaveSchedule
 				{
 					Template T_TFBot_Sniper_Huntsman
 				}
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_EngyB"
+			Where spawnbot_parachute
+			WaitBeforeStarting 30
+			WaitBetweenSpawnsAfterDeath 15
+			WaitForAllSpawned	"W2_A"
+			WaitForAllDead		"W2_Tank"
+			TotalCount 6
+			MaxActive 2
+			SpawnCount 2
+			TotalCurrency 50
+			Support Limited
+			TFBot
+			{
+				Template Sunny_Engineer
+				TeleportWhere spawnbot
+				Attributes TeleportToHint
 			}
 		}
 	}

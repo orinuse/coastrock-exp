@@ -1,3 +1,5 @@
+#base robot_standard.pop
+#base robot_giant.pop
 #base robot_remorin.pop
 
 WaveSchedule
@@ -6,6 +8,17 @@ WaveSchedule
 	RespawnWaveTime 6
 	CanBotsAttackWhileInSpawnRoom no
 	Advanced 1
+	
+	Templates
+	{
+		Sunny_MGMedic_Shield {
+			Health 650
+			Scale 1.3
+			Tag orin_shield
+			Template Remorin_Medic_Shield
+            Template gCHAR_MINI
+		}
+	}
 	
     Mission
 	{
@@ -285,4 +298,61 @@ WaveSchedule
             }
 		}
     }
+	Wave
+	{
+		InitWaveOutput
+		{
+			Target gamerules
+			Action RunScriptFile
+			Param "exp_sunny_side.nut"
+		}
+		StartWaveOutput
+		{
+			Target wave_start_endurance_relay
+			Action Trigger
+		}
+		DoneOutput
+		{
+			Target wave_finished_relay
+			Action Trigger
+		}
+		WaveSpawn
+		{
+			Name "W2_B"
+			Where spawnbot_tunnel
+			WaitForAllSpawned	"W2_Tank"
+			WaitForAllDead		"W2_A"
+			WaitBeforeStarting 0
+			WaitBetweenSpawns 30
+			TotalCount 10
+			MaxActive 10
+			SpawnCount 5
+			TotalCurrency 50
+			Squad
+			{
+				ShouldPreserveSquad 1
+				FormationSize 75
+				TFBot
+				{
+					Template Sunny_MGMedic_Shield
+				}
+				TFBot
+				{
+					Template T_TFBot_Giant_Soldier_Crit
+				}
+				TFBot
+				{
+					Template T_TFBot_Sniper_Huntsman
+				}
+				TFBot
+				{
+					Template T_TFBot_Sniper_Huntsman
+				}
+				TFBot
+				{
+					Template T_TFBot_Sniper_Huntsman
+				}
+			}
+		}
+	}
 }

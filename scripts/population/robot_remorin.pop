@@ -163,14 +163,14 @@ WaveSchedule
 			WeaponRestrictions SecondaryOnly
 			Attributes SpawnWithFullCharge
 			Attributes ProjectileShield
-			Attributes IgnoreEnemies
 			Tag bot_squad_member
 			Item "Das Naggenvatcher" 
 			ItemAttributes
 			{
 				ItemName TF_WEAPON_MEDIGUN
-				"ubercharge rate penalty" -3
-				"generate rage on heal" 2
+				"ubercharge rate penalty" -6
+				"generate rage on heal" 1
+				"heal rate penalty" 0.5
 			}
 			CharacterAttributes
 			{

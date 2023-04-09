@@ -23,6 +23,7 @@ function Init()
 	InitTags()
 	InitFlankers()
 	InitBoss()
+	InitShield()
 	DoEngyHints()
 	
 	// For gameplay purposes, always force this path on popfile load.
@@ -742,7 +743,41 @@ function InitBoss()
 
 function InitShield()
 {
-	// TBA
+	::TAGS.ClearBots(::SHIELD.TAG, ::SHIELD.BOTS)
+	::SHIELD.thinker = SpawnEntityFromTable("logic_relay",{
+		targetname = "remorin_shieldupdate"
+	})
+	::SHIELD.thinker.ValidateScriptScope()
+
+	local scope = ::SHIELD.thinker.GetScriptScope()
+	scope["ShieldDoRun"] <- false
+	scope["ShieldUpdate"] <- function()
+	{
+		if ( !("ShieldUpdate" in scope) || !scope["ShieldUpdate"] )
+			return;
+		
+		for( local i = 0; i < ::SHIELD.BOTS.len(); i++ )
+		{
+			local ary = ::SHIELD.BOTS[i]
+			local bot = ary[0]
+			local ragelevel = NetProps.GetPropFloat(bot, "m_Shared.tfsharedlocaldata.m_flRageMeter")
+			
+			if( ragelevel > 99.9 )
+			{
+				bot.PressSpecialFireButton(0.1)
+			}
+			// Medic as leaders don't heal yet carefully follow a squad member... so lets force them to heal anyways.
+			else if ( !NetProps.GetPropBool(bot.GetActiveWeapon(), "m_bHealing") )
+			{
+				bot.PressFireButton(0.1)
+				bot.PressFireButton(2)
+			}
+		}
+		
+		return 1.0
+	}
+
+	AddThinkToEnt(::SHIELD.thinker, "ShieldUpdate")
 	__CollectGameEventCallbacks(::SHIELD)
 }
 
@@ -877,6 +912,7 @@ function DoRedBots()
 		{
 			EntFire("!activator", "RunScriptCode", "weapon <- NetProps.GetPropEntityArray(self, `m_hMyWeapons`, 1)", 1, player)
 			EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`generate rage on heal`, 2, -1)", 2, player)
+			EntFire("!activator", "RunScriptCode", "NetProps.SetPropFloat( weapon, `m_flChargeLevel`, 100.0 )", 2, player)
 			EntFire("!activator", "RunScriptCode", "self.AddBotAttribute(Constants.FTFBotAttributeType.PROJECTILE_SHIELD)", 2, player)
 			EntFire("!activator", "RunScriptCode", "self.AddBotAttribute(Constants.FTFBotAttributeType.SPAWN_WITH_FULL_CHARGE)", 2, player)
 		}
@@ -895,6 +931,10 @@ function DoRedBots()
 		else if( dosh > 600 )
 		{
 			player.AddCustomAttribute("dmg taken from bullets reduced", 0.6, -1)
+		}
+		else
+		{
+			player.AddCustomAttribute("dmg taken from fire reduced", 0.6, -1)
 		}
 	}
 }
