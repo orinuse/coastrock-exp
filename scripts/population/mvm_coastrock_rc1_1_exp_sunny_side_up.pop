@@ -14,15 +14,27 @@ WaveSchedule
 		Sunny_Scout
 		{
 			Class Scout
-			Name "Boston Fast Food Delivery Bot"
+			Name "Delivery Boy"
 			Item "Fast Food"
-			Item "Bottle Cap"
+			Item "Soda Specs"
 			Skill Normal
 		}
 		Sunny_Soldier
 		{
 			Class Soldier
-			Name "Malfunction Outpost Robot"
+			Name "Fireworks Man"
+		}
+		Sunny_Soldier_Buff
+		{
+			Template T_TFBot_Soldier_Extended_Buff_Banner
+	
+			Name "Cheer-works Man"
+		}
+		Sunny_Soldier_Backup
+		{
+			Template T_TFBot_Soldier_Extended_Battalion
+	
+			Name "Nav-works Man"
 		}
 		Sunny_Pyro
 		{
@@ -30,45 +42,53 @@ WaveSchedule
 		
 			Class Pyro
 			Skill Normal
-			Name "Street Cleaner"
+			Name "Santiser"
 			Item "Fireman's Essentials"
 			Item "Electric Escorter"
 		}
 		Sunny_Demoman
 		{
 			Class Demoman
-			Name "Demolition Expertise"
+			Name "Confetti Man"
 		}
 		Sunny_Heavy
 		{
 			Template Remorin_Heavy
 
 			Class Heavy
-			Name "QA-1MIL"
+			Name "QA-1MIL Man"
 			Item "Bunsen Brave"
 		}
 		Sunny_Engineer
 		{
 			Class Engineer
-			Name "Constructor Bot"
+			Name "Mechanic"
+			Skill Expert
 		}
 		Sunny_Sniper
 		{
 			Template T_TFBot_Sniper
 
 			Class Sniper
-			Name "Underground Assassin"
+			Name "Crow Repeller"
+		}
+		Sunny_Sniper_Huntsman
+		{
+			Template T_TFBot_Sniper_Huntsman
+
+			Class Sniper
+			Name "Archery Enthusiast"
 		}
 		Sunny_Spy
 		{
 			Template T_TFBot_Spy
 
 			Class Spy
-			Name "Fancy Restaurant Chef"
+			Name "Careful Chef"
 		}
 		Sunny_Medic_BigHeal
 		{
-			Template T_TFBot_Medic_Bigheal
+			Template Remorin_Medic_BigHeal
 			ClassIcon Medic
 		}
 		Sunny_Medic_Kritz
@@ -76,7 +96,7 @@ WaveSchedule
 			Class Medic
 			Health	150
 			ClassIcon	medic_kritz
-			Skill	Easy
+			Skill	Normal
 			Item	"The Kritzkrieg"
 			Item	"Titanium Tyrolean"
 			Name "Malpractice Doctor"
@@ -93,21 +113,59 @@ WaveSchedule
 				ItemName	"The Kritzkrieg"
 				"uber duration bonus" -200
 				"ubercharge rate bonus" 6
+				"heal rate bonus" 5
 			}
 			CharacterAttributes
 			{
 				"bot medic uber health threshold" 400
-				"heal rate bonus" 0.1
 			}
 			Tag bot_squad_member
 		}
 		Sunny_Medic_QuickUber
 		{
 			Template T_TFBot_Medic_QuickUber
-			Name ""
+			Name "Therapeutic Medic"
+		}
+
+		Sunny_MGScout_BFB {
+            Class Scout
+            Name "Runnin' Crazy"
+            Item "Baby Face's Blaster"
+            Skill Expert
+			Health 650
+			Scale 1.4
+			ClassIcon scout_bfb_nys // TODO: bfb icon
+			Item "Summer Shades"
+			Item "Pest's Pads"
+			WeaponRestrictions PrimaryOnly
+            ItemAttributes
+            {
+                ItemName "Baby Face's Blaster"
+                "weapon spread bonus"    0.2
+                "fire rate penalty"    1.5
+				"mod no reload DISPLAY ONLY" 1
+				"reload time increased hidden" 0.01
+				"damage penalty" 0.8
+				"hype resets on jump" 0
+				"lose hype on take damage" 1
+				"move speed penalty" 1
+            }
+			ItemAttributes
+			{
+				ItemName "Pest's Pads"
+				"item style override" 2
+			}
+            Template gCHAR_MINI
+        }
+		Sunny_MGMedic_Shield {
+			Health 650
+			Scale 1.3
+			Tag orin_shield
+			Template Remorin_Medic_Shield
+            Template gCHAR_MINI
 		}
 	}
-	Mission
+    Mission
 	{
 		Objective DestroySentries
 		Where spawnbot
@@ -117,14 +175,14 @@ WaveSchedule
 		CooldownTime 30
 		DesiredCount 1
 		TFBot 
-		{ 
-			Template Remorin_SentryBuster
-		}
+        { 
+            Template Remorin_SentryBuster
+        }
 	}
 
 	//Subwave 1: $700 + $1950 = $2650
 	//Subwave 2: 
-	Wave
+    Wave
 	{
 		InitWaveOutput
 		{
@@ -142,347 +200,292 @@ WaveSchedule
 			Target wave_finished_relay
 			Action Trigger
 		}
-		WaveSpawn
-		{
-			Name "Intro"
-			WaitBeforeStarting 1
-			TotalCount 0
-			FirstSpawnOutput 
-			{
-				Target gamerules
-				Action RunScriptCode
-				Param "ClientPrint(null, 3, `\x000722A1FFWelcome to \x0007393232Gray Mann's \x000722A1FFCoastside Paradise!`)"
-			}
-		}
-		WaveSpawn
-		{
-			Name "Intro"
-			WaitBeforeStarting 4
-			TotalCount 0
-			FirstSpawnOutput 
-			{
-				Target gamerules
-				Action RunScriptCode
-				Param "ClientPrint(null, 3, `\x000722A1FFWe provides all sorts of recreational services!`)"
-			}
-		}
-		WaveSpawn
-		{
-			Name "Intro"
-			WaitBeforeStarting 8
-			TotalCount 0
-			FirstSpawnOutput 
-			{
-				Target gamerules
-				Action RunScriptCode
-				Param "ClientPrint(null, 3, `\x000722A1FFA water park for your submerging needs...`)"
-			}
-		}
-		WaveSpawn
-		{
-			Name "Intro"
-			WaitBeforeStarting 12
-			TotalCount 0
-			FirstSpawnOutput 
-			{
-				Target gamerules
-				Action RunScriptCode
-				Param "ClientPrint(null, 3, `\x000722A1FFor a homely cafe to let off your steam!`)"
-			}
-		}
-		WaveSpawn
-		{
-			Name "Intro"
-			WaitBeforeStarting 16
-			TotalCount 0
-			FirstSpawnOutput 
-			{
-				Target gamerules
-				Action RunScriptCode
-				Param "ClientPrint(null, 3, `\x0007FF0000Our staff will also be attending to your needs shortly!`)"
-			}
-			FirstSpawnWarningSound "vo/mvm/norm/Heavy_mvm_battlecry04.mp3"
-		}
-		WaveSpawn
-		{
-			Name "Intro"
-			WaitBeforeStarting 16.2
-			TotalCount 0
-			FirstSpawnWarningSound "vo/mvm/norm/Heavy_mvm_battlecry05.mp3"
-		}
-		WaveSpawn
-		{
-			Name "Intro"
-			WaitBeforeStarting 16.5
-			TotalCount 0
-			FirstSpawnWarningSound "vo/mvm/norm/Heavy_mvm_battlecry06.mp3"
-		}
-		WaveSpawn
-		{
-			Name "Intro"
-			WaitBeforeStarting 16.7
-			TotalCount 0
-			FirstSpawnWarningSound "vo/mvm/norm/Demoman_mvm_battlecry05.mp3"
-		}
-		WaveSpawn
-		{
-			Name "Intro_Last"
-			WaitBeforeStarting 20
-			TotalCount 0
-			FirstSpawnOutput 
-			{
-				Target gamerules
-				Action RunScriptCode
-				Param "ClientPrint(null, 3, `\x000722A1FFEnjoy your stay!`)"
-			}
-		}
-		WaveSpawn
-		{
-			Name "W1_Heavy"
+		WaveSpawn {
+			Name "W1 Scout + Soldier"
 			WaitForAllDead "Intro"
 			Where spawnbot
-			Where spawnbot_parachute
-			WaitBeforeStarting 1
-			WaitBetweenSpawns 15
-			TotalCount 40
-			MaxActive 8
-			SpawnCount 4
-			TotalCurrency 50
-			Squad
-			{
-				TFBot
-				{
-					Template Sunny_Heavy
+			Where spawnbot_tunnel
+			WaitBetweenSpawns	6
+			TotalCount	48
+			MaxActive	12
+			SpawnCount	4
+			TotalCurrency 100
+			RandomChoice {
+				TFBot {
+					Template Sunny_Soldier
+					Skill Hard
+				}
+				TFBot {
+					Template Sunny_Soldier
 					Skill Easy
 				}
-				TFBot
-				{
-					Template Sunny_Medic_Bigheal
-				}
 			}
 		}
-		WaveSpawn
-		{
-			Name "W1_A"
-			WaitForAllDead "Intro"
+		WaveSpawn {
+			Name "W1 Giant Pyro"
 			Where spawnbot_tunnel
-			WaitBetweenSpawns 1.5
-			TotalCount 25
-			MaxActive 5
-			SpawnCount 1
-			TotalCurrency 50
-			TFBot
-			{
-				Template Sunny_Pyro
-				BehaviorModifiers Push
-			}
-		}
-		WaveSpawn
-		{
-			Name "W1_A"
-			WaitForAllDead "Intro"
-			Where spawnbot_tunnel
-			Where spawnbot
 			Where spawnbot_parachute
-			WaitBeforeStarting 2
-			WaitBetweenSpawns 4
-			TotalCount 36
-			MaxActive 8
-			SpawnCount 4
-			TotalCurrency 50
-			TFBot
-			{
-				Template T_TFBot_Demoman_Knight
-			}
-		}
-		WaveSpawn
-		{
-			Name "W1 Giant Charged Soldier"
-			WaitForAllDead "Intro"
-			Where spawnbot_parachute
-			WaitBeforeStarting 20
-			WaitBetweenSpawns 35
-			TotalCount 3
-			MaxActive 2
-			SpawnCount 1
-			TotalCurrency 150
-			TFBot
-			{
-				Template T_TFBot_Giant_Soldier_Crit
-				Name "Giant Charged Rocketeer"
-			}
-		}
-		WaveSpawn
-		{
-			Name "W1 Giant Charged Soldier 2"
-			WaitForAllSpawned "W1 Giant Charged Soldier"
-			Where spawnbot_tunnel
 			WaitBeforeStarting 25
 			WaitBetweenSpawns 25
-			TotalCount 6
-			MaxActive 6
-			SpawnCount 3
-			TotalCurrency 150
-			Squad 
-			{
-				TFBot 
-				{
-					Template T_TFBot_Giant_Soldier_Crit
-					Name "Giant Charged Rocketeer"
-				}
-				TFBot 
-				{
-					Template Sunny_Medic_QuickUber
-				}
-				TFBot 
-				{
-					Template Sunny_Medic_QuickUber
-				}
-			}
-		}
-		WaveSpawn
-		{
-			Name "W1_B"
-			Where spawnbot
-			WaitForAllSpawned "W1_A"
-			WaitBeforeStarting 5
-			WaitBetweenSpawns 4
-			TotalCount 33
+			TotalCount 9
 			MaxActive 9
 			SpawnCount 3
-			TotalCurrency 50
-			TFBot
-			{
-				Class Demoman
-				Skill Expert
+			TotalCurrency 100
+			Squad {
+				TFBot {
+					Template Remorin_GPyro
+					Attributes AlwaysFireWeapon
+				}
+				TFBot {
+					Template Sunny_Medic_Kritz
+				}
+				TFBot {
+					Template Sunny_Medic_Kritz
+				}
 			}
 		}
-		WaveSpawn
-		{
-			Name "W1_B_Demo"
-			Where spawnbot_tunnel
+		WaveSpawn {
+			Name "W1 Tank"
+			WaitForAllSpawned "W1 Scout + Soldier"
+			WaitBeforeStarting	5
+			TotalCount	2
+			MaxActive	1
+			SpawnCount	1
+			TotalCurrency	200
+			Tank{
+				Health 15000
+				Speed 60
+				Name "Tank"
+				StartingPathTrackNode "tankpath_alt"
+				OnKilledOutput {
+					Target boss_dead_relay
+					Action Trigger                         
+				}
+				OnBombDroppedOutput {
+					Target boss_deploy_relay 
+					Action Trigger                         
+				}
+			}	
+		}
+		WaveSpawn {
+			Name "W1 Giant Charged Soldier"
+			WaitForAllDead "W1 Giant Pyro"
+			Where spawnbot_parachute
+			WaitBeforeStarting	5
+			WaitBetweenSpawns	25
+			TotalCount	6
+			MaxActive	4
+			SpawnCount	2
+			TotalCurrency	100
+			TFBot {
+				Template T_TFBot_Giant_Soldier_Crit
+			}
+		}
+		WaveSpawn {
+			Name "W1 Demoman"
+			WaitForAllSpawned "W1 Scout + Soldier"
+			WaitBeforeStarting	3
+			WaitBetweenSpawns	2
 			Where spawnbot
 			Where spawnbot_parachute
-			WaitForAllSpawned "W1_A"
-			WaitBeforeStarting 2
-			WaitBetweenSpawns 3
-			TotalCount 16
-			MaxActive 4
-			SpawnCount 2
-			TotalCurrency 50
-			TFBot
-			{
-				Template T_TFBot_Demoman_Knight
-			}
-		}
-		WaveSpawn
-		{
-			Name "W1_C"
-			Where spawnbot_tunnel
-			Where spawnbot
-			Where spawnbot_parachute
-			WaitForAllSpawned "W1_B_Demo"
-			WaitBeforeStarting 5
-			WaitBetweenSpawns 5
-			TotalCount 24
-			MaxActive 6
-			SpawnCount 3
-			TotalCurrency 50
-			TFBot
-			{
-				Template T_TFBot_Demoman_Knight
-			}
-		}
-		WaveSpawn
-		{
-			Name "W1_C2"
-			Where spawnbot_tunnel
-			WaitForAllSpawned "W1_B"
-			WaitBetweenSpawns 3
-			TotalCount 26
-			MaxActive 6
-			SpawnCount 2
-			TotalCurrency 26
-			TFBot
-			{
-				Template Sunny_Soldier
-			}
-		}
-		WaveSpawn
-		{
-			Name "W1_C2"
-			Where spawnbot
-			WaitForAllSpawned "W1_C"
-			WaitBetweenSpawns 3
-			TotalCount 14
-			MaxActive 6
-			SpawnCount 2
-			TotalCurrency 24
-			TFBot
-			{
-				Template Sunny_Soldier
+			TotalCount	36
+			MaxActive	8
+			SpawnCount	2
+			TotalCurrency	100
+			TFBot {
+				Template Sunny_Demoman
 				Skill Hard
 			}
 		}
-		WaveSpawn
-		{
-			Name "W1_D Heavy"
-			Where spawnbot_tunnel
-			WaitForAllSpawned "W1_C"
-			WaitBetweenSpawns 5
-			TotalCount 12
-			MaxActive 4
-			SpawnCount 2
-			TotalCurrency 50
-			TFBot
-			{
-				Template Sunny_Heavy
-			}
-		}
-		WaveSpawn
-		{
-			Name "W1_D Heavy"
-			Where spawnbot_flank
-			WaitForAllSpawned "W1_C2"
-			WaitBetweenSpawns 5
-			TotalCount 20
-			MaxActive 4
-			SpawnCount 2
-			TotalCurrency 50
-			TFBot
-			{
-				Template Sunny_Heavy
-			}
-		}
-		WaveSpawn
-		{
-			Name "W1_D"
-			Where spawnbot_tunnel
-			WaitForAllSpawned "W1_C"
-			WaitForAllDead "W1 Giant Charged Soldier 2"
+		WaveSpawn {
+			Name "W1 Super Fan Scout"
+			WaitForAllDead "W1 Giant Charged Soldier"
 			WaitBeforeStarting	15
-			WaitBetweenSpawns 7
-			TotalCount 3
-			MaxActive 3
-			SpawnCount 3
+			WaitBetweenSpawns	20
+			Where spawnbot_tunnel
+			TotalCount	18
+			MaxActive	3
+			SpawnCount	3
+			TotalCurrency	250
+			TFBot {
+				Template Sunny_MGScout_BFB
+				BehaviorModifiers Push
+				Tag flankbot
+			}
+		}
+		WaveSpawn {
+			Name "W1 Pyro + Extended Buff Soldier"
+			WaitForAllDead "W1 Demoman"
+			Where spawnbot
+			WaitBeforeStarting	4
+			WaitBetweenSpawns	5.8
+			TotalCount	60
+			MaxActive	10
+			SpawnCount	5
+			TotalCurrency	100
+			Squad {
+				TFBot {
+					Template T_TFBot_Soldier_Extended_Buff_Banner
+				}
+				TFBot {
+					Template T_TFBot_Soldier_Extended_Buff_Banner
+				}
+				TFBot {
+					Template Sunny_Pyro
+				}
+				TFBot {
+					Template Sunny_Pyro
+				}
+				TFBot {
+					Template Sunny_Pyro
+				}
+			}
+		}
+		// WaveSpawn {
+			// Name "W1 Soldier + Demoman"
+			// WaitForAllDead "W1 Pyro + Extended Buff Soldier"
+			// Where spawnbot_flank
+			// WaitBeforeStarting	3
+			// WaitBetweenSpawns	7
+			// DoneOutput {
+				// Target intel_endurance
+				// Action ForceReset
+			// }
+			// TotalCount	36
+			// MaxActive	12
+			// SpawnCount	6
+			// TotalCurrency	150
+			// Squad {
+				// TFBot {
+					// Template T_TFBot_Soldier_Extended_Buff_Banner
+				// }
+				// TFBot {
+					// Template Sunny_Demoman
+				// }
+				// TFBot {
+					// Template Sunny_Soldier
+				// }
+				// TFBot {
+					// Template Sunny_Demoman
+				// }
+				// TFBot {
+					// Template Sunny_Soldier
+				// }
+				// TFBot {
+					// Template Sunny_Demoman
+				// }
+			// }
+
+		// }
+		WaveSpawn {
+			Name "W1 Giant Burst Fire Soldier"
+			// WaitForAllDead "W1 Soldier + Demoman"
+			WaitForAllDead "W1 Pyro + Extended Buff Soldier"
+			WaitBeforeStarting	7
+			TotalCount	9
+			SpawnCount	9
 			TotalCurrency 200
-			TFBot
+			Where spawnbot_tunnel
+			DoneOutput
 			{
-				Template T_TFBot_Giant_Scout_Fast
+				Target "gamerules"
+				Action "RunScriptCode"
+				Param "StartWaveBreak(35, `music/mvm_start_tank_wave.wav`)"
+			}
+			Squad {
+				TFBot {
+					Template Remorin_GSoldier_Triple_Shot
+				}
+				TFBot {
+					Template Sunny_Medic_Kritz
+				}
+				TFBot {
+					Template Sunny_Medic_Kritz
+				}
+				TFBot {
+					Template Sunny_Medic_Kritz
+				}
+				TFBot {
+					Template Sunny_Medic_Kritz
+				}
+				TFBot {
+					Template Sunny_Medic_QuickUber
+				}
+				TFBot {
+					Template Sunny_Medic_QuickUber
+				}
+				TFBot {
+					Template Sunny_Medic_QuickUber
+				}
+				TFBot {
+					Template Sunny_Medic_QuickUber
+				}
+			}
+		}
+
+		// ----------
+		// -- $500 --
+		// ----------
+		
+		// Non-stop Tanks
+		WaveSpawn 
+		{
+			Name "W2_Tank1"
+			WaitForAllDead "W1 Giant Burst Fire Soldier"
+			WaitBetweenSpawns	50
+			TotalCount 	1
+			MaxActive	1
+			SpawnCount	1
+			TotalCurrency	50
+			Tank
+			{
+				Health 12000
+				Speed 75
+				Name "Tank"
+				StartingPathTrackNode "tankpath_same"
+				OnBombDroppedOutput
+				{
+					Target boss_deploy_relay
+					Action Trigger
+				}
 			}
 		}
 		WaveSpawn 
 		{
-			Name "W1_Boss"
-			WaitForAllDead	"W1_D Heavy"
-			WaitBeforeStarting	3
+			Name "W2_Tank"
+			WaitForAllSpawned "W2_Tank1"
+			WaitBeforeStarting	50
+			WaitBetweenSpawns	100
+			TotalCount 	2
+			MaxActive	2
+			SpawnCount	1
+			TotalCurrency	50
+			Tank
+			{
+				Health 12000
+				Speed 75
+				Name "Tank"
+				StartingPathTrackNode "tankpath_alt"
+				OnBombDroppedOutput
+				{
+					Target boss_deploy_relay
+					Action Trigger
+				}
+			}
+		}
+		WaveSpawn 
+		{
+			Name "W2_Tank"
+			WaitForAllDead "W2_Tank1"
+			WaitBeforeStarting	100
 			TotalCount 	1
 			MaxActive	1
 			SpawnCount	1
-			TotalCurrency	200
+			TotalCurrency	50
 			Tank
 			{
-				Health 26000
+				Health 12000
+				Speed 75
 				Name "Tank"
 				StartingPathTrackNode "tankpath_same"
 				OnBombDroppedOutput
@@ -494,199 +497,168 @@ WaveSchedule
 		}
 		WaveSpawn
 		{
-			Name "W1_Boss"
-			WaitForAllDead	"W1_D Heavy"
-			WaitBeforeStarting	3
-			Where spawnbot_parachute
-			TotalCount 1
-			MaxActive 1
-			SpawnCount 1
-			TotalCurrency 800
-			FirstSpawnOutput
-			{
-				Target gamerules
-				Action RunScriptCode
-				Param "RunBossLogic(2,3)"
-			}
-			DoneOutput
-			{
-				Target "gamerules"
-				Action "RunScriptCode"
-				Param "StartWaveBreak(35, `music/mvm_start_tank_wave.wav`)"
-			}
+			Name "W2_A"
+			WaitForAllSpawned "W2_Tank1"
+			Where spawnbot
+			WaitBeforeStarting 8
+			WaitBetweenSpawns 8
+			TotalCount 27
+			MaxActive 3
+			SpawnCount 3
+			TotalCurrency 100
 			TFBot
 			{
-				Class Soldier
-				Health 12500
-				Scale 1.8
-				Name "RoboDoe"
-				ClassIcon soldier_barrage
-				EventChangeAttributes
+				Template Sunny_Soldier_Backup
+				Skill Hard
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_A"
+			WaitForAllSpawned "W2_Tank1"
+			Where spawnbot
+			WaitBeforeStarting 18
+			WaitBetweenSpawns 15
+			TotalCount 64
+			MaxActive 8
+			SpawnCount 8
+			TotalCurrency 150
+			RandomSpawn 1
+			TFBot
+			{
+				Template Sunny_Sniper_Huntsman
+				Skill Expert
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_Engy"
+			WaitForAllSpawned "W2_Tank1"
+			Where spawnbot_parachute
+			WaitBeforeStarting 50
+			WaitBetweenSpawnsAfterDeath 20
+			TotalCount 6
+			MaxActive 2
+			SpawnCount 2
+			TotalCurrency 50
+			Support Limited
+			TFBot
+			{
+				Template Sunny_Engineer
+				TeleportWhere spawnbot
+				Attributes TeleportToHint
+			}
+		}
+		
+		// ----------
+		// -- $450 --
+		// ----------
+		WaveSpawn
+		{
+			Name "W2_B1"
+			Where spawnbot
+			WaitBeforeStarting 15
+			WaitBetweenSpawns 12
+			WaitForAllSpawned	"W2_A"
+			WaitForAllDead		"W2_Tank"
+			TotalCount 10
+			MaxActive 10
+			SpawnCount 10
+			TotalCurrency 50
+			Squad
+			{
+				FormationSize 100
+				ShouldPreserveSquad 1
+				TFBot
 				{
-					Default
-					{
-						Skill Hard
-						Tag remorin_boss
-						Tag bot_giant
-						Item "Hat With No Name"
-						Item "The Original"
-						Attributes MiniBoss
-						Attributes UseBossHealthBar
-						WeaponRestrictions PrimaryOnly
-						ItemAttributes
-						{
-							ItemName "The Original"
-							"faster reload rate" 0.2
-							"fire rate penalty" 2
-							"damage bonus" 1.6
-							"Projectile speed decreased" 0.5
-						}
-						CharacterAttributes
-						{
-							"move speed penalty"	0.35
-							"damage force reduction" 0.0
-							"airblast vulnerability multiplier" 0.00
-							"airblast vertical vulnerability multiplier" 0.00
-							"rage giving scale"	0.4
-						}
-					}
-					Phase1Pattern2
-					{
-						Skill Expert
-						Tag bot_Boss
-						Tag bot_giant
-						Item "The Liberty Launcher"
-						Attributes MiniBoss
-						Attributes UseBossHealthBar
-						WeaponRestrictions PrimaryOnly
-						ItemAttributes
-						{
-							ItemName "The Liberty Launcher"
-							"damage causes airblast" 1
-							"damage penalty" 0.5
-							"fire rate bonus" 0.25
-							"clip size upgrade atomic" 5
-							"faster reload rate" 0.2
-							"Blast radius increased" 1.2
-							"projectile spread angle penalty" 4
-						}
-						CharacterAttributes
-						{
-							"move speed penalty"	0.35
-							"damage force reduction" 0.0
-							"airblast vulnerability multiplier" 0.00
-							"airblast vertical vulnerability multiplier" 0.00
-							"rage giving scale"	0.4
-						}
-					}
-					Phase1Pattern3
-					{
-						Skill Expert
-						Tag bot_Boss
-						Tag bot_giant
-						Item "tf_weapon_rocketlauncher"
-						Attributes MiniBoss
-						Attributes UseBossHealthBar
-						Attributes HoldFireUntilFullReload
-						WeaponRestrictions PrimaryOnly
-						ItemAttributes
-						{
-							Itemname "tf_weapon_rocketlauncher"
-							"clip size upgrade atomic" 26.0
-							"faster reload rate" 0.22
-							"fire rate bonus" 0.18
-							"projectile spread angle penalty" 5
-							"damage bonus" 1.0
-							"Projectile speed decreased" 0.5
-						}
-						CharacterAttributes
-						{
-							"move speed penalty"	0.35
-							"damage force reduction" 0.0
-							"airblast vulnerability multiplier" 0.00
-							"airblast vertical vulnerability multiplier" 0.00
-							"rage giving scale"	0.4
-						}
-					}
-					Phase2Pattern1
-					{
-						Skill Expert
-						Tag bot_Boss
-						Tag bot_giant
-						Item "The Black Box"
-						Item "The Buff Banner"
-						Attributes MiniBoss
-						Attributes HoldFireUntilFullReload
-						WeaponRestrictions PrimaryOnly
-						ItemAttributes
-						{
-							ItemName	 "The Black Box"
-							"damage penalty" 0.45
-							"fire rate bonus" 0.2
-							"reload time increased" 0.7
-							"blast radius increased" 1.25
-							"clip size upgrade atomic" 5
-							"projectile spread angle penalty" 4
-							"heal on hit for rapidfire" 350
-							"Projectile speed decreased" 0.75
-							"killstreak tier" 2
-							"killstreak idleeffect" 7
-						}
-						CharacterAttributes
-						{
-							"move speed penalty"	0.35
-							"damage force reduction" 0.0
-							"airblast vulnerability multiplier" 0.00
-							"airblast vertical vulnerability multiplier" 0.00
-							"rage giving scale"	0.4
-							"increase buff duration"	1001
-						}
-					}
-					Phase2Pattern2
-					{
-						Skill Expert
-						Tag bot_Boss
-						Tag bot_giant
-						Item "tf_weapon_rocketlauncher"
-						Item "The Buff Banner"
-						Attributes MiniBoss
-						Attributes HoldFireUntilFullReload
-						WeaponRestrictions PrimaryOnly
-						ItemAttributes
-						{
-							ItemName "tf_weapon_rocketlauncher"
-							"fire rate bonus" 0.2
-							"faster reload rate" 0.4
-							"clip size upgrade atomic" 5.0
-							"Projectile speed decreased" 0.8
-						}
-						CharacterAttributes
-						{
-							"move speed penalty"	0.35
-							"damage force reduction" 0.0
-							"airblast vulnerability multiplier" 0.00
-							"airblast vertical vulnerability multiplier" 0.00
-							"rage giving scale"	0.4
-							"increase buff duration"	1001
-						}
-					}
+					Template T_TFBot_Sniper_Huntsman
+					Skill Expert
+				}
+				TFBot
+				{
+					Template Sunny_Medic_QuickUber
+				}
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_B"
+			Where spawnbot
+			WaitBeforeStarting 6
+			WaitBetweenSpawns 12
+			WaitForAllDead	"W2_B1"
+			TotalCount 30
+			MaxActive 10
+			SpawnCount 10
+			TotalCurrency 150
+			Squad
+			{
+				FormationSize 100
+				ShouldPreserveSquad 1
+				TFBot
+				{
+					Template T_TFBot_Sniper_Huntsman
+					Skill Expert
+				}
+				TFBot
+				{
+					Template Sunny_Medic_QuickUber
+				}
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_B"
+			Where spawnbot_parachute
+			WaitBeforeStarting 13
+			WaitBetweenSpawns 12
+			WaitForAllDead	"W2_B1"
+			TotalCount 5
+			MaxActive 2
+			SpawnCount 1
+			TotalCurrency 50
+			TFBot
+			{
+				Template Sunny_Soldier_Backup
+			}
+		}
+		WaveSpawn 
+		{
+			Name "W2_B"
+			WaitBeforeStarting	5
+			WaitBetweenSpawns	45
+			WaitForAllSpawned	"W2_B1"
+			TotalCount 	2
+			MaxActive	2
+			SpawnCount	1
+			TotalCurrency	50
+			Tank
+			{
+				Health 13000
+				Speed 43
+				Name "Tank"
+				StartingPathTrackNode "tankpath_same"
+				OnBombDroppedOutput
+				{
+					Target boss_deploy_relay
+					Action Trigger
 				}
 			}
 		}
 		WaveSpawn 
 		{
-			Name "W2_Tank"
-			WaitBeforeStarting	45
-			WaitBetweenSpawns	60
-			WaitForAllDead	"W1_Boss"
+			Name "W2_B"
+			WaitBeforeStarting	25
+			WaitBetweenSpawns	45
+			WaitForAllSpawned	"W2_B1"
 			TotalCount 	2
 			MaxActive	2
 			SpawnCount	1
-			TotalCurrency	250
+			TotalCurrency	50
 			Tank
 			{
-				Health 20000
-				Speed 65
+				Health 13000
+				Speed 43
 				Name "Tank"
 				StartingPathTrackNode "tankpath_alt"
 				OnBombDroppedOutput
@@ -696,9 +668,76 @@ WaveSchedule
 				}
 			}
 		}
+		WaveSpawn
+		{
+			Name "W2_B"
+			Where spawnbot_tunnel
+			WaitForAllSpawned	"W2_B1"
+			WaitBeforeStarting 15
+			WaitBetweenSpawns  45
+			TotalCount 15
+			MaxActive 10
+			SpawnCount 5
+			TotalCurrency 100
+			Squad
+			{
+				FormationSize 75
+				ShouldPreserveSquad 1
+				TFBot
+				{
+					Template Sunny_MGMedic_Shield
+				}
+				TFBot
+				{
+					Template T_TFBot_Giant_Soldier_Crit
+				}
+				TFBot
+				{
+					Template T_TFBot_Sniper_Huntsman
+				}
+				TFBot
+				{
+					Template T_TFBot_Sniper_Huntsman
+				}
+				TFBot
+				{
+					Template T_TFBot_Sniper_Huntsman
+				}
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_EngyB"
+			Where spawnbot_parachute
+			WaitBeforeStarting 30
+			WaitBetweenSpawnsAfterDeath 15
+			WaitForAllSpawned	"W2_A"
+			WaitForAllDead		"W2_Tank"
+			TotalCount 6
+			MaxActive 2
+			SpawnCount 2
+			TotalCurrency 50
+			Support Limited
+			TFBot
+			{
+				Template Sunny_Engineer
+				TeleportWhere spawnbot
+				Attributes TeleportToHint
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_Break"
+			WaitForAllDead	"W2_B"
+			DoneOutput
+			{
+				Target "gamerules"
+				Action "RunScriptCode"
+				Param "StartWaveBreak(35, `music/mvm_start_mid_wave.wav`)"
+			}
+		}
 	}
-	Wave
-	{
+	Wave {
 		InitWaveOutput
 		{
 			Target gamerules
@@ -715,328 +754,140 @@ WaveSchedule
 			Target wave_finished_relay
 			Action Trigger
 		}
-		WaveSpawn 
-		{
-			Name "W2_Tank"
-			WaitBetweenSpawns	60
-			TotalCount 	2
-			MaxActive	2
-			SpawnCount	1
-			TotalCurrency	250
-			Tank
-			{
-				Health 20000
-				Speed 75
-				Name "Tank"
-				StartingPathTrackNode "tankpath_alt"
-				OnBombDroppedOutput
-				{
-					Target boss_deploy_relay
-					Action Trigger
-				}
-			}
-		}
-		WaveSpawn 
-		{
-			Name "W2_Tank_2"
-			WaitBeforeStarting	60
-			WaitBetweenSpawns	60
-			WaitForAllDead	"W2_Tank"
-			TotalCount 	2
-			MaxActive	2
-			SpawnCount	1
-			TotalCurrency	250
-			Tank
-			{
-				Health 30000
-				Speed 75
-				Name "Tank"
-				StartingPathTrackNode "tankpath_alt"
-				OnBombDroppedOutput
-				{
-					Target boss_deploy_relay
-					Action Trigger
-				}
-			}
-		}
-		WaveSpawn 
-		{
-			Name "W2_Crit_Pyro"
-			Where	spawnbot
-			Where 	spawnbot_tunnel
-			Where 	spawnbot_parachute
-			WaitBetweenSpawns	1.5
-			TotalCount 	56
-			MaxActive	15
-			SpawnCount	1
+		WaveSpawn {
+			Name "W3 Engineer"
+			WaitBetweenSpawns 40
 			TotalCurrency	100
-			FirstSpawnOutput 
-			{
-				Target gamerules
-				Action RunScriptCode
-				Param "ClientPrint(null, 3, `\x00072229F9CRIT BOT MALICE!!!`)"
-			}
-			TFBot
-			{
-				Template Sunny_Pyro
-				Skill Easy
-				Attributes AlwaysFireWeapon
-				Attributes AlwaysCrit
-			}
-		}
-		WaveSpawn 
-		{
-			Name "W2_Crit_Heavy"
-			Where	spawnbot
-			Where 	spawnbot_tunnel
-			Where 	spawnbot_parachute
-			WaitBetweenSpawns	8
-			TotalCount 	24
-			MaxActive	6
-			SpawnCount	3
-			TotalCurrency	50
-			TFBot
-			{
-				Template T_TFBot_Heavyweapons_Shotgun
-				Name "Coastline Shotgunner"
-				ClassIcon Heavy
-				Skill Hard
-				Attributes AlwaysCrit
-			}
-		}
-		WaveSpawn 
-		{
-			Name "W2_Crit_Scout"
-			Where	spawnbot
-			Where 	spawnbot_tunnel
-			Where 	spawnbot_parachute
-			WaitBeforeStarting	6
-			WaitBetweenSpawns	5
-			WaitForAllSpawned	"W2_Crit_Pyro"
-			TotalCount 	49
-			MaxActive	14
-			SpawnCount	7
-			TotalCurrency	50
-			TFBot
-			{
-				Template Sunny_Scout
-				Skill Normal
-				Attributes AlwaysCrit
-			}
-		}
-		WaveSpawn 
-		{
-			Name "W2_Crit_Bowman"
-			Where	spawnbot
-			Where 	spawnbot_tunnel
-			Where 	spawnbot_parachute
-			WaitBeforeStarting	6
-			WaitBetweenSpawns	1
-			WaitForAllSpawned	"W2_Crit_Heavy"
-			TotalCount 	33
-			MaxActive	5
-			SpawnCount	1
-			TotalCurrency	50
-			TFBot
-			{
-				ClassIcon	sniper
-				WeaponRestrictions PrimaryOnly
-				Health	125
-				Attributes	AlwaysCrit
-				Skill	Normal
-				Name	"Bowbot"
-				Class	Sniper
-				Item	"The Huntsman"
-				ItemAttributes
-				{
-					ItemName	"The Huntsman"
-					"damage penalty" 0.8
-				}
-			}
-		}
-		WaveSpawn
-		{
-			Name "W2_jarate"
-			Where	spawnbot
-			Where 	spawnbot_parachute
-			WaitBeforeStarting	6
-			WaitBetweenSpawns	1
-			WaitForAllSpawned	"W2_Crit_Bowman"
-			WaitForAllDead	"W2_Crit_Scout"
-			TotalCount 	44
-			MaxActive	11
-			SpawnCount	11
-			TotalCurrency	50
-			TFBot
-			{
-				ClassIcon	sniper
-				WeaponRestrictions SecondaryOnly
-				Attributes AlwaysFireWeapon
-				Health	125
-				Attributes	AlwaysCrit
-				Skill	Easy
-				Name	"Lemon Juice Production Robot"
-				Class	Sniper
-				Item	"jarate"
-				ItemAttributes
-				{
-					ItemName	"jarate"
-					"effect bar recharge rate increased"	0.4
-					"deploy time increased" 0.0
-				}
-			}
-		}
-		WaveSpawn
-		{
-			Name "W2_jarate"
-			Where	spawnbot
-			Where 	spawnbot_tunnel
-			WaitBeforeStarting	6
-			WaitBetweenSpawns	1
-			WaitForAllSpawned	"W2_Crit_Bowman"
-			WaitForAllDead	"W2_Crit_Scout"
-			TotalCount 	31
-			MaxActive	6
-			SpawnCount	1
-			TotalCurrency	50
-			TFBot
-			{
-				ClassIcon	sniper
-				WeaponRestrictions MeleeOnly
-				Attributes AlwaysFireWeapon
-				Health	250
-				Attributes	AlwaysCrit
-				Skill	Hard
-				Name	"Crocodile Robot"
-				Class	Sniper
-				Scale 1.2
-				Item	"The Bushwacka"
-				CharacterAttributes	
-				{
-					"move speed bonus" 1.10
-				}
-			}
-		}
-		WaveSpawn
-		{
-			Name "W2_Support Scout"
-			Where	spawnbot
-			Where   spawnbot_flank
-			Where 	spawnbot_tunnel
-			WaitBeforeStarting	6
-			WaitBetweenSpawns	10
-			WaitForAllSpawned	"W2_Jarate"
-			TotalCount 	400
+			TotalCount 12
 			MaxActive	8
 			SpawnCount	4
-			TotalCurrency	400
-			Support 1
-			RandomChoice
-			{
-				TFBot
-				{
-					Class Scout
-					Skill Hard
-				}
-				TFBot
-				{
-					Class Scout
-					Skill Hard
-				}
-				TFBot
-				{
-					Class Scout
-					Skill Hard
-				}
-				TFBot
-				{
-					Class Scout
-					Skill Hard
-				}
-				TFBot
-				{
-					Class Scout
-					Skill Hard
-				}
-				TFBot
-				{
-					Template T_TFBot_Scout_FAN
-					Attributes AlwaysCrit
-				}
-				TFBot
-				{
-					Template T_TFBot_Scout_FAN
-					Attributes AlwaysCrit				
-					}
-				TFBot
-				{
-					Template T_TFBot_Scout_FAN
-					Attributes AlwaysCrit
-				}
-				TFBot
-				{
-					Template T_TFBot_Scout_Bonk
-					Attributes AlwaysCrit
-				}
-				TFBot
-				{
-					Template T_TFBot_Scout_Bonk
-					Attributes AlwaysCrit
+			Where spawnbot
+			Where spawnbot_tunnel
+			Where spawnbot_flank
+			Support Limited
+			TFBot {
+				Template Sunny_Engineer
+				Attributes IgnoreFlag
+				Attributes TeleportToHint
+			}
+		}
+		WaveSpawn {
+			Name "W3 Giant Heavy"
+			WaitBetweenSpawns	14
+			TotalCurrency	150
+			TotalCount	3
+			MaxActive	3
+			SpawnCount	1
+			Where spawnbot_tunnel
+			TFBot {
+				Template Remorin_GHeavy
+				Name "The Moon Lander"
+				Item "Cadet Visor"
+			}
+		}
+		WaveSpawn {
+			Name "W3 Giant Heater Heavy + Space Marine"
+			WaitForAllSpawned "W3 Giant Heavy"
+			WaitBeforeStarting	40
+			WaitBetweenSpawns	22
+			TotalCurrency	150
+			TotalCount	3
+			MaxActive	3
+			SpawnCount	1
+			Where spawnbot_tunnel
+			TFBot {
+				Template Remorin_GHeavy_Heater
+				Item "Corona Australis"
+				Name "Mars Invader"
+			}
+		}
+		WaveSpawn {
+			Name "W3 Giant Heater Heavy + Space Marine"
+			WaitForAllDead "W3 Giant Heavy"
+			WaitBetweenSpawns	4
+			TotalCurrency	100
+			TotalCount	45
+			MaxActive	10
+			SpawnCount	5
+			Where spawnbot_tunnel
+			TFBot {
+				Template Sunny_Soldier
+				Skill Hard
+				Name "Patrol Bot from Mars"
+				Item "Breach and Bomb"
+				Item "The Cow Mangler 5000"
+				ItemAttributes {
+					ItemName "The Cow Mangler 5000"
+					"Set DamageType Ignite" 5
+					"dmg bonus vs buildings" 1.8
+					"faster reload rate" 0.8
 				}
 			}
 		}
-		WaveSpawn
-		{
-			Name "W2_Giant"
-			Where	spawnbot
-			Where 	spawnbot_tunnel
-			WaitBeforeStarting	6
-			WaitBetweenSpawns	20
-			WaitForAllSpawned	"W2_Jarate"
-			TotalCount 	15
-			MaxActive	15
-			SpawnCount	5
+		WaveSpawn {
+			Name "W3 Spy"
+			WaitForAllDead "W3 Giant Heater Heavy + Space Marine"
+			WaitBetweenSpawns	25
+			WaitBeforeStarting	2
 			TotalCurrency	100
-			Squad
-			{
-				TFBot
-				{
-					Template Remorin_Heavy_Deflector
-					Template gCHAR_HEAVY
-					Name "Mr. Red Deflect"
-					Attributes MiniBoss
-					Health 5000
-					Skill Expert
-					WeaponRestrictions PrimaryOnly
-					ItemAttributes
-					{
-						ItemName "Deflector"
-						"damage bonus"	1.5
-						"damage penalty" 1.0
-					}
-					CharacterAttributes
-					{
-						"move speed bonus" 0.5
-					}
+			TotalCount	48
+			MaxActive	6
+			SpawnCount	6
+			Where spawnbot_parachute
+			Support Limited
+			TFBot {
+				Template Sunny_Spy
+				Skill Expert
+			}
+		}
+		WaveSpawn {
+			Name "W3 BFB + Uber"
+			WaitForAllDead "W3 Giant Heater Heavy + Space Marine"
+			WaitBetweenSpawns	15
+			WaitBeforeStarting	2
+			TotalCurrency	50
+			TotalCount	16
+			MaxActive	4
+			SpawnCount	2
+			Where spawnbot_parachute
+			Squad {
+				TFBot {
+					Template Sunny_MGScout_BFB
 				}
-				TFBot
-				{
-					Template Sunny_Medic_Kritz
+				TFBot {
+					Template Sunny_Medic_QuickUber
 				}
-				TFBot
-				{
-					Template Sunny_Medic_Kritz
-				}
-				TFBot
-				{
-					Template Sunny_Medic_Kritz
-				}
-				TFBot
-				{
-					Template Sunny_Medic_Kritz
-				}
+			}
+		}
+		WaveSpawn {
+			Name "W3 Burst Demo"
+			WaitForAllDead "W3 Giant Heater Heavy + Space Marine"
+			WaitBetweenSpawns	10	
+			WaitBeforeStarting	2
+			TotalCurrency	50
+			TotalCount	49
+			MaxActive	7
+			SpawnCount	7
+			Where spawnbot
+			TFBot {
+				Template Remorin_Demo_Burst
+				Attributes AlwaysCrit
+				ClassIcon Demo
+			}
+		}
+		WaveSpawn {
+			Name "W3 Tri-Shot"
+			WaitForAllSpawned "W3 Burst Demo"
+			WaitBeforeStarting	10
+			WaitBetweenSpawns	15
+			TotalCurrency	100
+			TotalCount	6
+			MaxActive	3
+			SpawnCount	3
+			Where spawnbot_tunnel
+			TFBot {
+				Template Remorin_GSoldier_Triple_Shot
 			}
 		}
 	}
-	
 }

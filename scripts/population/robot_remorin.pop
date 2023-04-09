@@ -2,9 +2,9 @@
 
 WaveSchedule
 {
-	// Orin:
-	// Most of what was here is dated, but I like the standards that it wants
-	// to establish, but sadly I cannot use all of them without being wasteful.
+	// There are some things I wish were defaults, but I can't use
+	// them without creating redundacy; A template is redundant if
+	// the custom robot is not reusable, usually boss bots.
 	// 
 	// See bottom of file for details.
 
@@ -14,11 +14,6 @@ WaveSchedule
 		// ++ Commons ++
 		// Sorted by class
 		////////////////////
-		Remorin_Scout
-		{
-			Class Scout
-			MaxVisionRange 1200
-		}
 		Remorin_Scout_Sandman
 		{
 			Class Scout
@@ -34,6 +29,57 @@ WaveSchedule
 				ItemName "The Sandman"
 				"max health additive penalty" -0
 			}
+		}
+		Remorin_Soldier_DirectHit {
+			Class Soldier
+			Name "Direct Hit Soldier"
+			ClassIcon soldier_directhit
+			Item "The Direct Hit"
+			Skill Expert
+			ItemAttributes {
+				ItemName "The Direct Hit"
+				"Projectile speed increased" 1.2
+			}
+		}
+		Remorin_Soldier_Charged {
+			Class Soldier
+			Name "Charged Soldier"
+			Item "The Original"
+			classicon soldier_crit
+			Skill Normal
+			ItemAttributes
+			{
+				ItemName "The Original"
+				"Projectile speed decreased"	0.5
+				"reload time increased HIDDEN"	-0.1
+				"mod no reload DISPLAY ONLY" 1
+				"fire rate penalty" 2
+				"damage bonus" 1.3
+			}
+		}
+		Remorin_Soldier_BlackBox_Burst
+        {
+            Class        Soldier
+            Name        "Armored Black Box Soldier"
+            ClassIcon        soldier_blackbox
+            Health        600
+            Item "The Black Box"
+            Skill        Hard
+            Attributes SpawnWithFullCharge
+            Scale        1.4
+            Attributes HoldFireUntilFullReload
+            ItemAttributes
+            {
+                ItemName "The Black Box"
+                "damage penalty" 0.33
+                "fire rate bonus" 0.3
+                "clip size upgrade atomic" 4
+                "faster reload rate" 0.5
+                "blast radius increased" 1.25
+                "Projectile speed decreased" 0.7
+                "projectile spread angle penalty" 2
+                "heal on hit for rapidfire" 200
+            }
 		}
 		Remorin_Pyro
 		{
@@ -90,26 +136,22 @@ WaveSchedule
 				"attack projectiles" 1	// force ability to shoot down projectiles
 			}
 		}
-		Remorin_Medic_Megaheal
+		Remorin_Medic_BigHeal
 		{
 		    Class Medic
-			ClassIcon medic_infpop
-			Name "Mega-heal Medic"
-			Tag bot_giant //  Mega-Heal disable stuns but can still be applied addcond 71, which has the be-backstabbed-anywhere debuff.
+			ClassIcon medic
+			Name "Big-Heals Medic"
 		    Skill Normal	// Don't overheal anyone else, pocket your patient
 			WeaponRestrictions SecondaryOnly
-			Attributes SpawnWithFullCharge
 			Tag bot_squad_member
 			Item "The Quick-Fix"
 			Item "Titanium Tyrolean"
 			ItemAttributes
 			{
 			    ItemName "The Quick-Fix"
-			    "bot medic uber health threshold" 400
-				"ubercharge rate bonus" 200
-				"uber duration bonus" -508
-				"heal rate bonus" 1.2
-				"healing received bonus" 1.1
+				"ubercharge rate bonus" 0.0
+				"uber duration bonus" 0.0
+				"heal rate bonus" 10.0
 			}	
 		}
 		Remorin_Medic_Shield // Would be better if they could be a squad leader with shield already out
@@ -121,14 +163,14 @@ WaveSchedule
 			WeaponRestrictions SecondaryOnly
 			Attributes SpawnWithFullCharge
 			Attributes ProjectileShield
-			Attributes IgnoreEnemies
 			Tag bot_squad_member
 			Item "Das Naggenvatcher" 
 			ItemAttributes
 			{
 				ItemName TF_WEAPON_MEDIGUN
-				"ubercharge rate penalty" -3
-				"generate rage on heal" 2
+				"ubercharge rate penalty" -6
+				"generate rage on heal" 1
+				"heal rate penalty" 0.5
 			}
 			CharacterAttributes
 			{
@@ -356,6 +398,26 @@ WaveSchedule
 		//////////////////
 		// ++ SPECIAL ++
 		//////////////////
+		Remorin_GSoldier_Triple_Shot {
+			Class Soldier
+			Attributes HoldFireUntilFullReload
+			Name "Tri-shots Lieutenant"
+			ClassIcon soldier_burstfire
+			Skill Expert
+			Health 4200
+			Item "pyroland_rocketlauncher_bluemew"
+			Attributes MiniBoss
+			ItemAttributes {
+				ItemName "pyroland_rocketlauncher_bluemew"
+				"damage bonus" 1.25
+				"fire rate bonus" 0.115
+				"clip size penalty" 0.75
+				"faster reload rate" 0.48
+				"projectile spread angle penalty" 7
+				"projectile speed increased" 1.2
+			}
+			Template gCHAR_SOLDIER
+		}
 		Remorin_GSoldier_Rapid
 		{
 			Class Soldier
@@ -367,7 +429,6 @@ WaveSchedule
 			Tag bot_giant
 			Attributes MiniBoss
 			Item "Upgradeable TF_WEAPON_ROCKETLAUNCHER"
-			Item "Full Metal Drill Hat"
 			ItemAttributes
 			{
 				ItemName "Upgradeable TF_WEAPON_ROCKETLAUNCHER"
@@ -400,7 +461,6 @@ WaveSchedule
 				"fire rate bonus" 0.1
 				"clip size upgrade atomic" 5.0
 				"Projectile speed decreased" 0.65
-				"gesture speed increase" 3
 				"killstreak tier" 2
 				"killstreak idleeffect" 6
 			}
@@ -428,30 +488,6 @@ WaveSchedule
 			CharacterAttributes
 			{
 				"gesture speed increase" 0.4
-			}
-			Template gCHAR_HEAVY
-		}
-		Remorin_GHeavy_Natascha
-		{
-			Class Heavyweapons
-			Name "Giant Natascha Heavy"
-			ClassIcon heavy_slowonhit_giant
-			Item "Natascha"
-			Skill Expert
-			Health 5000
-			WeaponRestrictions PrimaryOnly
-			Attributes MiniBoss
-			Tag bot_giant
-			ItemAttributes
-			{
-				ItemName "Natascha"
-				"damage bonus"	1.5
-				"killstreak tier" 2
-				"killstreak idleeffect" 3
-			}
-			CharacterAttributes
-			{
-				"gesture speed increase" 0.8
 			}
 			Template gCHAR_HEAVY
 		}
@@ -603,6 +639,8 @@ WaveSchedule
 				"damage force reduction" 0.8
 				"airblast vulnerability multiplier" 0.5
 				"airblast vertical vulnerability multiplier" 0.75
+				"head scale" 0.7
+				"voice pitch scale" 0.95
 			}
 		}
 		gCHAR_BOSS
@@ -614,7 +652,6 @@ WaveSchedule
 				"damage force reduction" 0.0
 				"airblast vulnerability multiplier" 0.00
 				"airblast vertical vulnerability multiplier" 0.00
-			//	"override footstep sound set" 5
 				"rage giving scale"	0.4
 			}
 		}
@@ -690,14 +727,22 @@ WaveSchedule
 				ClassIcon	sign_d
 			}
 		}
+		Banner_Deploy {
+            CharacterAttributes {
+            	"deploy time increased" 1.34
+            }
+		}
+		Extended_Banner {
+			CharacterAttributes {
+            	"increase buff duration" 9.0
+            }
+		}
 	}
 	
-	///////////////////////////////////////////////////
+	// STANDARDS
 	//
 	// 1. Items bot will opportunistiscally use need a 34% increase in deploy time .
 	// - "deploy time increased" 1.34
-	// 
-	// 2. Non-stock robots use the "UPGRADEABLE" version of their weapon, if reading their stats is interesting and brief for the reader.
 	//
 	// ++ ROBOTS ++
 	// ------------
@@ -734,22 +779,17 @@ WaveSchedule
 	//
 	// >> CUSTOM <<
 	//
-	// 1. Deflector Heavy (small)
-	// - A 20% damage penalty.
-	//
-	// 2. Dragon's Fury Pyros
+	// 1. Dragon's Fury Pyros
 	// - MaxVisionRange 800
 	//
-	// 3. Ignite Bots
+	// 2. Ignite Bots
 	// - A damage penalty with a max of 30%
 	// - Wep: "attach particle effect" 2
 	//
-	// 4. Throwable Bots
+	// 3. Throwable Bots
 	// - Jar: "fire rate penalty" 2.5
 	// - Gas: "mult_item_meter_charge_rate" 0.1
 	//
-	// 5. Slow reloading bots
+	// 4. Slow reloading bots
 	// - Use "reload time increased"
-	//
-	///////////////////////////////////////////////////
 }
