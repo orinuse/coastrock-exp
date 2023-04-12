@@ -158,7 +158,7 @@ WaveSchedule
 		{
 			Class Medic
 			Name "Shield Medic"
-			ClassIcon medic_shield_qf
+			ClassIcon medic_shield_lite
 			Skill Normal
 			WeaponRestrictions SecondaryOnly
 			Attributes SpawnWithFullCharge

@@ -103,23 +103,46 @@ function DoEngyHints()
 			[Vector(886, 1535, 4), QAngle(0,-100,0)]
 		],
 		// #5
+		//// Off-path hint
 		[
 			[Vector(-526, -330, 320), QAngle(0,  30,0)],
 			[Vector(-740,  -71, 256), QAngle(0,  60,0)],
 			[Vector(-636,  -18, 256), QAngle(0, 272,0)]
 		],
 		// #6
+		//// Off-path hint
 		[
-			[Vector(-819,  -540, 64), QAngle(0, 15,0), Vector(-764, -414, 64), QAngle(0, -6, 0)],
+			[Vector(-819,  -540, 64), QAngle(0, 15,0),  Vector( -764,  -414,  64), QAngle(0, -6, 0)],
 			[Vector(-1050, -550, 64), QAngle(0,-26,0)],
-			[Vector(-1087, -382, 64), QAngle(0,-26,0), Vector(-1160, -481, 64), QAngle(0, 63, 0)]
+			[Vector(-1087, -382, 64), QAngle(0,-26,0),  Vector(-1160,  -481,  64), QAngle(0, 63, 0)]
 		],
 		// #7
 		[
-			[Vector(566, -473,64), QAngle(0,48,0), Vector(286,-475,64), QAngle(0,45,0)],
-			[Vector(479, -179,64), QAngle(0, -101,0)],
-			[Vector(380, -610,64), QAngle(0,   36,0)]
+			[Vector(566, -473, 64), QAngle(0,   48,0),  Vector(  286,  -475,  64), QAngle(0, 45,0)],
+			[Vector(479, -179, 64), QAngle(0, -101,0)],
+			[Vector(380, -610, 64), QAngle(0,   36,0)]
 		],
+		// #8
+		//// Off-path hint
+		[
+			[Vector(249, 215, 256), QAngle(0, -179,0)],
+			[Vector(360, 467, 256), QAngle(0, -112,0)],
+			[Vector(464, 138, 256), QAngle(0,  173,0)]
+		],
+		//// These were being leniently-used as a "far-ahead" spawn over any other hint
+		//// It made engys build by the hatch and turn their backs to the players at front.
+		/*
+		[
+			[Vector(755, 637, 256), QAngle(0, -24,0)],
+			[Vector(466, 590, 256), QAngle(0,  11, 0)],
+			[Vector(409, 367, 256), QAngle(0,  90,0)]
+		],
+		[
+			[Vector(882,  -866, 320), QAngle(0,  50,0)],
+			[Vector(625, -1011, 320), QAngle(0, 196,0)],
+			[Vector(532,  -861, 320), QAngle(0,  -1,0), Vector(  724, -1158, 320), QAngle(0, 90,0)]
+		],
+		*/
 	]
 	
 	for( local i = 0; i < EngyHints.len(); i++ )
@@ -428,6 +451,13 @@ local EndVOs =
 
 function StartWaveBreak(duration = 35, music = "music/mvm_start_mid_wave.wav", pathrelay = "bombpath_choose_relay")
 {
+	for( local i = 0; i < MAX_PLAYERS; i++ )
+	{
+		local player = GetPlayerFromUserID(i)
+		if( player.GetTeam() == TF_TEAM_PVE_INVADERS ) 
+			player.TakeDamage( player.GetHealth()*3, 65536, null)
+	}
+	
 	// PATHS
 	if ( pathrelay == "Left" )
 		pathrelay = "bombpath_left"
@@ -445,8 +475,8 @@ function StartWaveBreak(duration = 35, music = "music/mvm_start_mid_wave.wav", p
 
 	local size = EndVOs.len() - 1
 	local choice = EndVOs[RandomInt(0,size)]
-	EntFire( GAMERULES, "PlayVORed", choice, 0)
-	EntFire( GAMERULES, "PlayVORed", "Announcer.MVM_Get_To_Upgrade", 5)
+	EntFire( GAMERULES, "PlayVO", choice, 0)
+	EntFire( GAMERULES, "PlayVO", "Announcer.MVM_Get_To_Upgrade", 5)
 	EntFire( pathrelay, "Trigger", 10)
 	
 	// SOUND
@@ -664,7 +694,9 @@ function InitBoss()
 							loadout = format( "Phase%iPattern%i", this["bossphasecount"]+1 - j, choice )
 						}
 						EntFire( POPULATOR, "ChangeBotAttributes", loadout)
-						printl(loadout)
+						
+						if( developer() )
+							printl( "BOSS: "+loadout )
 						
 						scope["bosslastchoice"] = choice
 						::BOSS.BOTS[i][1] = Time()
@@ -770,7 +802,7 @@ function InitShield()
 			else if ( !NetProps.GetPropBool(bot.GetActiveWeapon(), "m_bHealing") )
 			{
 				bot.PressFireButton(0.1)
-				bot.PressFireButton(2)
+				bot.PressFireButton(60)
 			}
 		}
 		

@@ -18,11 +18,48 @@ WaveSchedule
 			Template Remorin_Medic_Shield
             Template gCHAR_MINI
 		}
+		Sunny_Pyro
+		{
+			Template Remorin_Pyro
+		
+			Class Pyro
+			Skill Normal
+			Name "Santiser"
+			Item "Fireman's Essentials"
+			Item "The Electric Escorter"
+		}
+		
+		Sunny_GSniper_Laser
+		{
+			Class Sniper
+			Health 3000
+			Name "Giant Solding Enthusiast"
+			ClassIcon sniper
+			Skill Expert
+			Tag bot_giant
+			Item "The Fortified Compound"
+			Item "Sniper's Snipin' Glass"
+			Item "Lord Cockswain's Novelty Mutton Chops and Pipe"
+			Attributes MiniBoss
+			ItemAttributes
+			{
+				ItemName "The Fortified Compound"
+				"override projectile type" 1
+				"damage bonus"	3
+				"fire rate bonus" 0.01
+				"sniper fires tracer" 1
+				"projectile penetration" 1	// has tracer, makes sense
+				"gesture speed increase" 2
+				"ragdolls become ash" 1
+				"turn to gold" 1
+			}
+			Template gCHAR_OTHER
+		}
 	}
 	
     Mission
 	{
-		Objective DestroySentries
+		Objective SeekAndDestroy
 		Where spawnbot
 		BeginAtWave 1
 		RunForThisManyWaves 6
@@ -316,42 +353,129 @@ WaveSchedule
 			Target wave_finished_relay
 			Action Trigger
 		}
+		WaveSpawn {
+			Name "W1 Last Standing"
+			// WaitForAllDead "W1 Soldier + Demoman"
+			WaitForAllDead "W1 Pyro + Extended Buff Soldier"
+			TotalCount	5
+			SpawnCount	5
+			TotalCurrency 200
+			Where spawnbot_tunnel
+			Squad {
+				TFBot {
+					Template Sunny_Pyro
+				}
+				TFBot {
+					Template Sunny_Pyro
+				}
+				TFBot {
+					Template Sunny_Pyro
+				}
+				TFBot {
+					Template Sunny_Pyro
+				}
+				TFBot {
+					Template Sunny_Pyro
+				}
+			}
+		}
+		WaveSpawn {
+			Name "W1 Break"
+			WaitForAllDead "W1 Last Standing"
+			FirstSpawnOutput
+			{
+				Target "gamerules"
+				Action "RunScriptCode"
+				Param "StartWaveBreak(35, `music/mvm_start_tank_wave.wav`)"
+			}
+		}
+		WaveSpawn 
+		{
+			Name "W2_Tank1"
+			WaitForAllDead "W1 Break"
+			WaitBetweenSpawns	50
+			TotalCount 	1
+			MaxActive	1
+			SpawnCount	1
+			TotalCurrency	50
+			Tank
+			{
+				Health 12000
+				Speed 75
+				Name "Tank"
+				StartingPathTrackNode "tankpath_same"
+				OnBombDroppedOutput
+				{
+					Target boss_deploy_relay
+					Action Trigger
+				}
+			}
+		}
 		WaveSpawn
 		{
-			Name "W2_B"
-			Where spawnbot_tunnel
-			WaitForAllSpawned	"W2_Tank"
-			WaitForAllDead		"W2_A"
-			WaitBeforeStarting 0
-			WaitBetweenSpawns 30
-			TotalCount 10
-			MaxActive 10
-			SpawnCount 5
-			TotalCurrency 50
-			Squad
+			Name "W2_A"
+			WaitForAllSpawned "W2_Tank1"
+			Where spawnbot
+			WaitBeforeStarting 8
+			WaitBetweenSpawns 8
+			TotalCount 27
+			MaxActive 3
+			SpawnCount 3
+			TotalCurrency 100
+			TFBot
 			{
-				ShouldPreserveSquad 1
-				FormationSize 75
-				TFBot
-				{
-					Template Sunny_MGMedic_Shield
-				}
-				TFBot
-				{
-					Template T_TFBot_Giant_Soldier_Crit
-				}
-				TFBot
-				{
-					Template T_TFBot_Sniper_Huntsman
-				}
-				TFBot
-				{
-					Template T_TFBot_Sniper_Huntsman
-				}
-				TFBot
-				{
-					Template T_TFBot_Sniper_Huntsman
-				}
+				Class Soldier
+				Skill Hard
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_Engy"
+			WaitForAllSpawned "W2_Tank1"
+			Where spawnbot_parachute
+			WaitBeforeStarting 5
+			WaitBetweenSpawns 20
+			TotalCount 6
+			MaxActive 2
+			SpawnCount 2
+			TotalCurrency 50
+			Support Limited
+			TFBot
+			{
+				Class Engineer
+				TeleportWhere spawnbot
+				Attributes TeleportToHint
+			}
+		}
+	}
+	Wave
+	{
+		InitWaveOutput
+		{
+			Target gamerules
+			Action RunScriptFile
+			Param "exp_sunny_side.nut"
+		}
+		StartWaveOutput
+		{
+			Target wave_start_endurance_relay
+			Action Trigger
+		}
+		DoneOutput
+		{
+			Target wave_finished_relay
+			Action Trigger
+		}
+		WaveSpawn
+		{
+			Where spawnbot_parachute
+			TotalCount 1
+			MaxActive 1
+			SpawnCount 1
+			TotalCurrency 50
+			TFBot
+			{
+				Template Sunny_GSniper_Laser
 			}
 		}
 	}
