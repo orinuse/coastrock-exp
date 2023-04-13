@@ -451,10 +451,10 @@ local EndVOs =
 
 function StartWaveBreak(duration = 35, music = "music/mvm_start_mid_wave.wav", pathrelay = "bombpath_choose_relay")
 {
-	for( local i = 0; i < MAX_PLAYERS; i++ )
+	for( local i = 1; i < MAX_PLAYERS; i++ )
 	{
 		local player = GetPlayerFromUserID(i)
-		if( player.GetTeam() == TF_TEAM_PVE_INVADERS ) 
+		if( player && player.GetTeam() == TF_TEAM_PVE_INVADERS ) 
 			player.TakeDamage( player.GetHealth()*3, 65536, null)
 	}
 	
@@ -483,12 +483,12 @@ function StartWaveBreak(duration = 35, music = "music/mvm_start_mid_wave.wav", p
 	if( duration >= 35 )
 	{
 		local delta = (duration - 20)
-		EntFire(GAMERULES, "PlayVORed", COUNTDOWN_20s, delta)
+		EntFire(GAMERULES, "PlayVO", COUNTDOWN_20s, delta)
 	}
 	if( duration >= 25 )
 	{
 		local delta = (duration - 10)
-		EntFire(GAMERULES, "PlayVORed", COUNTDOWN_10s, delta)
+		EntFire(GAMERULES, "PlayVO", COUNTDOWN_10s, delta)
 	}
 	if( duration >= 15 )
 	{
@@ -498,8 +498,8 @@ function StartWaveBreak(duration = 35, music = "music/mvm_start_mid_wave.wav", p
 		local rVO = StartVOs[choice][0]
 		local rFixup = StartVOs[choice][1]
 
-		EntFire(GAMERULES, "PlayVORed", rVO, delta + rFixup)
-		EntFire(GAMERULES, "PlayVORed", music, delta + rFixup)
+		EntFire(GAMERULES, "PlayVO", rVO, delta + rFixup)
+		EntFire(GAMERULES, "PlayVO", music, delta + rFixup)
 	}
 }
 
@@ -944,7 +944,7 @@ function DoRedBots()
 		{
 			EntFire("!activator", "RunScriptCode", "weapon <- NetProps.GetPropEntityArray(self, `m_hMyWeapons`, 1)", 1, player)
 			EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`generate rage on heal`, 2, -1)", 2, player)
-			EntFire("!activator", "RunScriptCode", "NetProps.SetPropFloat( weapon, `m_flChargeLevel`, 100.0 )", 2, player)
+			EntFire("!activator", "RunScriptCode", "NetProps.SetPropFloat( weapon, `m_flChargeLevel`, 1.0 )", 2, player)
 			EntFire("!activator", "RunScriptCode", "self.AddBotAttribute(Constants.FTFBotAttributeType.PROJECTILE_SHIELD)", 2, player)
 			EntFire("!activator", "RunScriptCode", "self.AddBotAttribute(Constants.FTFBotAttributeType.SPAWN_WITH_FULL_CHARGE)", 2, player)
 		}

@@ -176,7 +176,7 @@ WaveSchedule
 			{
 				"bot medic uber health threshold" 25
 				"bot medic uber deploy delay duration" 9999
-				"increase buff duration" 3
+				"increase buff duration" 5
 			}
 		}
 		Remorin_Medic_Vac_Bullet

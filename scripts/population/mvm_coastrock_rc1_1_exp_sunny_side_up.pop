@@ -19,6 +19,16 @@ WaveSchedule
 			Item "Soda Specs"
 			Skill Normal
 		}
+		Sunny_Scout_Bonk
+		{
+			Class Scout
+			ClassIcon scout_bonk
+			Name "Refreshing Boy"
+			Item "Bonk! Atomic Punch"
+			Item "Bonk Helm"
+			Item "Fast Food"
+			Skill Normal
+		}
 		Sunny_Soldier
 		{
 			Class Soldier
@@ -165,12 +175,12 @@ WaveSchedule
 			Template Remorin_Medic_Shield
             Template gCHAR_MINI
 		}
-		
+
 		Sunny_GSniper_Laser
 		{
 			Class Sniper
 			Health 3000
-			Name "Giant Solding Enthusiast"
+			Name "Giant Flux Enthusiast"
 			ClassIcon sniper
 			Skill Expert
 			Tag bot_giant
@@ -182,7 +192,7 @@ WaveSchedule
 			{
 				ItemName "The Fortified Compound"
 				"override projectile type" 1
-				"damage bonus"	3
+				"damage bonus"	2
 				"fire rate bonus" 0.01
 				"sniper fires tracer" 1
 				"projectile penetration" 1	// has tracer, makes sense
@@ -413,7 +423,7 @@ WaveSchedule
 		WaveSpawn {
 			Name "W1 Break"
 			WaitForAllDead "W1 Last Standing"
-			DoneOutput
+			FirstSpawnOutput
 			{
 				Target "gamerules"
 				Action "RunScriptCode"
@@ -425,11 +435,12 @@ WaveSchedule
 		// -- $500 --
 		// ----------
 		
-		// Non-stop Tanks
+		Non-stop Tanks
 		WaveSpawn 
 		{
 			Name "W2_Tank1"
 			WaitForAllDead "W1 Break"
+			WaitBeforeStarting 1
 			WaitBetweenSpawns	50
 			TotalCount 	1
 			MaxActive	1
@@ -530,10 +541,41 @@ WaveSchedule
 		}
 		WaveSpawn
 		{
+			Name "W2_B"
+			Where spawnbot_tunnel
+			WaitForAllSpawned "W2_Tank1"
+			WaitBeforeStarting 60
+			WaitBetweenSpawns  15
+			TotalCount 15
+			MaxActive 6
+			SpawnCount 3
+			TotalCurrency 100
+			Squad
+			{
+				FormationSize 75
+				ShouldPreserveSquad 1
+				TFBot
+				{
+					Template Sunny_MGMedic_Shield
+				}
+				TFBot
+				{
+					Template Sunny_Pyro
+					Attributes AlwaysFireWeapon
+				}
+				TFBot
+				{
+					Template Sunny_Pyro
+					Attributes AlwaysFireWeapon
+				}
+			}
+		}
+		WaveSpawn
+		{
 			Name "W2_EngyA"
 			WaitForAllSpawned "W2_Tank1"
 			Where spawnbot_parachute
-			WaitBeforeStarting 50
+			WaitBeforeStarting 30
 			WaitBetweenSpawns 20
 			TotalCount 6
 			MaxActive 2
@@ -559,23 +601,14 @@ WaveSchedule
 			WaitBetweenSpawns 12
 			WaitForAllSpawned	"W2_A"
 			WaitForAllDead		"W2_Tank"
-			TotalCount 10
-			MaxActive 10
-			SpawnCount 10
+			TotalCount 7
+			MaxActive 7
+			SpawnCount 7
 			TotalCurrency 50
-			Squad
+			TFBot
 			{
-				FormationSize 100
-				ShouldPreserveSquad 1
-				TFBot
-				{
-					Template T_TFBot_Sniper_Huntsman
-					Skill Expert
-				}
-				TFBot
-				{
-					Template Sunny_Medic_QuickUber
-				}
+				Template Sunny_Scout_Bonk
+				Skill Hard
 			}
 		}
 		WaveSpawn
@@ -585,39 +618,41 @@ WaveSchedule
 			WaitBeforeStarting 6
 			WaitBetweenSpawns 12
 			WaitForAllDead	"W2_B1"
-			TotalCount 30
-			MaxActive 10
-			SpawnCount 10
+			TotalCount 35
+			MaxActive 7
+			SpawnCount 7
 			TotalCurrency 150
+			TFBot
+			{
+				Template Sunny_Scout_Bonk
+				Skill Hard
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_B"
+			Where spawnbot_flank
+			WaitBeforeStarting 15
+			WaitBetweenSpawns 12
+			WaitForAllDead	"W2_B1"
+			TotalCount 16
+			MaxActive 8
+			SpawnCount 4
+			TotalCurrency 50
 			Squad
 			{
 				FormationSize 100
 				ShouldPreserveSquad 1
 				TFBot
 				{
-					Template T_TFBot_Sniper_Huntsman
-					Skill Expert
+					Template Sunny_Soldier_Backup
+					Tag flankbot
+					BehaviorModifiers Push
 				}
 				TFBot
 				{
 					Template Sunny_Medic_QuickUber
 				}
-			}
-		}
-		WaveSpawn
-		{
-			Name "W2_B"
-			Where spawnbot_parachute
-			WaitBeforeStarting 13
-			WaitBetweenSpawns 12
-			WaitForAllDead	"W2_B1"
-			TotalCount 5
-			MaxActive 2
-			SpawnCount 1
-			TotalCurrency 50
-			TFBot
-			{
-				Template Sunny_Soldier_Backup
 			}
 		}
 		WaveSpawn 
@@ -673,9 +708,9 @@ WaveSchedule
 			WaitForAllSpawned	"W2_B1"
 			WaitBeforeStarting 15
 			WaitBetweenSpawns  45
-			TotalCount 15
-			MaxActive 10
-			SpawnCount 5
+			TotalCount 6
+			MaxActive 4
+			SpawnCount 2
 			TotalCurrency 100
 			Squad
 			{
@@ -687,19 +722,7 @@ WaveSchedule
 				}
 				TFBot
 				{
-					Template T_TFBot_Giant_Soldier_Crit
-				}
-				TFBot
-				{
-					Template T_TFBot_Sniper_Huntsman
-				}
-				TFBot
-				{
-					Template T_TFBot_Sniper_Huntsman
-				}
-				TFBot
-				{
-					Template T_TFBot_Sniper_Huntsman
+					Template Sunny_GSniper_Laser
 				}
 			}
 		}

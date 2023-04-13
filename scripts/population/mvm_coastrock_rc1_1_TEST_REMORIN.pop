@@ -33,7 +33,7 @@ WaveSchedule
 		{
 			Class Sniper
 			Health 3000
-			Name "Giant Solding Enthusiast"
+			Name "Giant Flux Enthusiast"
 			ClassIcon sniper
 			Skill Expert
 			Tag bot_giant
@@ -377,6 +377,22 @@ WaveSchedule
 				TFBot {
 					Template Sunny_Pyro
 				}
+			}
+		}
+		WaveSpawn
+		{
+			Where spawnbot
+			WaitBeforeStarting 8
+			WaitBetweenSpawns 8
+			TotalCount 27
+			MaxActive 5
+			SpawnCount 5
+			TotalCurrency 100
+			Support 1
+			TFBot
+			{
+				Class Scout
+				Skill Hard
 			}
 		}
 		WaveSpawn {
