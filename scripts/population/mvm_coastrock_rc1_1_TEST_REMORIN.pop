@@ -484,14 +484,39 @@ WaveSchedule
 		}
 		WaveSpawn
 		{
-			Where spawnbot_parachute
-			TotalCount 1
-			MaxActive 1
-			SpawnCount 1
+			Where spawnbot_tunnel
+			TotalCount 6
+			MaxActive 2
+			SpawnCount 2
 			TotalCurrency 50
-			TFBot
+			Squad
 			{
-				Template Sunny_GSniper_Laser
+				FormationSize 100
+				TFBot
+				{
+					Template Sunny_MGMedic_Shield
+				}
+				TFBot
+				{
+					Class Soldier
+					Name "Giant Fireworks Specialist"
+					ClassIcon soldier_directhit_giant
+					Skill Expert
+					Health 4000
+					WeaponRestrictions PrimaryOnly
+					Attributes HoldFireUntilFullReload
+					Attributes MiniBoss
+					Tag bot_giant
+					Item "The Direct Hit"
+					Item "The Cross-Comm Express"
+					ItemAttributes
+					{
+						ItemName "The Direct Hit"
+						"projectile speed increased" 3
+						"dmg falloff decreased" 0.2
+					}
+					Template gCHAR_SOLDIER
+				}
 			}
 		}
 	}

@@ -802,7 +802,7 @@ function InitShield()
 			else if ( !NetProps.GetPropBool(bot.GetActiveWeapon(), "m_bHealing") )
 			{
 				bot.PressFireButton(0.1)
-				bot.PressFireButton(60)
+				bot.PressFireButton(20)
 			}
 		}
 		

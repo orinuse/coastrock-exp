@@ -176,31 +176,26 @@ WaveSchedule
             Template gCHAR_MINI
 		}
 
-		Sunny_GSniper_Laser
+		Sunny_GSoldier_DirectHit
 		{
-			Class Sniper
-			Health 3000
-			Name "Giant Flux Enthusiast"
-			ClassIcon sniper
+			Class Soldier
+			Name "Giant Fireworks Specialist"
+			ClassIcon soldier_directhit_giant
 			Skill Expert
-			Tag bot_giant
-			Item "The Fortified Compound"
-			Item "Sniper's Snipin' Glass"
-			Item "Lord Cockswain's Novelty Mutton Chops and Pipe"
+			Health 4000
+			WeaponRestrictions PrimaryOnly
+			Attributes HoldFireUntilFullReload
 			Attributes MiniBoss
+			Tag bot_giant
+			Item "The Direct Hit"
+			Item "The Cross-Comm Express"
 			ItemAttributes
 			{
-				ItemName "The Fortified Compound"
-				"override projectile type" 1
-				"damage bonus"	2
-				"fire rate bonus" 0.01
-				"sniper fires tracer" 1
-				"projectile penetration" 1	// has tracer, makes sense
-				"gesture speed increase" 2
-				"ragdolls become ash" 1
-				"turn to gold" 1
+				ItemName "The Direct Hit"
+				"projectile speed increased" 2
+				"dmg falloff decreased" 0.2
 			}
-			Template gCHAR_OTHER
+			Template gCHAR_SOLDIER
 		}
 	}
     Mission
@@ -435,17 +430,17 @@ WaveSchedule
 		// -- $500 --
 		// ----------
 		
-		Non-stop Tanks
+		// Non-stop Tanks
 		WaveSpawn 
 		{
 			Name "W2_Tank1"
 			WaitForAllDead "W1 Break"
-			WaitBeforeStarting 1
+			WaitBeforeStarting	1 // race condition prevention
 			WaitBetweenSpawns	50
 			TotalCount 	1
 			MaxActive	1
 			SpawnCount	1
-			TotalCurrency	50
+			TotalCurrency	25
 			Tank
 			{
 				Health 18000
@@ -490,7 +485,7 @@ WaveSchedule
 			TotalCount 	1
 			MaxActive	1
 			SpawnCount	1
-			TotalCurrency	50
+			TotalCurrency	25
 			Tank
 			{
 				Health 18000
@@ -511,7 +506,7 @@ WaveSchedule
 			Where spawnbot
 			WaitBeforeStarting 8
 			WaitBetweenSpawns 8
-			TotalCount 27
+			TotalCount 30
 			MaxActive 3
 			SpawnCount 3
 			TotalCurrency 100
@@ -528,7 +523,7 @@ WaveSchedule
 			Where spawnbot
 			WaitBeforeStarting 18
 			WaitBetweenSpawns 15
-			TotalCount 64
+			TotalCount 72
 			MaxActive 8
 			SpawnCount 8
 			TotalCurrency 150
@@ -549,7 +544,7 @@ WaveSchedule
 			TotalCount 15
 			MaxActive 6
 			SpawnCount 3
-			TotalCurrency 100
+			TotalCurrency 50
 			Squad
 			{
 				FormationSize 75
@@ -604,7 +599,7 @@ WaveSchedule
 			TotalCount 7
 			MaxActive 7
 			SpawnCount 7
-			TotalCurrency 50
+			TotalCurrency 25
 			TFBot
 			{
 				Template Sunny_Scout_Bonk
@@ -621,7 +616,7 @@ WaveSchedule
 			TotalCount 35
 			MaxActive 7
 			SpawnCount 7
-			TotalCurrency 150
+			TotalCurrency 125
 			TFBot
 			{
 				Template Sunny_Scout_Bonk
@@ -633,8 +628,8 @@ WaveSchedule
 			Name "W2_B"
 			Where spawnbot_flank
 			WaitBeforeStarting 15
-			WaitBetweenSpawns 12
-			WaitForAllDead	"W2_B1"
+			WaitBetweenSpawns 15
+			WaitForAllSpawned "W2_B1"
 			TotalCount 16
 			MaxActive 8
 			SpawnCount 4
@@ -722,7 +717,7 @@ WaveSchedule
 				}
 				TFBot
 				{
-					Template Sunny_GSniper_Laser
+					Template Sunny_GSoldier_DirectHit
 				}
 			}
 		}
