@@ -28,6 +28,20 @@ WaveSchedule
 			Item "Fireman's Essentials"
 			Item "The Electric Escorter"
 		}
+		Sunny_Sniper_Huntsman
+		{
+			Template T_TFBot_Sniper_Huntsman
+			
+			Item "The Outback Intellectual"
+			Item "The Archers Groundings"
+		}
+		Sunny_Spy
+		{
+			Template T_TFBot_Spy
+
+			Name "Underpaid Chef"
+			Item "Connoisseur's Cap"
+		}
 		
 		Sunny_GSniper_Laser
 		{
@@ -331,7 +345,7 @@ WaveSchedule
 			Support 1
 			TFBot
             {
-				Template Remorin_Scout_Sandman
+				Template Sunny_Sniper_Huntsman
             }
 		}
     }
@@ -366,16 +380,16 @@ WaveSchedule
 					Template Sunny_Pyro
 				}
 				TFBot {
-					Template Sunny_Pyro
+					Template Sunny_Spy
 				}
 				TFBot {
-					Template Sunny_Pyro
+					Template Sunny_Spy
 				}
 				TFBot {
-					Template Sunny_Pyro
+					Template Sunny_Spy
 				}
 				TFBot {
-					Template Sunny_Pyro
+					Template Sunny_Spy
 				}
 			}
 		}

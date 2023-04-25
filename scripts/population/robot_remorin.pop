@@ -635,7 +635,7 @@ WaveSchedule
 			Tag bot_giant
 			CharacterAttributes
 			{
-				"move speed penalty" 0.85
+				"move speed penalty" 0.8
 				"damage force reduction" 0.8
 				"airblast vulnerability multiplier" 0.5
 				"airblast vertical vulnerability multiplier" 0.75

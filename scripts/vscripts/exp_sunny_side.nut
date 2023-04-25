@@ -32,6 +32,15 @@ function Init()
 	EntFire("bombpath_clearall_relay", "Trigger", null, 1)
 	EntFire("bombpath_right", "Trigger", null, 1.1)
 	
+	// Tanks could use this
+	local boss_dead_relay = SpawnEntityFromTable("logic_relay", 
+		{
+			targetname = "boss_dead_relay"
+			"OnTrigger#1": "tank_boss,SetHealth,1,0,-1"
+			"OnTrigger#1": "tank_boss,RemoveHealth,1,0.1,-1"
+		}
+	)
+	
 	// Don't use in final version; this is just for internal amusement.
 	if( developer() )
 		DoRedBots()
@@ -449,7 +458,7 @@ local EndVOs =
 	"vo/mvm_wave_end08.mp3"
 ]	
 
-function StartWaveBreak(duration = 35, music = "music/mvm_start_mid_wave.wav", pathrelay = "bombpath_choose_relay")
+function StartWaveBreak(duration = 35, music = "music/mvm_start_mid_wave.wav", pathrelay = "bombpath_right")
 {
 	for( local i = 1; i < MAX_PLAYERS; i++ )
 	{
@@ -457,16 +466,10 @@ function StartWaveBreak(duration = 35, music = "music/mvm_start_mid_wave.wav", p
 		if( player && player.GetTeam() == TF_TEAM_PVE_INVADERS ) 
 			player.TakeDamage( player.GetHealth()*3, 65536, null)
 	}
-	
-	// PATHS
-	if ( pathrelay == "Left" )
-		pathrelay = "bombpath_left"
-	else if ( pathrelay == "Right" )
-		pathrelay = "bombpath_right"
 
 	// LOGIC
-	EntFire("bombpath_arrows_clear_relay", "Trigger")
 	EntFire("bombpath_arrows_clear_relay", "Trigger", null, duration)
+	EntFire( pathrelay, "Trigger", null, 10)
 	EntFire("upgrade_door_open_relay", "Trigger")
 	EntFire("upgrade_door_close_relay", "Trigger", null, duration)
 	EntFire( POPULATOR, "PauseBotSpawning")
@@ -477,7 +480,6 @@ function StartWaveBreak(duration = 35, music = "music/mvm_start_mid_wave.wav", p
 	local choice = EndVOs[RandomInt(0,size)]
 	EntFire( GAMERULES, "PlayVO", choice, 0)
 	EntFire( GAMERULES, "PlayVO", "Announcer.MVM_Get_To_Upgrade", 5)
-	EntFire( pathrelay, "Trigger", 10)
 	
 	// SOUND
 	if( duration >= 35 )

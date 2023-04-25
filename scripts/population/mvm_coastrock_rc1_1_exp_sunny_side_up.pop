@@ -23,7 +23,7 @@ WaveSchedule
 		{
 			Class Scout
 			ClassIcon scout_bonk
-			Name "Refreshing Boy"
+			Name "Drinking Boy"
 			Item "Bonk! Atomic Punch"
 			Item "Bonk Helm"
 			Item "Fast Food"
@@ -32,19 +32,25 @@ WaveSchedule
 		Sunny_Soldier
 		{
 			Class Soldier
-			Name "Fireworks Man"
+			Name "Man of Fireworks"
 		}
 		Sunny_Soldier_Buff
 		{
 			Template T_TFBot_Soldier_Extended_Buff_Banner
 	
-			Name "Cheer-works Man"
+			Name "Man of Cheers"
+		}
+		Sunny_Soldier_Conch
+		{
+			Template T_TFBot_Soldier_Extended_Concheror
+	
+			Name "Man of Conquerings"
 		}
 		Sunny_Soldier_Backup
 		{
 			Template T_TFBot_Soldier_Extended_Battalion
 	
-			Name "Nav-works Man"
+			Name "Man of Collectivism"
 		}
 		Sunny_Pyro
 		{
@@ -52,7 +58,7 @@ WaveSchedule
 		
 			Class Pyro
 			Skill Normal
-			Name "Santiser"
+			Name "The Santiser"
 			Item "Fireman's Essentials"
 			Item "The Electric Escorter"
 		}
@@ -72,7 +78,7 @@ WaveSchedule
 		Sunny_Engineer
 		{
 			Class Engineer
-			Name "Mechanic"
+			Name "The Plumber"
 			Skill Expert
 		}
 		Sunny_Sniper
@@ -85,16 +91,16 @@ WaveSchedule
 		Sunny_Sniper_Huntsman
 		{
 			Template T_TFBot_Sniper_Huntsman
-
-			Class Sniper
-			Name "Archery Enthusiast"
+			
+			Item "The Outback Intellectual"
+			Item "The Archers Groundings"
 		}
 		Sunny_Spy
 		{
 			Template T_TFBot_Spy
 
-			Class Spy
-			Name "Careful Chef"
+			Name "Let him Cook"
+			Item "Connoisseur's Cap"
 		}
 		Sunny_Medic_BigHeal
 		{
@@ -109,7 +115,7 @@ WaveSchedule
 			Skill	Normal
 			Item	"The Kritzkrieg"
 			Item	"Titanium Tyrolean"
-			Name "Malpractice Doctor"
+			Name "Protein Supplier"
 			Item "Flatliner"
 			Attributes AlwaysCrit
 			Attributes SpawnWithFullCharge
@@ -134,9 +140,11 @@ WaveSchedule
 		Sunny_Medic_QuickUber
 		{
 			Template T_TFBot_Medic_QuickUber
-			Name "Therapeutic Medic"
+			Name "Steroids Supplier"
 		}
 
+		// Mini-giants
+		// ------------
 		Sunny_MGScout_BFB {
             Class Scout
             Name "Runnin' Crazy"
@@ -144,15 +152,15 @@ WaveSchedule
             Skill Expert
 			Health 650
 			Scale 1.4
-			ClassIcon scout_blaster_nys // TODO: bfb icon
+			ClassIcon scout_blaster_nys_bright
 			Item "Summer Shades"
 			Item "Pest's Pads"
 			WeaponRestrictions PrimaryOnly
             ItemAttributes
             {
                 ItemName "Baby Face's Blaster"
-                "weapon spread bonus"    0.2
-                "fire rate penalty"    1.5
+                "spread penalty"    1.2
+                "fire rate penalty"    2
 				"mod no reload DISPLAY ONLY" 1
 				"reload time increased hidden" 0.01
 				"damage penalty" 0.8
@@ -169,18 +177,25 @@ WaveSchedule
         }
 		Sunny_MGMedic_Shield
 		{
-			Health 650
+			Health 450
 			Scale 1.3
 			Tag orin_shield
+			Attributes IgnoreEnemies
 			Template Remorin_Medic_Shield
             Template gCHAR_MINI
+			CharacterAttributes
+			{
+				"move speed penalty" 0.7
+			}
 		}
 
+		// Giants
+		// -------
 		Sunny_GSoldier_DirectHit
 		{
 			Class Soldier
-			Name "Giant Fireworks Specialist"
-			ClassIcon soldier_directhit_giant
+			Name "Giant Precise Soldier"
+			ClassIcon soldier_directhit_lite_giant
 			Skill Expert
 			Health 4000
 			WeaponRestrictions PrimaryOnly
@@ -285,9 +300,9 @@ WaveSchedule
 			MaxActive	1
 			SpawnCount	1
 			TotalCurrency	200
-			Tank{
-				Health 15000
-				Speed 60
+			Tank {
+				Health 14000
+				Speed 50
 				Name "Tank"
 				StartingPathTrackNode "tankpath_alt"
 				OnKilledOutput {
@@ -306,10 +321,10 @@ WaveSchedule
 			Where spawnbot_parachute
 			WaitBeforeStarting	5
 			WaitBetweenSpawns	25
-			TotalCount	12
+			TotalCount	6
 			MaxActive	4
 			SpawnCount	2
-			TotalCurrency	100
+			TotalCurrency	200
 			TFBot {
 				Template T_TFBot_Giant_Soldier_Crit
 			}
@@ -333,25 +348,26 @@ WaveSchedule
 		WaveSpawn {
 			Name "W1 Last Standing"
 			WaitForAllDead "W1 Demoman"
-			WaitBeforeStarting	30
-			WaitBetweenSpawns	20
-			Where spawnbot_tunnel
+			WaitBeforeStarting	20
+			WaitBetweenSpawns	10
+			Where spawnbot_flank
 			TotalCount	18
-			MaxActive	3
-			SpawnCount	3
-			TotalCurrency	250
+			MaxActive	4
+			SpawnCount	2
+			TotalCurrency	100
 			TFBot {
-				Template Sunny_MGScout_BFB
+				Template Sunny_Soldier_Buff
 				BehaviorModifiers Push
 				Tag flankbot
 			}
 		}
 		WaveSpawn {
 			Name "W1 Pyro + Extended Buff Soldier"
-			WaitForAllDead "W1 Demoman"
+			WaitForAllSpawned "W1 Demoman"
+			WaitForAllDead "W1 Giant Charged Soldier"
 			Where spawnbot
 			WaitBeforeStarting	4
-			WaitBetweenSpawns	5.8
+			WaitBetweenSpawns	6
 			TotalCount	60
 			MaxActive	10
 			SpawnCount	5
@@ -378,14 +394,16 @@ WaveSchedule
 		}
 		WaveSpawn {
 			Name "W1 Last Standing"
-			// WaitForAllDead "W1 Soldier + Demoman"
 			WaitForAllDead "W1 Pyro + Extended Buff Soldier"
 			WaitBeforeStarting	7
-			TotalCount	9
-			SpawnCount	9
-			TotalCurrency 200
+			TotalCount	10
+			SpawnCount	10
+			TotalCurrency 250
 			Where spawnbot_tunnel
 			Squad {
+				TFBot {
+					Template Sunny_MGMedic_Shield
+				}
 				TFBot {
 					Template Remorin_GSoldier_Triple_Shot
 				}
@@ -415,6 +433,22 @@ WaveSchedule
 				}
 			}
 		}
+		WaveSpawn
+		{
+			Name "W1 Last Standing SPY"
+			Where spawnbot_parachute
+			WaitForAllDead "W1 Pyro + Extended Buff Soldier"
+			TotalCount 3
+			MaxActive 3
+			SpawnCount 3
+			TotalCurrency 50
+			Support Limited
+			TFBot
+			{
+				Template Sunny_Spy
+				Attributes IgnoreFlag
+			}
+		}
 		WaveSpawn {
 			Name "W1 Break"
 			WaitForAllDead "W1 Last Standing"
@@ -422,7 +456,7 @@ WaveSchedule
 			{
 				Target "gamerules"
 				Action "RunScriptCode"
-				Param "StartWaveBreak(35, `music/mvm_start_tank_wave.wav`)"
+				Param "StartWaveBreak(35, `music/mvm_start_tank_wave.wav`, `bombpath_right`)"
 			}
 		}
 
@@ -444,7 +478,7 @@ WaveSchedule
 			Tank
 			{
 				Health 18000
-				Speed 60
+				Speed 50
 				Name "Tank"
 				StartingPathTrackNode "tankpath_same"
 				OnBombDroppedOutput
@@ -467,7 +501,7 @@ WaveSchedule
 			Tank
 			{
 				Health 18000
-				Speed 60
+				Speed 50
 				Name "Tank"
 				StartingPathTrackNode "tankpath_alt"
 				OnBombDroppedOutput
@@ -489,7 +523,7 @@ WaveSchedule
 			Tank
 			{
 				Health 18000
-				Speed 60
+				Speed 50
 				Name "Tank"
 				StartingPathTrackNode "tankpath_same"
 				OnBombDroppedOutput
@@ -539,10 +573,10 @@ WaveSchedule
 			Name "W2_B"
 			Where spawnbot_tunnel
 			WaitForAllSpawned "W2_Tank1"
-			WaitBeforeStarting 60
-			WaitBetweenSpawns  15
-			TotalCount 15
-			MaxActive 6
+			WaitBeforeStarting 50
+			WaitBetweenSpawns  30
+			TotalCount 9
+			MaxActive 3
 			SpawnCount 3
 			TotalCurrency 50
 			Squad
@@ -555,12 +589,12 @@ WaveSchedule
 				}
 				TFBot
 				{
-					Template Sunny_Pyro
+					Template Remorin_Pyro
 					Attributes AlwaysFireWeapon
 				}
 				TFBot
 				{
-					Template Sunny_Pyro
+					Template Remorin_Pyro
 					Attributes AlwaysFireWeapon
 				}
 			}
@@ -613,7 +647,7 @@ WaveSchedule
 			WaitBeforeStarting 6
 			WaitBetweenSpawns 12
 			WaitForAllDead	"W2_B1"
-			TotalCount 35
+			TotalCount 49
 			MaxActive 7
 			SpawnCount 7
 			TotalCurrency 125
@@ -630,25 +664,18 @@ WaveSchedule
 			WaitBeforeStarting 15
 			WaitBetweenSpawns 15
 			WaitForAllSpawned "W2_B1"
-			TotalCount 16
-			MaxActive 8
-			SpawnCount 4
+			TotalCount 18
+			MaxActive 6
+			SpawnCount 3
 			TotalCurrency 50
-			Squad
+			TFBot
 			{
-				FormationSize 100
-				ShouldPreserveSquad 1
-				TFBot
-				{
-					Template Sunny_Soldier_Backup
-					Tag flankbot
-					BehaviorModifiers Push
-				}
-				TFBot
-				{
-					Template Sunny_Medic_QuickUber
-				}
+				Template Sunny_Soldier_Backup
+				BehaviorModifiers Push
+				Tag flankbot
+				Skill Hard
 			}
+
 		}
 		WaveSpawn 
 		{
@@ -663,7 +690,7 @@ WaveSchedule
 			Tank
 			{
 				Health 20000
-				Speed 43
+				Speed 40
 				Name "Tank"
 				StartingPathTrackNode "tankpath_same"
 				OnBombDroppedOutput
@@ -686,7 +713,7 @@ WaveSchedule
 			Tank
 			{
 				Health 20000
-				Speed 43
+				Speed 40
 				Name "Tank"
 				StartingPathTrackNode "tankpath_alt"
 				OnBombDroppedOutput
@@ -702,10 +729,10 @@ WaveSchedule
 			Where spawnbot_tunnel
 			WaitForAllSpawned	"W2_B1"
 			WaitBeforeStarting 15
-			WaitBetweenSpawns  45
-			TotalCount 6
+			WaitBetweenSpawns  30
+			TotalCount 12
 			MaxActive 4
-			SpawnCount 2
+			SpawnCount 4
 			TotalCurrency 100
 			Squad
 			{
@@ -719,6 +746,14 @@ WaveSchedule
 				{
 					Template Sunny_GSoldier_DirectHit
 				}
+				TFBot
+				{
+					Template Sunny_Medic_QuickUber
+				}
+				TFBot
+				{
+					Template Sunny_Medic_QuickUber
+				}
 			}
 		}
 		WaveSpawn
@@ -726,19 +761,18 @@ WaveSchedule
 			Name "W2_EngyB"
 			Where spawnbot_parachute
 			WaitBeforeStarting 30
-			WaitBetweenSpawns 15
-			WaitForAllSpawned	"W2_A"
-			WaitForAllDead		"W2_Tank"
-			TotalCount 6
-			MaxActive 2
-			SpawnCount 2
+			WaitBetweenSpawns 45
+			WaitForAllSpawned "W2_Tank"
+			WaitForAllDead	  "W2_A"
+			TotalCount 9
+			MaxActive 3
+			SpawnCount 3
 			TotalCurrency 50
 			Support Limited
 			TFBot
 			{
-				Template Sunny_Engineer
-				TeleportWhere spawnbot
-				Attributes TeleportToHint
+				Template Sunny_Spy
+				Attributes IgnoreFlag
 			}
 		}
 	}
