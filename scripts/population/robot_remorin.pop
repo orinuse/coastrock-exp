@@ -158,7 +158,7 @@ WaveSchedule
 		{
 			Class Medic
 			Name "Shield Medic"
-			ClassIcon medic_shield_qf
+			ClassIcon medic_shield_lite
 			Skill Normal
 			WeaponRestrictions SecondaryOnly
 			Attributes SpawnWithFullCharge
@@ -176,7 +176,7 @@ WaveSchedule
 			{
 				"bot medic uber health threshold" 25
 				"bot medic uber deploy delay duration" 9999
-				"increase buff duration" 3
+				"increase buff duration" 5
 			}
 		}
 		Remorin_Medic_Vac_Bullet
@@ -325,8 +325,6 @@ WaveSchedule
 				ItemName "TF_WEAPON_SCATTERGUN"
 				"bullets per shot bonus" 1.2
 				"damage bonus" 1.25
-				"killstreak tier" 2
-				"killstreak idleeffect" 1
 			}
 			Template gCHAR_SCOUT
 		}
@@ -345,8 +343,6 @@ WaveSchedule
 			{
 				ItemName "TF_WEAPON_ROCKETLAUNCHER"
 				"damage bonus" 1.2					// this is the superior one :o
-				"killstreak tier" 2
-				"killstreak idleeffect" 1
 			}
 			Template gCHAR_SOLDIER
 		}
@@ -387,10 +383,8 @@ WaveSchedule
 			Tag bot_giant
 			ItemAttributes
 			{
-				ItemName " TF_WEAPON_MINIGUN"
+				ItemName "TF_WEAPON_MINIGUN"
 				"damage bonus"	1.5
-				"killstreak tier" 2
-				"killstreak idleeffect" 1
 			}
 			Template gCHAR_HEAVY
 		}
@@ -436,8 +430,6 @@ WaveSchedule
 				"reload time increased hidden" -0.1
 				"mod no reload DISPLAY ONLY" 1
 				"Projectile speed decreased" 0.65
-				"killstreak tier" 2
-				"killstreak idleeffect" 2
 			}
 			Template gCHAR_SOLDIER
 		}
@@ -461,8 +453,6 @@ WaveSchedule
 				"fire rate bonus" 0.1
 				"clip size upgrade atomic" 5.0
 				"Projectile speed decreased" 0.65
-				"killstreak tier" 2
-				"killstreak idleeffect" 6
 			}
 			Template gCHAR_SOLDIER
 		}
@@ -482,8 +472,6 @@ WaveSchedule
 				ItemName "The Brass Beast"
 				"damage bonus"	1.7
 				"minigun spinup time increased" 2.5
-				"killstreak tier" 2
-				"killstreak idleeffect" 2
 			}
 			CharacterAttributes
 			{
@@ -505,10 +493,9 @@ WaveSchedule
 			ItemAttributes
 			{
 				ItemName "The Huo Long Heatmaker"
-				"ring of fire while aiming"	18
 				"damage bonus"	1.3
-				"killstreak tier" 2
-				"killstreak idleeffect" 3
+				"ring of fire while aiming"	36
+				"weapon burn dmg increased" 2
 			}
 			Template gCHAR_HEAVY
 		}
@@ -635,7 +622,7 @@ WaveSchedule
 			Tag bot_giant
 			CharacterAttributes
 			{
-				"move speed penalty" 0.85
+				"move speed penalty" 0.8
 				"damage force reduction" 0.8
 				"airblast vulnerability multiplier" 0.5
 				"airblast vertical vulnerability multiplier" 0.75

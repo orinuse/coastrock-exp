@@ -32,6 +32,11 @@ function Init()
 	EntFire("bombpath_clearall_relay", "Trigger", null, 1)
 	EntFire("bombpath_right", "Trigger", null, 1.1)
 	
+	// Tanks could use this
+	local boss_deploy_relay = Entities.FindByName(null, "boss_deploy_relay")
+	EntityOutputs.AddOutput(boss_deploy_relay, "OnTrigger", "tank_boss", "SetHealth", "1", 0.1, -1)
+	EntityOutputs.AddOutput(boss_deploy_relay, "OnTrigger", "tank_boss", "RemoveHealth", "1", 0.1, -1)
+	
 	// Don't use in final version; this is just for internal amusement.
 	if( developer() )
 		DoRedBots()
@@ -103,23 +108,46 @@ function DoEngyHints()
 			[Vector(886, 1535, 4), QAngle(0,-100,0)]
 		],
 		// #5
+		//// Off-path hint
 		[
 			[Vector(-526, -330, 320), QAngle(0,  30,0)],
 			[Vector(-740,  -71, 256), QAngle(0,  60,0)],
 			[Vector(-636,  -18, 256), QAngle(0, 272,0)]
 		],
 		// #6
+		//// Off-path hint
 		[
-			[Vector(-819,  -540, 64), QAngle(0, 15,0), Vector(-764, -414, 64), QAngle(0, -6, 0)],
+			[Vector(-819,  -540, 64), QAngle(0, 15,0),  Vector( -764,  -414,  64), QAngle(0, -6, 0)],
 			[Vector(-1050, -550, 64), QAngle(0,-26,0)],
-			[Vector(-1087, -382, 64), QAngle(0,-26,0), Vector(-1160, -481, 64), QAngle(0, 63, 0)]
+			[Vector(-1087, -382, 64), QAngle(0,-26,0),  Vector(-1160,  -481,  64), QAngle(0, 63, 0)]
 		],
 		// #7
 		[
-			[Vector(566, -473,64), QAngle(0,48,0), Vector(286,-475,64), QAngle(0,45,0)],
-			[Vector(479, -179,64), QAngle(0, -101,0)],
-			[Vector(380, -610,64), QAngle(0,   36,0)]
+			[Vector(566, -473, 64), QAngle(0,   48,0),  Vector(  286,  -475,  64), QAngle(0, 45,0)],
+			[Vector(479, -179, 64), QAngle(0, -101,0)],
+			[Vector(380, -610, 64), QAngle(0,   36,0)]
 		],
+		// #8
+		//// Off-path hint
+		[
+			[Vector(249, 215, 256), QAngle(0, -179,0)],
+			[Vector(360, 467, 256), QAngle(0, -112,0)],
+			[Vector(464, 138, 256), QAngle(0,  173,0)]
+		],
+		//// These were being leniently-used as a "far-ahead" spawn over any other hint
+		//// It made engys build by the hatch and turn their backs to the players at front.
+		/*
+		[
+			[Vector(755, 637, 256), QAngle(0, -24,0)],
+			[Vector(466, 590, 256), QAngle(0,  11, 0)],
+			[Vector(409, 367, 256), QAngle(0,  90,0)]
+		],
+		[
+			[Vector(882,  -866, 320), QAngle(0,  50,0)],
+			[Vector(625, -1011, 320), QAngle(0, 196,0)],
+			[Vector(532,  -861, 320), QAngle(0,  -1,0), Vector(  724, -1158, 320), QAngle(0, 90,0)]
+		],
+		*/
 	]
 	
 	for( local i = 0; i < EngyHints.len(); i++ )
@@ -158,7 +186,7 @@ function DoEngyHints()
 }
 
 /*****************************************************
-	FLANKER PATHS
+	FLANKERS PATHS
 	
 `	Little role is given to the "fkanker" tag, and some
 	paths that should be flanker-only are free to be
@@ -168,7 +196,18 @@ function DoEngyHints()
 	
 *****************************************************/
 
-::FLANKERS <- { ref = "FLANKERS" }
+local DISABLE_DODGE = Constants.FTFBotAttributeType.DISABLE_DODGE
+
+::FLANKERS <-
+{
+	ref = "FLANKERS",
+	TAG = "flankbot",
+	
+	// Intended format:
+	// [ mvmbot, lastupdatetime ]
+	BOTS = [],
+	thinker = null
+}
 
 function InitFlankers()
 {
@@ -359,7 +398,7 @@ function InitFlankers()
 		}
 	}
 	
-	// Finalise it all.
+	// Finalise entities.
 	local bombpath_left  = Entities.FindByName(null, "bombpath_left")
 	local bombpath_right = Entities.FindByName(null, "bombpath_right")
 	local bombpath_clearall_relay = Entities.FindByName(null, "bombpath_clearall_relay")
@@ -374,19 +413,80 @@ function InitFlankers()
 	EntityOutputs.AddOutput(bombpath_clearall_relay, "OnTrigger", "orin_flank_prefer_left", "Disable", null, 0, -1)
 	EntityOutputs.AddOutput(bombpath_clearall_relay, "OnTrigger", "orin_flank_prefer_right", "Disable", null, 0, -1)
 	
+	// Setup automatic disabling of dodging.
+	::TAGS.ClearAllBots(::FLANKERS.TAG, ::FLANKERS.BOTS)
+	::FLANKERS.thinker = SpawnEntityFromTable("logic_relay",{
+		targetname = "remorin_flankerupdate"
+	})
+	::FLANKERS.thinker.ValidateScriptScope()
+
+	local scope = ::FLANKERS.thinker.GetScriptScope()
+	scope["FlankerDoRun"] <- false
+	scope["FlankerUpdate"] <- function()
+	{
+		if ( !("FlankerUpdate" in scope) || !scope["FlankerDoRun"] )
+			return;
+		
+		for( local i = 0; i < ::FLANKERS.BOTS.len(); i++ )
+		{
+			local ary = ::FLANKERS.BOTS[i]
+			local bot = ary[0]
+			
+			bot.AddBotAttribute(DISABLE_DODGE)
+			::TAGS.ClearBot(bot, ::FLANKERS.TAG, ::FLANKERS.BOTS)
+			
+			if( developer() )
+				printl("::FLANKER - A Flanker is found!")
+		}
+		
+		return 3.0
+	}
+
+	AddThinkToEnt(::FLANKERS.thinker, "FlankerUpdate")
 	__CollectGameEventCallbacks(::FLANKERS)
 }
 
+// Collect any flanker robots that has spawned for later use.
+::FLANKERS.OnGameEvent_post_inventory_application <- function( params )
+{
+	local player = GetPlayerFromUserID( params.userid )
+	if( player.IsFakeClient() )
+	{
+		EntFireByHandle(player, "RunScriptCode", "::TAGS.AcknowledgeBot(self, ::FLANKERS.TAG, ::FLANKERS.BOTS)", 0.1, player, player )
+	}
+}
+
+// Remove tags from any flanker bots that have died.
+::FLANKERS.OnGameEvent_player_death <- function( params )
+{
+	local player = GetPlayerFromUserID( params.userid )
+	::TAGS.ClearBot(player, ::FLANKERS.TAG, ::FLANKERS.BOTS)
+}
+
+// Allow the think to run on wave starts.
 ::FLANKERS.OnGameEvent_mvm_begin_wave <- function( params )
 {
 	DebugDrawClear()
+	local scope = ::FLANKERS.thinker.GetScriptScope()
+	scope["FlankerDoRun"] = true
+}
+
+// Clear the boss tag from all flanker bots on any team's round victory.
+::FLANKERS.OnGameEvent_teamplay_round_win <- function( params )
+{
+	::TAGS.ClearAllBots(::FLANKERS.TAG, ::FLANKERS.BOTS)
+	local scope = ::FLANKERS.thinker.GetScriptScope()
+	scope["FlankerDoRun"] = false
 }
 
 ::FLANKERS.OnGameEvent_teamplay_round_start <- function( params )
 {
 	local events =
 	[
+		"post_inventory_application",
+		"player_death",
 		"mvm_begin_wave",
+		"teamplay_round_win",
 		"teamplay_round_start"
 	]
 
@@ -426,17 +526,18 @@ local EndVOs =
 	"vo/mvm_wave_end08.mp3"
 ]	
 
-function StartWaveBreak(duration = 35, music = "music/mvm_start_mid_wave.wav", pathrelay = "bombpath_choose_relay")
+function StartWaveBreak(duration = 35, music = "music/mvm_start_mid_wave.wav", pathrelay = "bombpath_right")
 {
-	// PATHS
-	if ( pathrelay == "Left" )
-		pathrelay = "bombpath_left"
-	else if ( pathrelay == "Right" )
-		pathrelay = "bombpath_right"
+	for( local i = 1; i < MAX_PLAYERS; i++ )
+	{
+		local player = GetPlayerFromUserID(i)
+		if( player && player.GetTeam() == TF_TEAM_PVE_INVADERS ) 
+			player.TakeDamage( player.GetHealth()*3, 65536, null)
+	}
 
 	// LOGIC
-	EntFire("bombpath_arrows_clear_relay", "Trigger")
 	EntFire("bombpath_arrows_clear_relay", "Trigger", null, duration)
+	EntFire( pathrelay, "Trigger", null, 10)
 	EntFire("upgrade_door_open_relay", "Trigger")
 	EntFire("upgrade_door_close_relay", "Trigger", null, duration)
 	EntFire( POPULATOR, "PauseBotSpawning")
@@ -445,20 +546,19 @@ function StartWaveBreak(duration = 35, music = "music/mvm_start_mid_wave.wav", p
 
 	local size = EndVOs.len() - 1
 	local choice = EndVOs[RandomInt(0,size)]
-	EntFire( GAMERULES, "PlayVORed", choice, 0)
-	EntFire( GAMERULES, "PlayVORed", "Announcer.MVM_Get_To_Upgrade", 5)
-	EntFire( pathrelay, "Trigger", 10)
+	EntFire( GAMERULES, "PlayVO", choice, 0)
+	EntFire( GAMERULES, "PlayVO", "Announcer.MVM_Get_To_Upgrade", 5)
 	
 	// SOUND
 	if( duration >= 35 )
 	{
 		local delta = (duration - 20)
-		EntFire(GAMERULES, "PlayVORed", COUNTDOWN_20s, delta)
+		EntFire(GAMERULES, "PlayVO", COUNTDOWN_20s, delta)
 	}
 	if( duration >= 25 )
 	{
 		local delta = (duration - 10)
-		EntFire(GAMERULES, "PlayVORed", COUNTDOWN_10s, delta)
+		EntFire(GAMERULES, "PlayVO", COUNTDOWN_10s, delta)
 	}
 	if( duration >= 15 )
 	{
@@ -468,8 +568,8 @@ function StartWaveBreak(duration = 35, music = "music/mvm_start_mid_wave.wav", p
 		local rVO = StartVOs[choice][0]
 		local rFixup = StartVOs[choice][1]
 
-		EntFire(GAMERULES, "PlayVORed", rVO, delta + rFixup)
-		EntFire(GAMERULES, "PlayVORed", music, delta + rFixup)
+		EntFire(GAMERULES, "PlayVO", rVO, delta + rFixup)
+		EntFire(GAMERULES, "PlayVO", music, delta + rFixup)
 	}
 }
 
@@ -487,7 +587,7 @@ function InitTags()
 	__CollectGameEventCallbacks(::TAGS)
 }
 
-::TAGS.RegisterBot <- function(bot, tagname, ary)
+::TAGS.AcknowledgeBot <- function(bot, tagname, ary)
 {
 	if( bot.IsFakeClient() )
 	{
@@ -502,7 +602,7 @@ function InitTags()
 }
 
 // Remove dead tagged bots from our arrays.
-::TAGS.UnregisterBot <- function(bot, tagname, ary)
+::TAGS.ClearBot <- function(bot, tagname, ary)
 {
 	bot.ValidateScriptScope()
 	local scope = bot.GetScriptScope()
@@ -523,7 +623,7 @@ function InitTags()
 }
 
 // For round ends.
-::TAGS.ClearBots <- function(tagname, ary)
+::TAGS.ClearAllBots <- function(tagname, ary)
 {
 	for( local i = 0; i < MAX_PLAYERS; i++ )
 	{
@@ -612,7 +712,7 @@ function RunBossLogic(phasecount, patterncount = 1, changetime = 10)
 
 function InitBoss()
 {
-	::TAGS.ClearBots(::BOSS.TAG, ::BOSS.BOTS)
+	::TAGS.ClearAllBots(::BOSS.TAG, ::BOSS.BOTS)
 	::BOSS.thinker = SpawnEntityFromTable("logic_relay",{
 		targetname = "remorin_bossupdate"
 	})
@@ -664,7 +764,9 @@ function InitBoss()
 							loadout = format( "Phase%iPattern%i", this["bossphasecount"]+1 - j, choice )
 						}
 						EntFire( POPULATOR, "ChangeBotAttributes", loadout)
-						printl(loadout)
+						
+						if( developer() )
+							printl( "BOSS: "+loadout )
 						
 						scope["bosslastchoice"] = choice
 						::BOSS.BOTS[i][1] = Time()
@@ -681,13 +783,13 @@ function InitBoss()
 	__CollectGameEventCallbacks(::BOSS)
 }
 
-// Collect any boss robot that spawns for later use.
+// Collect any boss robots that has spawned for later use.
 ::BOSS.OnGameEvent_post_inventory_application <- function( params )
 {
 	local player = GetPlayerFromUserID( params.userid )
 	if( player.IsFakeClient() )
 	{
-		EntFireByHandle(player, "RunScriptCode", "::TAGS.RegisterBot(self, ::BOSS.TAG, ::BOSS.BOTS)", 0.1, player, player )
+		EntFireByHandle(player, "RunScriptCode", "::TAGS.AcknowledgeBot(self, ::BOSS.TAG, ::BOSS.BOTS)", 0.1, player, player )
 	}
 }
 
@@ -695,13 +797,20 @@ function InitBoss()
 ::BOSS.OnGameEvent_player_death <- function( params )
 {
 	local player = GetPlayerFromUserID( params.userid )
-	::TAGS.UnregisterBot(player, ::BOSS.TAG, ::BOSS.BOTS)
+	::TAGS.ClearBot(player, ::BOSS.TAG, ::BOSS.BOTS)
 }
 
-// Clear the boss tag from all boss bots.
+// Allow the think to run on wave starts.
+::BOSS.OnGameEvent_mvm_begin_wave <- function( params )
+{
+	local scope = ::BOSS.thinker.GetScriptScope()
+	scope["BossDoRun"] = true
+}
+
+// Clear the boss tag from all boss bots on any team's round victory.
 ::BOSS.OnGameEvent_teamplay_round_win <- function( params )
 {
-	::TAGS.ClearBots(::BOSS.TAG, ::BOSS.BOTS)
+	::TAGS.ClearAllBots(::BOSS.TAG, ::BOSS.BOTS)
 	local scope = ::BOSS.thinker.GetScriptScope()
 	scope["BossDoRun"] = false
 }
@@ -713,6 +822,7 @@ function InitBoss()
 	[
 		"post_inventory_application",
 		"player_death",
+		"mvm_begin_wave",
 		"teamplay_round_win",
 		"teamplay_round_start"
 	]
@@ -743,7 +853,7 @@ function InitBoss()
 
 function InitShield()
 {
-	::TAGS.ClearBots(::SHIELD.TAG, ::SHIELD.BOTS)
+	::TAGS.ClearAllBots(::SHIELD.TAG, ::SHIELD.BOTS)
 	::SHIELD.thinker = SpawnEntityFromTable("logic_relay",{
 		targetname = "remorin_shieldupdate"
 	})
@@ -753,7 +863,7 @@ function InitShield()
 	scope["ShieldDoRun"] <- false
 	scope["ShieldUpdate"] <- function()
 	{
-		if ( !("ShieldUpdate" in scope) || !scope["ShieldUpdate"] )
+		if ( !("ShieldUpdate" in scope) || !scope["ShieldDoRun"] )
 			return;
 		
 		for( local i = 0; i < ::SHIELD.BOTS.len(); i++ )
@@ -770,7 +880,7 @@ function InitShield()
 			else if ( !NetProps.GetPropBool(bot.GetActiveWeapon(), "m_bHealing") )
 			{
 				bot.PressFireButton(0.1)
-				bot.PressFireButton(2)
+				bot.PressFireButton(20)
 			}
 		}
 		
@@ -781,24 +891,36 @@ function InitShield()
 	__CollectGameEventCallbacks(::SHIELD)
 }
 
+// Collect any shield robots that has spawned for later use.
 ::SHIELD.OnGameEvent_post_inventory_application <- function( params )
 {
 	local player = GetPlayerFromUserID( params.userid )
 	if( player.IsFakeClient() )
 	{
-		EntFireByHandle(player, "RunScriptCode", "::TAGS.RegisterBot(self, ::SHIELD.TAG, ::SHIELD.BOTS)", 0.1, player, player )
+		EntFireByHandle(player, "RunScriptCode", "::TAGS.AcknowledgeBot(self, ::SHIELD.TAG, ::SHIELD.BOTS)", 0.1, player, player )
 	}
 }
 
+// Remove tags from any shield bots that have died.
 ::SHIELD.OnGameEvent_player_death <- function( params )
 {
 	local player = GetPlayerFromUserID( params.userid )
-	::TAGS.UnregisterBot(player, ::SHIELD.TAG, ::SHIELD.BOTS)
+	::TAGS.ClearBot(player, ::SHIELD.TAG, ::SHIELD.BOTS)
 }
 
+// Allow the think to run on wave starts.
+::SHIELD.OnGameEvent_mvm_begin_wave <- function( params )
+{
+	local scope = ::SHIELD.thinker.GetScriptScope()
+	scope["ShieldDoRun"] = true
+}
+
+// Clear the boss tag from all shield bots on any team's round victory.
 ::SHIELD.OnGameEvent_teamplay_round_win <- function( params )
 {
-	::TAGS.ClearBots(::SHIELD.TAG, ::SHIELD.BOTS)
+	::TAGS.ClearAllBots(::SHIELD.TAG, ::SHIELD.BOTS)
+	local scope = ::SHIELD.thinker.GetScriptScope()
+	scope["ShieldDoRun"] = false
 }
 
 // We ought to clean our waste responsibly.
@@ -912,7 +1034,7 @@ function DoRedBots()
 		{
 			EntFire("!activator", "RunScriptCode", "weapon <- NetProps.GetPropEntityArray(self, `m_hMyWeapons`, 1)", 1, player)
 			EntFire("!activator", "RunScriptCode", "weapon.AddAttribute(`generate rage on heal`, 2, -1)", 2, player)
-			EntFire("!activator", "RunScriptCode", "NetProps.SetPropFloat( weapon, `m_flChargeLevel`, 100.0 )", 2, player)
+			EntFire("!activator", "RunScriptCode", "NetProps.SetPropFloat( weapon, `m_flChargeLevel`, 1.0 )", 2, player)
 			EntFire("!activator", "RunScriptCode", "self.AddBotAttribute(Constants.FTFBotAttributeType.PROJECTILE_SHIELD)", 2, player)
 			EntFire("!activator", "RunScriptCode", "self.AddBotAttribute(Constants.FTFBotAttributeType.SPAWN_WITH_FULL_CHARGE)", 2, player)
 		}
