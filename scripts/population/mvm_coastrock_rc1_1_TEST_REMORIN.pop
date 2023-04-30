@@ -512,24 +512,7 @@ WaveSchedule
 				}
 				TFBot
 				{
-					Class Soldier
-					Name "Giant Fireworks Specialist"
-					ClassIcon soldier_directhit_giant
-					Skill Expert
-					Health 4000
-					WeaponRestrictions PrimaryOnly
-					Attributes HoldFireUntilFullReload
-					Attributes MiniBoss
-					Tag bot_giant
-					Item "The Direct Hit"
-					Item "The Cross-Comm Express"
-					ItemAttributes
-					{
-						ItemName "The Direct Hit"
-						"projectile speed increased" 3
-						"dmg falloff decreased" 0.2
-					}
-					Template gCHAR_SOLDIER
+					Template Remorin_GHeavy_Heater
 				}
 			}
 		}
