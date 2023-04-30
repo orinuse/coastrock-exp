@@ -35,6 +35,25 @@ WaveSchedule
 			Item "The Outback Intellectual"
 			Item "The Archers Groundings"
 		}
+		Sunny_Sniper_Jarate
+		{
+			Class Sniper
+			Name "Jar Thrower"
+			Skill Easy
+			ClassIcon sniper_jarate
+			Item "Jarate"
+			//Item "Master's Yellow Belt" // doesn't appear on robot models
+			Item "The Outback Intellectual"
+			Item "Hard Counter"
+			WeaponRestrictions SecondaryOnly
+			Attributes AlwaysFireWeapon
+			ItemAttributes
+			{
+				ItemName "Jarate"
+				"effect bar recharge rate increased" 0.1
+				"fire rate penalty" 2.5
+			}
+		}
 		Sunny_Spy
 		{
 			Template T_TFBot_Spy
@@ -377,7 +396,7 @@ WaveSchedule
 			Where spawnbot_tunnel
 			Squad {
 				TFBot {
-					Template Sunny_Pyro
+					Template Sunny_Sniper_Jarate
 				}
 				TFBot {
 					Template Sunny_Spy
