@@ -392,7 +392,8 @@ WaveSchedule
 		//////////////////
 		// ++ SPECIAL ++
 		//////////////////
-		Remorin_GSoldier_Triple_Shot {
+		Remorin_GSoldier_Triple_Shot
+		{
 			Class Soldier
 			Attributes HoldFireUntilFullReload
 			Name "Tri-shots Lieutenant"

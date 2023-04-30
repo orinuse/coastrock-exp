@@ -1,0 +1,8 @@
+# Archives
+*.zip*
+*.rar*
+*.7z*
+*.tar.gz
+
+# Other
+src/forum_thread.txt

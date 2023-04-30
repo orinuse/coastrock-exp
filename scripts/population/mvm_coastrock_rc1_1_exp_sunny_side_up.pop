@@ -8,6 +8,8 @@ WaveSchedule
 	RespawnWaveTime 6
 	CanBotsAttackWhileInSpawnRoom no
 	Advanced 1
+	
+	CustomNavFile "mvm_coastrock_rc1_1_orin" [$SIGSEGV]
 
 	Templates
 	{
@@ -72,7 +74,7 @@ WaveSchedule
 			Template Remorin_Heavy
 
 			Class Heavy
-			Name "QA-1MIL Man"
+			Name "Heavy Weapons"
 			Item "The Bunsen Brave"
 		}
 		Sunny_Engineer
@@ -83,28 +85,6 @@ WaveSchedule
 			TeleportWhere spawnbot
 			Attributes TeleportToHint
 			Attributes IgnoreFlag
-		}
-		Sunny_Sniper
-		{
-			Template T_TFBot_Sniper
-
-			Class Sniper
-			Name "Crow Shooter"
-		}
-		Sunny_Sniper_Huntsman
-		{
-			Template T_TFBot_Sniper_Huntsman
-			
-			Name "Arrow Shooter"
-			Item "The Outback Intellectual"
-			Item "The Archers Groundings"
-		}
-		Sunny_Spy
-		{
-			Template T_TFBot_Spy
-
-			Name "Let him Cook.."
-			Item "Connoisseur's Cap"
 		}
 		Sunny_Medic_BigHeal
 		{
@@ -146,6 +126,47 @@ WaveSchedule
 		{
 			Template T_TFBot_Medic_QuickUber
 			Name "Steroids Injection"
+		}
+		Sunny_Sniper
+		{
+			Template T_TFBot_Sniper
+
+			Class Sniper
+			Name "Crow Shooter"
+		}
+		Sunny_Sniper_Huntsman
+		{
+			Template T_TFBot_Sniper_Huntsman
+			
+			Name "Arrow Shooter"
+			Item "The Outback Intellectual"
+			Item "The Archers Groundings"
+		}
+		Sunny_Sniper_Jarate
+		{
+			Class Sniper
+			Name "Jar Thrower"
+			Skill Easy
+			ClassIcon sniper_jarate
+			Item "Jarate"
+			//Item "Master's Yellow Belt" // doesn't appear on robot models
+			Item "The Outback Intellectual"
+			Item "Hard Counter"
+			WeaponRestrictions SecondaryOnly
+			Attributes AlwaysFireWeapon
+			ItemAttributes
+			{
+				ItemName "Jarate"
+				"effect bar recharge rate increased" 0.1
+				"fire rate penalty" 2.5
+			}
+		}
+		Sunny_Spy
+		{
+			Template T_TFBot_Spy
+
+			Name "Let him Cook.."
+			Item "Connoisseur's Cap"
 		}
 
 		// Mini-giants
@@ -219,9 +240,16 @@ WaveSchedule
 		}
 		Sunny_GPyro
 		{
-			Template gCHAR_PYRO
+			Template Remorin_GPyro
 			
 			Name "Giant Deep-fat frier"
+		}
+		Sunny_GHeavy_Heater
+		{
+			Template Remorin_GHeavy_Heater
+			
+			Name "Heavy Oven"
+			Item "Corona Australis"
 		}
 	}
     Mission
@@ -785,144 +813,6 @@ WaveSchedule
 			TFBot
 			{
 				Template Sunny_Spy
-				Attributes IgnoreFlag
-			}
-		}
-	}
-	// 800$
-	Wave {
-		InitWaveOutput
-		{
-			Target gamerules
-			Action RunScriptFile
-			Param "exp_sunny_side.nut"
-		}
-		StartWaveOutput
-		{
-			Target wave_start_endurance_relay
-			Action Trigger
-		}
-		DoneOutput
-		{
-			Target wave_finished_relay
-			Action Trigger
-		}
-		WaveSpawn {
-			Name "W3 Giant Heavy"
-			WaitBetweenSpawns	14
-			TotalCurrency	150
-			TotalCount	3
-			MaxActive	3
-			SpawnCount	1
-			Where spawnbot_tunnel
-			TFBot {
-				Template Remorin_GHeavy
-				Name "The Moon Lander"
-				Item "Cadet Visor"
-			}
-		}
-		WaveSpawn {
-			Name "W3 Giant Heater Heavy + Space Marine"
-			WaitForAllSpawned "W3 Giant Heavy"
-			WaitBeforeStarting	40
-			WaitBetweenSpawns	22
-			TotalCurrency	150
-			TotalCount	3
-			MaxActive	3
-			SpawnCount	1
-			Where spawnbot_tunnel
-			TFBot {
-				Template Remorin_GHeavy_Heater
-				Item "Corona Australis"
-				Name "Mars Invader"
-			}
-		}
-		WaveSpawn {
-			Name "W3 Giant Heater Heavy + Space Marine"
-			WaitForAllDead "W3 Giant Heavy"
-			WaitBetweenSpawns	4
-			TotalCurrency	100
-			TotalCount	45
-			MaxActive	10
-			SpawnCount	5
-			Where spawnbot_tunnel
-			TFBot {
-				Template Sunny_Soldier
-				Skill Hard
-				Name "Patrol Bot from Mars"
-				Item "Breach and Bomb"
-				Item "The Cow Mangler 5000"
-				ItemAttributes {
-					ItemName "The Cow Mangler 5000"
-					"Set DamageType Ignite" 5
-					"dmg bonus vs buildings" 1.8
-					"faster reload rate" 0.8
-				}
-			}
-		}
-		WaveSpawn {
-			Name "W3 Spy"
-			WaitForAllDead "W3 Giant Heater Heavy + Space Marine"
-			WaitBetweenSpawns	25
-			WaitBeforeStarting	2
-			TotalCurrency	100
-			TotalCount	48
-			MaxActive	6
-			SpawnCount	6
-			Where spawnbot_parachute
-			Support Limited
-			TFBot {
-				Template Sunny_Spy
-				Skill Expert
-			}
-		}
-		WaveSpawn {
-			Name "W3 BFB + Uber"
-			WaitForAllDead "W3 Giant Heater Heavy + Space Marine"
-			WaitBetweenSpawns	15
-			WaitBeforeStarting	2
-			TotalCurrency	50
-			TotalCount	16
-			MaxActive	4
-			SpawnCount	2
-			Where spawnbot_parachute
-			Squad {
-				TFBot {
-					Template Sunny_MGScout_BFB
-				}
-				TFBot {
-					Template Sunny_Medic_QuickUber
-				}
-			}
-		}
-		WaveSpawn {
-			Name "W3 Burst Demo"
-			WaitForAllDead "W3 Giant Heater Heavy + Space Marine"
-			WaitBetweenSpawns	10	
-			WaitBeforeStarting	2
-			TotalCurrency	50
-			TotalCount	49
-			MaxActive	7
-			SpawnCount	7
-			Where spawnbot
-			TFBot {
-				Template Remorin_Demo_Burst
-				Attributes AlwaysCrit
-				ClassIcon Demo
-			}
-		}
-		WaveSpawn {
-			Name "W3 Tri-Shot"
-			WaitForAllSpawned "W3 Burst Demo"
-			WaitBeforeStarting	10
-			WaitBetweenSpawns	15
-			TotalCurrency	100
-			TotalCount	6
-			MaxActive	3
-			SpawnCount	3
-			Where spawnbot_tunnel
-			TFBot {
-				Template Remorin_GSoldier_Triple_Shot
 			}
 		}
 	}
