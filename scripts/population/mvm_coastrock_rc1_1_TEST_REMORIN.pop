@@ -386,84 +386,10 @@ WaveSchedule
 			Target wave_finished_relay
 			Action Trigger
 		}
-		WaveSpawn {
-			Name "W1 Last Standing"
-			// WaitForAllDead "W1 Soldier + Demoman"
-			WaitForAllDead "W1 Pyro + Extended Buff Soldier"
-			TotalCount	5
-			SpawnCount	5
-			TotalCurrency 200
-			Where spawnbot_tunnel
-			Squad {
-				TFBot {
-					Template Sunny_Sniper_Jarate
-				}
-				TFBot {
-					Template Sunny_Spy
-				}
-				TFBot {
-					Template Sunny_Spy
-				}
-				TFBot {
-					Template Sunny_Spy
-				}
-				TFBot {
-					Template Sunny_Spy
-				}
-			}
-		}
-		WaveSpawn
-		{
-			Where spawnbot
-			WaitBeforeStarting 8
-			WaitBetweenSpawns 8
-			TotalCount 27
-			MaxActive 5
-			SpawnCount 5
-			TotalCurrency 100
-			Support 1
-			TFBot
-			{
-				Class Scout
-				Skill Hard
-			}
-		}
-		WaveSpawn {
-			Name "W1 Break"
-			WaitForAllDead "W1 Last Standing"
-			FirstSpawnOutput
-			{
-				Target "gamerules"
-				Action "RunScriptCode"
-				Param "StartWaveBreak(35, `music/mvm_start_tank_wave.wav`)"
-			}
-		}
-		WaveSpawn 
-		{
-			Name "W2_Tank1"
-			WaitForAllDead "W1 Break"
-			WaitBetweenSpawns	50
-			TotalCount 	1
-			MaxActive	1
-			SpawnCount	1
-			TotalCurrency	50
-			Tank
-			{
-				Health 12000
-				Speed 75
-				Name "Tank"
-				StartingPathTrackNode "tankpath_same"
-				OnBombDroppedOutput
-				{
-					Target boss_deploy_relay
-					Action Trigger
-				}
-			}
-		}
 		WaveSpawn
 		{
 			Name "W2_A"
-			WaitForAllSpawned "W2_Tank1"
+			WaitForAllDead "W2_Tank1"
 			Where spawnbot
 			WaitBeforeStarting 8
 			WaitBetweenSpawns 8
@@ -473,8 +399,16 @@ WaveSchedule
 			TotalCurrency 100
 			TFBot
 			{
-				Class Soldier
+				Class Pyro
 				Skill Hard
+				Item "Connoisseur's Cap"
+				Item "The Frymaster"
+				Name "Deep-fat Frier"
+				ItemAttributes
+				{
+					ItemName "TF_WEAPON_FLAMETHROWER"
+					"airblast_destroy_projectile" 1
+				}
 			}
 		}
 		WaveSpawn
@@ -482,7 +416,7 @@ WaveSchedule
 			Name "W2_Engy"
 			WaitForAllSpawned "W2_Tank1"
 			Where spawnbot_parachute
-			WaitBeforeStarting 5
+			WaitBeforeStarting 0
 			WaitBetweenSpawns 20
 			TotalCount 6
 			MaxActive 2
@@ -491,7 +425,8 @@ WaveSchedule
 			Support Limited
 			TFBot
 			{
-				Class Engineer
+				Class Medic
+				BehaviorModifiers Push
 				TeleportWhere spawnbot
 				Attributes TeleportToHint
 			}

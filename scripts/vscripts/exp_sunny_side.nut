@@ -9,7 +9,6 @@ local TF_TEAM_PVE_DEFENDERS = Constants.ETFTeam.TF_TEAM_PVE_DEFENDERS
 local TF_TEAM_PVE_INVADERS = Constants.ETFTeam.TF_TEAM_PVE_INVADERS
 local MAX_PLAYERS = Constants.Server.MAX_PLAYERS
 
-::ORIN <- {}
 ::OBJECTIVE <- null
 ::POPNAME <- null
 
@@ -24,6 +23,7 @@ function Init()
 	InitFlankers()
 	InitBoss()
 	InitShield()
+	InitTankAnims()
 	DoEngyHints()
 	
 	// For gameplay purposes, always force this path on popfile load.
@@ -32,15 +32,18 @@ function Init()
 	EntFire("bombpath_clearall_relay", "Trigger", null, 1)
 	EntFire("bombpath_right", "Trigger", null, 1.1)
 	
-	// Tanks could use this
-	local boss_deploy_relay = Entities.FindByName(null, "boss_deploy_relay")
-	EntityOutputs.AddOutput(boss_deploy_relay, "OnTrigger", "tank_boss", "SetHealth", "1", 0.1, -1)
-	EntityOutputs.AddOutput(boss_deploy_relay, "OnTrigger", "tank_boss", "RemoveHealth", "1", 0.1, -1)
-	
 	// Don't use in final version; this is just for internal amusement.
 	if( developer() )
 		DoRedBots()
 }
+
+/*****************************************************
+	ORIN'S UTILS
+	
+	No popfile functions.
+	
+*****************************************************/
+::ORIN <- {}
 
 // This is for removing game events when the mission has changed
 ::ORIN.CheckEvents <- function(ref, eventary)
@@ -60,6 +63,224 @@ function Init()
 		}
 	}
 }
+
+::ORIN.cmpXYZequ <- function(vec1, vec2)
+{
+	// hol up.. is this what we want
+	if( (typeof(vec1) != "Vector" && typeof(vec1) != "QAngle") || (typeof(vec2) != "Vector" && typeof(vec2) != "QAngle") )
+	{
+		throw "Comparison only allows Vector or QAngle."
+	}
+
+	// No fancy things
+	if( vec1 >= vec2 && vec1 <= vec2 )
+	{
+		return true
+	}
+	return false
+}
+
+::ORIN.cmpXYZ <- function(other)
+{
+	// hol up.. is this what we want
+	if( typeof(other) != "Vector" && typeof(other) != "QAngle" )
+	{
+		throw "Comparison only allows Vector or QAngle."
+	}
+
+	// No fancy things
+	if( x > other.x && y > other.y && z > other.z )
+	{
+		return 1
+	}
+	else if( x < other.x && y < other.y && z < other.z )
+	{
+		return -1
+	}
+	return 0
+}
+
+// Edit the default classes to do comparisons with itself properly.
+::Vector._cmp <- ::ORIN.cmpXYZ
+::QAngle._cmp <- ::ORIN.cmpXYZ
+
+/*****************************************************
+	WAVE BRREAKS
+	
+	A core trait of endurance missions is breaking itself
+	into parts using wave breaks.
+
+	Functions:
+	> StartWaveBreak(duration, music, pathrelay)
+	Starts a wave break. CALL FROM POPFILE.
+	
+	> duration	- Length of break. (Defaults to 35).
+	> music		- On break end, play this music. (Defaults to "music/mvm_start_mid_wave.wav").
+	> pathrelay	- On break end, fire this relay. (Defaults to "bombpath_choose_relay").
+	
+*****************************************************/
+
+const COUNTDOWN_30s = "vo/announcer_begins_30sec.mp3"
+const COUNTDOWN_20s = "vo/announcer_begins_20sec.mp3"
+const COUNTDOWN_10s = "vo/announcer_begins_10sec.mp3"
+local StartVOs =
+[
+	["vo/mvm_general_wav_start01.mp3", 0],
+	["vo/mvm_general_wav_start02.mp3", 1],
+	["vo/mvm_general_wav_start03.mp3", -1],
+	["vo/mvm_general_wav_start07.mp3", -1]
+]
+local EndVOs =
+[
+	"vo/mvm_wave_end01.mp3",
+	"vo/mvm_wave_end02.mp3",
+	"vo/mvm_wave_end07.mp3",
+	"vo/mvm_wave_end08.mp3"
+]	
+
+function StartWaveBreak(duration = 35, music = "music/mvm_start_mid_wave.wav", pathrelay = "bombpath_right")
+{
+	for( local i = 1; i < MAX_PLAYERS; i++ )
+	{
+		local player = GetPlayerFromUserID(i)
+		if( player && player.GetTeam() == TF_TEAM_PVE_INVADERS ) 
+			player.TakeDamage( player.GetHealth()*3, 65536, null)
+	}
+
+	// LOGIC
+	EntFire("bombpath_clearall_relay", "Trigger", null)
+	EntFire("bombpath_arrows_clear_relay", "Trigger", null, duration)
+	EntFire( pathrelay, "Trigger", null, 2)
+	EntFire("upgrade_door_open_relay", "Trigger")
+	EntFire("upgrade_door_close_relay", "Trigger", null, duration)
+	EntFire( POPULATOR, "PauseBotSpawning")
+	EntFire( POPULATOR, "UnpauseBotSpawning", null, duration)
+	EntFire("item_teamflag", "ForceReset")
+
+	local size = EndVOs.len() - 1
+	local choice = EndVOs[RandomInt(0,size)]
+	EntFire( GAMERULES, "PlayVO", choice, 0)
+	EntFire( GAMERULES, "PlayVO", "Announcer.MVM_Get_To_Upgrade", 5)
+	
+	// SOUND
+	if( duration >= 40 )
+	{
+		local delta = (duration - 30)
+		EntFire(GAMERULES, "PlayVO", COUNTDOWN_30s, delta)
+	}
+	if( duration >= 30 )
+	{
+		local delta = (duration - 20)
+		EntFire(GAMERULES, "PlayVO", COUNTDOWN_20s, delta)
+	}
+	if( duration >= 20 )
+	{
+		local delta = (duration - 10)
+		EntFire(GAMERULES, "PlayVO", COUNTDOWN_10s, delta)
+	}
+	if( duration >= 10 )
+	{
+		local delta = (duration - 5)		
+		local size = (StartVOs.len() - 1)
+		local choice = RandomInt(0,size)
+		local rVO = StartVOs[choice][0]
+		local rFixup = StartVOs[choice][1]
+
+		EntFire(GAMERULES, "PlayVO", rVO, delta + rFixup)
+		EntFire(GAMERULES, "PlayVO", music, delta + rFixup)
+	}
+}
+
+/*****************************************************
+	TANK DEATH ANIMS
+
+	Tank should explode when the hatch does, but also
+	with delicious anims.
+	
+	No popfile functions.
+	
+*****************************************************/
+::TANK <- { ref = "TANK" }
+
+function InitTankAnims()
+{
+	local boss_deploy_relay = Entities.FindByName(null, "boss_deploy_relay")
+	EntityOutputs.AddOutput(boss_deploy_relay, "OnTrigger", "tank_boss", "DestroyIfAtCapturePoint", "0", 0, -1)
+
+	// Appropiate sequences:
+	// 7 = destroy_mvm_mannworks1_L
+	// 8 = destroy_mvm_mannworks2_L
+	// 0 = destroy_mvm_mannworks3_L
+	local param = format( "self.SetSequence(%i)", RandomInt(7, 9) )
+	EntityOutputs.AddOutput(boss_deploy_relay, "OnTrigger", "tank_destruction", "RunScriptCode", param, 0.1, -1)
+}
+
+// Add function in it that searches for its tank_destruction ent
+// Call it on a delay
+/* ::TANK.FindDestruction <- function( tank )
+{
+	// Get Tank origin and angles
+	// Compare it to all tank_destruction ents
+	
+	if( tank && tank.GetClassname() == "tank_boss" )
+	{
+		local tank_origin = tank.GetOrigin()
+		local tank_angles = tank.GetAbsAngles()
+		for( local ent; ent = Entities.FindByClassname(ent, "tank_destruction"); )
+		{
+			printl(ent)
+			
+			local des_origin = ent.GetOrigin()
+			local des_angles = ent.GetAbsAngles()
+			
+			local equ_origin = ::ORIN.cmpXYZequ(tank_origin, des_origin)
+			local equ_angles = ::ORIN.cmpXYZequ(tank_angles, des_angles)
+
+			// Make a new tank_destruction entity with the anim we want
+			if( equ_origin && equ_angles )
+			{
+				local newent = SpawnEntityFromTable("prop_dynamic", {
+					origin = des_origin,
+					angles = des_angles,
+					solid = 0,
+					model = "models/bots/boss_bot/boss_tank_part1_destruction.mdl"
+				})
+
+				
+				newent.SetSeq
+				ent.Kill()
+				printl("hah")
+			}
+		}
+	}
+} */
+
+// To know if its from the hatch, check if "damageamount" is "10000000".
+/* ::TANK.OnGameEvent_npc_hurt <- function( params )
+{
+	local damageamount = params.damageamount
+	local entity = EntIndexToHScript(params.entindex)
+
+	if( damageamount != 10000000 )
+		return;
+	
+	if( entity.GetClassname() != "tank_boss" )
+		return;
+	
+	EntFire("!activator", "RunScriptCode", "::TANK.FindDestruction(self)", 0, entity)
+} */
+
+// We ought to clean our waste responsibly.
+/* ::TANK.OnGameEvent_teamplay_round_start <- function( params )
+{
+	local events =
+	[
+		"npc_hurt",
+		"teamplay_round_start"
+	]
+
+	::ORIN.CheckEvents("TANK", events)
+} */
 
 /*****************************************************
 	ENGINEER HINTS
@@ -217,7 +438,24 @@ function InitFlankers()
 		// "nav_flankbot_right"
 		local hammerid = NetProps.GetPropInt(ent, "m_iHammerID")
 		if( hammerid == 7981 )
+		{
+			// Before we remove this entity, block blue bots from using the nav areas it overlaps.
+			local areas = {}
+			NavMesh.GetNavAreasOverlappingEntityExtent(ent, areas)
+			
+			foreach( area in areas )
+			{
+				if( developer() > 1 )
+				{
+					area.DebugDrawFilled(40, 0, 200, 200, 300, false, 5)
+					DebugDrawText(area.GetCenter(), "BLOCKED", false, 300)
+				}
+				
+				area.MarkAsBlocked( TF_TEAM_PVE_INVADERS )
+			}
+			
 			ent.Kill()
+		}
 	}
 	for ( local ent; ent = Entities.FindByClassname(ent, "func_nav_avoid"); )
 	{
@@ -480,7 +718,8 @@ function InitFlankers()
 }
 
 ::FLANKERS.OnGameEvent_teamplay_round_start <- function( params )
-{
+{	
+	DebugDrawClear()
 	local events =
 	[
 		"post_inventory_application",
@@ -491,86 +730,6 @@ function InitFlankers()
 	]
 
 	::ORIN.CheckEvents("FLANKERS", events)
-}
-
-/*****************************************************
-	WAVE BRREAKS
-	
-	A core trait of endurance missions is breaking itself
-	into parts using wave breaks.
-
-	Functions:
-	> StartWaveBreak(duration, music, pathrelay)
-	Starts a wave break. CALL FROM POPFILE.
-	
-	> duration	- Length of break. (Defaults to 35).
-	> music		- On break end, play this music. (Defaults to "music/mvm_start_mid_wave.wav").
-	> pathrelay	- On break end, fire this relay. (Defaults to "bombpath_choose_relay").
-	
-*****************************************************/
-
-const COUNTDOWN_20s = "vo/announcer_begins_20sec.mp3"
-const COUNTDOWN_10s = "vo/announcer_begins_10sec.mp3"
-local StartVOs =
-[
-	["vo/mvm_general_wav_start01.mp3", 0],
-	["vo/mvm_general_wav_start02.mp3", 1],
-	["vo/mvm_general_wav_start03.mp3", -1],
-	["vo/mvm_general_wav_start07.mp3", -1]
-]
-local EndVOs =
-[
-	"vo/mvm_wave_end01.mp3",
-	"vo/mvm_wave_end02.mp3",
-	"vo/mvm_wave_end07.mp3",
-	"vo/mvm_wave_end08.mp3"
-]	
-
-function StartWaveBreak(duration = 35, music = "music/mvm_start_mid_wave.wav", pathrelay = "bombpath_right")
-{
-	for( local i = 1; i < MAX_PLAYERS; i++ )
-	{
-		local player = GetPlayerFromUserID(i)
-		if( player && player.GetTeam() == TF_TEAM_PVE_INVADERS ) 
-			player.TakeDamage( player.GetHealth()*3, 65536, null)
-	}
-
-	// LOGIC
-	EntFire("bombpath_arrows_clear_relay", "Trigger", null, duration)
-	EntFire( pathrelay, "Trigger", null, 10)
-	EntFire("upgrade_door_open_relay", "Trigger")
-	EntFire("upgrade_door_close_relay", "Trigger", null, duration)
-	EntFire( POPULATOR, "PauseBotSpawning")
-	EntFire( POPULATOR, "UnpauseBotSpawning", null, duration)
-	EntFire("item_teamflag", "ForceReset")
-
-	local size = EndVOs.len() - 1
-	local choice = EndVOs[RandomInt(0,size)]
-	EntFire( GAMERULES, "PlayVO", choice, 0)
-	EntFire( GAMERULES, "PlayVO", "Announcer.MVM_Get_To_Upgrade", 5)
-	
-	// SOUND
-	if( duration >= 35 )
-	{
-		local delta = (duration - 20)
-		EntFire(GAMERULES, "PlayVO", COUNTDOWN_20s, delta)
-	}
-	if( duration >= 25 )
-	{
-		local delta = (duration - 10)
-		EntFire(GAMERULES, "PlayVO", COUNTDOWN_10s, delta)
-	}
-	if( duration >= 15 )
-	{
-		local delta = (duration - 5)		
-		local size = (StartVOs.len() - 1)
-		local choice = RandomInt(0,size)
-		local rVO = StartVOs[choice][0]
-		local rFixup = StartVOs[choice][1]
-
-		EntFire(GAMERULES, "PlayVO", rVO, delta + rFixup)
-		EntFire(GAMERULES, "PlayVO", music, delta + rFixup)
-	}
 }
 
 /*****************************************************
@@ -804,7 +963,6 @@ function InitBoss()
 ::BOSS.OnGameEvent_mvm_begin_wave <- function( params )
 {
 	local scope = ::BOSS.thinker.GetScriptScope()
-	scope["BossDoRun"] = true
 }
 
 // Clear the boss tag from all boss bots on any team's round victory.
@@ -877,11 +1035,12 @@ function InitShield()
 				bot.PressSpecialFireButton(0.1)
 			}
 			// Medic as leaders don't heal yet carefully follow a squad member... so lets force them to heal anyways.
-			else if ( !NetProps.GetPropBool(bot.GetActiveWeapon(), "m_bHealing") )
+			// DON'T DO THIS! Medics get the same speed as their patient!
+			/* else if ( !NetProps.GetPropBool(bot.GetActiveWeapon(), "m_bHealing") )
 			{
 				bot.PressFireButton(0.1)
 				bot.PressFireButton(20)
-			}
+			} */
 		}
 		
 		return 1.0
@@ -930,6 +1089,7 @@ function InitShield()
 	[
 		"post_inventory_application",
 		"player_death",
+		"mvm_begin_wave",
 		"teamplay_round_win",
 		"teamplay_round_start"
 	]
