@@ -4,7 +4,7 @@
 
 WaveSchedule
 {
-	StartingCurrency 700
+	StartingCurrency 900
 	RespawnWaveTime 6
 	CanBotsAttackWhileInSpawnRoom no
 	Advanced 1
@@ -34,63 +34,59 @@ WaveSchedule
 		Sunny_Soldier
 		{
 			Class Soldier
-			Name "A Rocket Man"
+			Item "The Panisher"
+			Name "Stove"
 		}
 		Sunny_Soldier_Buff
 		{
 			Template T_TFBot_Soldier_Extended_Buff_Banner
-	
-			Name "A Cheerful Man"
+
+			Item "The Panisher"
+			Name "Extended Buff Stove"
 		}
 		Sunny_Soldier_Conch
 		{
 			Template T_TFBot_Soldier_Extended_Concheror
-	
-			Name "A Conquering Man"
+
+			Item "The Panisher"
+			Name "Extended Conch Stove"
 		}
 		Sunny_Soldier_Backup
 		{
 			Template T_TFBot_Soldier_Extended_Battalion
-	
-			Name "A Crafty Man"
+
+			Item "The Panisher"
+			Name "Extended Backup Stove"
 		}
 		Sunny_Pyro
 		{
 			Template Remorin_Pyro
 		
 			Class Pyro
-			Skill Normal
+			Skill Hard
 			Name "Deep-fat Frier"
-			Item "Fireman's Essentials"
-			Item "The Electric Escorter"
+				Item "Connoisseur's Cap"
+				Item "The Frymaster"
+			
+			ItemAttributes
+			{
+				ItemName "TF_WEAPON_FLAMETHROWER"
+				"airblast_destroy_projectile" 1
+			}
 		}
 		Sunny_Demoman
 		{
 			Class Demoman
-			Name "Confetti Thrower"
-		}
-		Sunny_Heavy
-		{
-			Template Remorin_Heavy
-
-			Class Heavy
-			Name "Heavy Weapons"
-			Item "The Bunsen Brave"
+			Item "The Hot Dogger"
+			Name "Hotdog Bomber"
 		}
 		Sunny_Engineer
 		{
 			Class Engineer
-			Name "The Plumber"
 			Skill Expert
 			TeleportWhere spawnbot
 			Attributes TeleportToHint
 			Attributes IgnoreFlag
-		}
-		Sunny_Medic_BigHeal
-		{
-			Template Remorin_Medic_BigHeal
-			Name "Nutrient Injection"
-			ClassIcon Medic
 		}
 		Sunny_Medic_Kritz
 		{
@@ -100,7 +96,7 @@ WaveSchedule
 			Skill	Normal
 			Item	"The Kritzkrieg"
 			Item	"Titanium Tyrolean"
-			Name "Protein Injection"
+			Name "Steroids"
 			Item "Flatliner"
 			Attributes AlwaysCrit
 			Attributes SpawnWithFullCharge
@@ -125,7 +121,6 @@ WaveSchedule
 		Sunny_Medic_QuickUber
 		{
 			Template T_TFBot_Medic_QuickUber
-			Name "Steroids Injection"
 		}
 		Sunny_Sniper
 		{
@@ -138,7 +133,6 @@ WaveSchedule
 		{
 			Template T_TFBot_Sniper_Huntsman
 			
-			Name "Arrow Shooter"
 			Item "The Outback Intellectual"
 			Item "The Archers Groundings"
 		}
@@ -211,45 +205,17 @@ WaveSchedule
             Template gCHAR_MINI
 			CharacterAttributes
 			{
-				"move speed penalty" 0.7
+				"move speed penalty" 0.6
 			}
 		}
 
 		// Giants
 		// -------
-		Sunny_GSoldier_DirectHit
-		{
-			Class Soldier
-			Name "Giant Precise Soldier"
-			ClassIcon soldier_directhit_lite_giant
-			Skill Expert
-			Health 4000
-			WeaponRestrictions PrimaryOnly
-			Attributes HoldFireUntilFullReload
-			Attributes MiniBoss
-			Tag bot_giant
-			Item "The Direct Hit"
-			Item "The Cross-Comm Express"
-			ItemAttributes
-			{
-				ItemName "The Direct Hit"
-				"projectile speed increased" 2
-				"dmg falloff decreased" 0.2
-			}
-			Template gCHAR_SOLDIER
-		}
 		Sunny_GPyro
 		{
 			Template Remorin_GPyro
 			
 			Name "Giant Deep-fat frier"
-		}
-		Sunny_GHeavy_Heater
-		{
-			Template Remorin_GHeavy_Heater
-			
-			Name "Heavy Oven"
-			Item "Corona Australis"
 		}
 	}
     Mission
@@ -266,9 +232,23 @@ WaveSchedule
             Template Remorin_SentryBuster
         }
 	}
+	Mission
+	{
+		Objective Sniper
+		Where spawnbot_mission_sniper
+		BeginAtWave 1
+		RunForThisManyWaves 6
+		InitialCooldown 30
+		CooldownTime 50
+		DesiredCount 1
+		TFBot 
+        { 
+            Template Sunny_Sniper
+        }
+	}
 
-	//Subwave 1: $700  + $1100 = $1800
-	//Subwave 2: $1800 + $900  = $2700
+	//Subwave 1: $900  + $1100 = $2000
+	//Subwave 2: $2000 + $900  = $2900
     Wave
 	{
 		InitWaveOutput
@@ -287,232 +267,237 @@ WaveSchedule
 			Target wave_finished_relay
 			Action Trigger
 		}
-		WaveSpawn {
-			Name "W1 Scout + Soldier"
-			WaitForAllDead "Intro"
-			Where spawnbot
-			Where spawnbot_tunnel
-			WaitBetweenSpawns	6
-			TotalCount	48
-			MaxActive	12
-			SpawnCount	4
-			TotalCurrency 100
-			RandomChoice {
-				TFBot {
-					Template Sunny_Soldier
-					Skill Hard
-				}
-				TFBot {
-					Template Sunny_Soldier
-					Skill Easy
-				}
-			}
-		}
-		WaveSpawn {
-			Name "W1 Giant Pyro"
-			Where spawnbot_tunnel
-			Where spawnbot_parachute
-			WaitBeforeStarting 25
-			WaitBetweenSpawns 25
-			TotalCount 9
-			MaxActive 9
-			SpawnCount 3
-			TotalCurrency 100
-			Squad {
-				TFBot {
-					Template Sunny_GPyro
-					Attributes AlwaysFireWeapon
-				}
-				TFBot {
-					Template Sunny_Medic_Kritz
-				}
-				TFBot {
-					Template Sunny_Medic_Kritz
-				}
-			}
-		}
-		WaveSpawn {
-			Name "W1 Tank"
-			WaitForAllSpawned "W1 Scout + Soldier"
-			WaitBeforeStarting	5
-			TotalCount	2
-			MaxActive	1
-			SpawnCount	1
-			TotalCurrency	200
-			Tank {
-				Health 14000
-				Speed 50
-				Name "Tank"
-				StartingPathTrackNode "tankpath_alt"
-				OnKilledOutput {
-					Target boss_dead_relay
-					Action Trigger                         
-				}
-				OnBombDroppedOutput {
-					Target boss_deploy_relay 
-					Action Trigger                         
-				}
-			}	
-		}
-		WaveSpawn {
-			Name "W1 Giant Charged Soldier"
-			WaitForAllDead "W1 Giant Pyro"
-			Where spawnbot_parachute
-			WaitBeforeStarting	5
-			WaitBetweenSpawns	25
-			TotalCount	6
-			MaxActive	4
-			SpawnCount	2
-			TotalCurrency	200
-			TFBot {
-				Template T_TFBot_Giant_Soldier_Crit
-			}
-		}
-		WaveSpawn {
-			Name "W1 Demoman 1"
-			WaitForAllSpawned "W1 Scout + Soldier"
-			WaitBeforeStarting	3
-			WaitBetweenSpawns	2
-			Where spawnbot
-			Where spawnbot_parachute
-			TotalCount	36
-			MaxActive	8
-			SpawnCount	2
-			TotalCurrency	70
-			TFBot {
-				Template Sunny_Demoman
-				Skill Hard
-			}
-		}
-		WaveSpawn {
-			Name "W1 Demoman 2"
-			WaitForAllDead "W1 Demoman 1"
-			WaitBeforeStarting	6
-			WaitBetweenSpawns	4
-			Where spawnbot
-			Where spawnbot_parachute
-			TotalCount	18
-			MaxActive	8
-			SpawnCount	3
-			TotalCurrency	30
-			TFBot {
-				Template Sunny_Demoman
-				Skill Hard
-			}
-		}
-		WaveSpawn {
-			Name "W1 Last Standing"
-			WaitForAllDead "W1 Demoman 2"
-			WaitBeforeStarting	20
-			WaitBetweenSpawns	10
-			Where spawnbot_flank
-			TotalCount	18
-			MaxActive	4
-			SpawnCount	2
-			TotalCurrency	100
-			TFBot {
-				Template Sunny_Soldier_Buff
-				BehaviorModifiers Push
-				Tag flankbot
-			}
-		}
-		WaveSpawn {
-			Name "W1 Pyro + Extended Buff Soldier"
-			WaitForAllSpawned "W1 Demoman 2"
-			WaitForAllDead "W1 Giant Charged Soldier"
-			Where spawnbot
-			WaitBeforeStarting	4
-			WaitBetweenSpawns	6
-			TotalCount	60
-			MaxActive	10
-			SpawnCount	5
-			TotalCurrency	100
-			Squad {
-				FormationSize 100
-				ShouldPreserveSquad 1
-				TFBot {
-					Template T_TFBot_Soldier_Extended_Buff_Banner
-				}
-				TFBot {
-					Template T_TFBot_Soldier_Extended_Buff_Banner
-				}
-				TFBot {
-					Template Sunny_Pyro
-				}
-				TFBot {
-					Template Sunny_Pyro
-				}
-				TFBot {
-					Template Sunny_Pyro
-				}
-			}
-		}
-		WaveSpawn {
-			Name "W1 Last Standing"
-			WaitForAllDead "W1 Pyro + Extended Buff Soldier"
-			WaitBeforeStarting	7
-			TotalCount	10
-			SpawnCount	10
-			TotalCurrency 150
-			Where spawnbot_tunnel
-			Squad {
-				TFBot {
-					Template Sunny_MGMedic_Shield
-				}
-				TFBot {
-					Template Remorin_GSoldier_Triple_Shot
-				}
-				TFBot {
-					Template Sunny_Medic_Kritz
-				}
-				TFBot {
-					Template Sunny_Medic_Kritz
-				}
-				TFBot {
-					Template Sunny_Medic_Kritz
-				}
-				TFBot {
-					Template Sunny_Medic_Kritz
-				}
-				TFBot {
-					Template Sunny_Medic_QuickUber
-				}
-				TFBot {
-					Template Sunny_Medic_QuickUber
-				}
-				TFBot {
-					Template Sunny_Medic_QuickUber
-				}
-				TFBot {
-					Template Sunny_Medic_QuickUber
-				}
-			}
-		}
-		WaveSpawn
-		{
-			Name "W1 Last Standing SPY"
-			Where spawnbot_parachute
-			WaitForAllDead "W1 Pyro + Extended Buff Soldier"
-			TotalCount 3
-			MaxActive 3
-			SpawnCount 3
-			TotalCurrency 50
-			WaitBeforeStarting 2
-			Support Limited
-			TFBot
-			{
-				Template Sunny_Spy
-				Attributes IgnoreFlag
-			}
-		}
+		// WaveSpawn {
+			// Name "W1 Scout + Soldier"
+			// WaitForAllDead "Intro"
+			// Where spawnbot
+			// Where spawnbot_tunnel
+			// WaitBetweenSpawns	6
+			// TotalCount	48
+			// MaxActive	12
+			// SpawnCount	4
+			// TotalCurrency 100
+			// RandomChoice {
+				// TFBot {
+					// Template Sunny_Soldier
+					// Skill Hard
+				// }
+				// TFBot {
+					// Template Sunny_Soldier
+					// Skill Easy
+				// }
+			// }
+		// }
+		// WaveSpawn {
+			// Name "W1 Giant Pyro"
+			// Where spawnbot_tunnel
+			// Where spawnbot_parachute
+			// WaitBeforeStarting 25
+			// WaitBetweenSpawns 25
+			// TotalCount 9
+			// MaxActive 9
+			// SpawnCount 3
+			// TotalCurrency 100
+			// Squad {
+				// TFBot {
+					// Template Sunny_GPyro
+					// Attributes AlwaysFireWeapon
+				// }
+				// TFBot {
+					// Template Sunny_Medic_Kritz
+				// }
+				// TFBot {
+					// Template Sunny_Medic_Kritz
+				// }
+			// }
+		// }
+		// WaveSpawn {
+			// Name "W1 Tank"
+			// WaitForAllSpawned "W1 Scout + Soldier"
+			// WaitBeforeStarting	5
+			// TotalCount	2
+			// MaxActive	1
+			// SpawnCount	1
+			// TotalCurrency	200
+			// Tank {
+				// Health 14000
+				// Speed 50
+				// Name "Tank"
+				// StartingPathTrackNode "tankpath_alt"
+				// OnKilledOutput {
+					// Target boss_dead_relay
+					// Action Trigger                         
+				// }
+				// OnBombDroppedOutput {
+					// Target boss_deploy_relay 
+					// Action Trigger                         
+				// }
+			// }	
+		// }
+		// WaveSpawn {
+			// Name "W1 Giant Charged Soldier"
+			// WaitForAllDead "W1 Giant Pyro"
+			// Where spawnbot_parachute
+			// WaitBeforeStarting	5
+			// WaitBetweenSpawns	25
+			// TotalCount	6
+			// MaxActive	4
+			// SpawnCount	2
+			// TotalCurrency	200
+			// TFBot {
+				// Template T_TFBot_Giant_Soldier_Crit
+			// }
+		// }
+		// WaveSpawn {
+			// Name "W1 Demoman 1"
+			// WaitForAllSpawned "W1 Scout + Soldier"
+			// WaitBeforeStarting	3
+			// WaitBetweenSpawns	2
+			// Where spawnbot
+			// Where spawnbot_parachute
+			// TotalCount	36
+			// MaxActive	8
+			// SpawnCount	2
+			// TotalCurrency	70
+			// TFBot {
+				// Template Sunny_Demoman
+				// Skill Hard
+			// }
+		// }
+		// WaveSpawn {
+			// Name "W1 Demoman 2"
+			// WaitForAllDead "W1 Demoman 1"
+			// WaitBeforeStarting	6
+			// WaitBetweenSpawns	4
+			// Where spawnbot
+			// Where spawnbot_parachute
+			// TotalCount	18
+			// MaxActive	8
+			// SpawnCount	3
+			// TotalCurrency	30
+			// TFBot {
+				// Template Sunny_Demoman
+				// Skill Hard
+			// }
+		// }
+		// WaveSpawn {
+			// Name "W1 Last Standing"
+			// WaitForAllDead "W1 Demoman 2"
+			// WaitBeforeStarting	20
+			// WaitBetweenSpawns	10
+			// Where spawnbot_flank
+			// TotalCount	18
+			// MaxActive	4
+			// SpawnCount	2
+			// TotalCurrency	100
+			// TFBot {
+				// Template Sunny_Soldier_Buff
+				// BehaviorModifiers Push
+				// Tag flankbot
+			// }
+		// }
+		// WaveSpawn {
+			// Name "W1 Pyro + Extended Buff Soldier"
+			// WaitForAllSpawned "W1 Demoman 2"
+			// WaitForAllDead "W1 Giant Charged Soldier"
+			// Where spawnbot
+			// WaitBeforeStarting	4
+			// WaitBetweenSpawns	6
+			// TotalCount	60
+			// MaxActive	10
+			// SpawnCount	5
+			// TotalCurrency	100
+			// Squad {
+				// FormationSize 100
+				// ShouldPreserveSquad 1
+				// TFBot {
+					// Template T_TFBot_Soldier_Extended_Buff_Banner
+				// }
+				// TFBot {
+					// Template T_TFBot_Soldier_Extended_Buff_Banner
+				// }
+				// TFBot {
+					// Template Sunny_Pyro
+				// }
+				// TFBot {
+					// Template Sunny_Pyro
+				// }
+				// TFBot {
+					// Template Sunny_Pyro
+				// }
+			// }
+		// }
+		// WaveSpawn {
+			// Name "W1 Last Standing"
+			// WaitForAllDead "W1 Pyro + Extended Buff Soldier"
+			// WaitBeforeStarting	7
+			// TotalCount	10
+			// SpawnCount	10
+			// TotalCurrency 150
+			// Where spawnbot_tunnel
+			// Squad {
+				// TFBot {
+					// Template Sunny_MGMedic_Shield
+				// }
+				// TFBot {
+					// Template Remorin_GSoldier_Triple_Shot
+				// }
+				// TFBot {
+					// Template Sunny_Medic_Kritz
+				// }
+				// TFBot {
+					// Template Sunny_Medic_Kritz
+				// }
+				// TFBot {
+					// Template Sunny_Medic_Kritz
+				// }
+				// TFBot {
+					// Template Sunny_Medic_Kritz
+				// }
+				// TFBot {
+					// Template Sunny_Medic_QuickUber
+				// }
+				// TFBot {
+					// Template Sunny_Medic_QuickUber
+				// }
+				// TFBot {
+					// Template Sunny_Medic_QuickUber
+				// }
+				// TFBot {
+					// Template Sunny_Medic_QuickUber
+				// }
+			// }
+		// }
+		// WaveSpawn
+		// {
+			// Name "W1 Last Standing SPY"
+			// Where spawnbot_parachute
+			// WaitForAllDead "W1 Pyro + Extended Buff Soldier"
+			// TotalCount 3
+			// MaxActive 3
+			// SpawnCount 3
+			// TotalCurrency 50
+			// WaitBeforeStarting 2
+			// Support Limited
+			// TFBot
+			// {
+				// Template Sunny_Spy
+				// Attributes IgnoreFlag
+			// }
+		// }
 		WaveSpawn {
 			Name "W1 Break"
 			WaitForAllDead "W1 Last Standing"
+			StartWaveOutput
+			{
+				Target "spawnbot_mission_sniper"
+				Action Disable
+			}
 			FirstSpawnOutput
 			{
 				Target "gamerules"
-				Action "RunScriptCode"
-				Param "StartWaveBreak(45, `music/mvm_start_tank_wave.wav`, `bombpath_right`)"
+				Action RunScriptCode
+				Param "StartWaveBreak(10, `music/mvm_start_tank_wave.wav`, `bombpath_left`)"
 			}
 		}
 
@@ -521,12 +506,51 @@ WaveSchedule
 		// -- $500 --
 		// ----------
 		
-		// Non-stop Tanks
+		WaveSpawn
+		{
+			Name "W2_EngyA"
+			WaitForAllDead "W1 Break"
+			Where spawnbot_parachute
+			TotalCount 3
+			MaxActive 3
+			SpawnCount 3
+			TotalCurrency 50
+			Support Limited
+			FirstSpawnOutput
+			{
+				Target "spawnbot_mission_sniper"
+				Action Enable
+			}
+			TFBot
+			{
+				Template Sunny_Engineer
+			}
+		}
+		WaveSpawn
+		{
+			Name "W2_EngyB"
+			WaitForAllDead "W2_EngyA"
+			Where spawnbot_parachute
+			WaitBeforeStarting 15
+			WaitBetweenSpawns 25
+			TotalCount 6
+			MaxActive 2
+			SpawnCount 2
+			TotalCurrency 50
+			Support Limited
+			TFBot
+			{
+				Template Sunny_Engineer
+			}
+		}
+		
+		// More vicious Tanks
 		WaveSpawn 
 		{
 			Name "W2_Tank1"
+			WaitForAllSpawned "W2_EngyA"
 			WaitForAllDead "W1 Break"
-			WaitBeforeStarting	1 // race condition prevention
+			WaitBeforeStarting	12
 			WaitBetweenSpawns	50
 			TotalCount 	1
 			MaxActive	1
@@ -550,9 +574,8 @@ WaveSchedule
 			Name "W2_Tank"
 			WaitForAllSpawned "W2_Tank1"
 			WaitBeforeStarting	50
-			WaitBetweenSpawns	100
-			TotalCount 	2
-			MaxActive	2
+			TotalCount 	1
+			MaxActive	1
 			SpawnCount	1
 			TotalCurrency	50
 			Tank
@@ -571,8 +594,8 @@ WaveSchedule
 		WaveSpawn 
 		{
 			Name "W2_Tank"
-			WaitForAllDead "W2_Tank1"
-			WaitBeforeStarting	100
+			WaitForAllSpawned "W2_Tank1"
+			WaitBeforeStarting	90
 			TotalCount 	1
 			MaxActive	1
 			SpawnCount	1
@@ -595,9 +618,9 @@ WaveSchedule
 			Name "W2_A"
 			WaitForAllSpawned "W2_Tank1"
 			Where spawnbot
-			WaitBeforeStarting 8
-			WaitBetweenSpawns 8
-			TotalCount 30
+			WaitBeforeStarting 16
+			WaitBetweenSpawns 20
+			TotalCount 18
 			MaxActive 3
 			SpawnCount 3
 			TotalCurrency 100
@@ -612,7 +635,7 @@ WaveSchedule
 			Name "W2_A"
 			WaitForAllSpawned "W2_Tank1"
 			Where spawnbot
-			WaitBeforeStarting 18
+			WaitBeforeStarting 12
 			WaitBetweenSpawns 15
 			TotalCount 72
 			MaxActive 8
@@ -627,19 +650,33 @@ WaveSchedule
 		}
 		WaveSpawn
 		{
-			Name "W2_EngyA"
-			WaitForAllSpawned "W2_Tank1"
+			Name "W2_B1"
 			Where spawnbot_parachute
-			WaitBeforeStarting 30
+			WaitForAllSpawned "W2_Tank1"
+			WaitBeforeStarting 35
 			WaitBetweenSpawns 20
-			TotalCount 6
-			MaxActive 2
-			SpawnCount 2
-			TotalCurrency 50
-			Support Limited
-			TFBot
+			TotalCount 12
+			MaxActive 3
+			SpawnCount 3
+			TotalCurrency 20
+			Squad
 			{
-				Template Sunny_Engineer
+				FormationSize 75
+				ShouldPreserveSquad 1
+				TFBot
+				{
+					Template Sunny_MGMedic_Shield
+				}
+				TFBot
+				{
+					Template Sunny_Pyro
+					Attributes AlwaysFireWeapon
+				}
+				TFBot
+				{
+					Template Sunny_Pyro
+					Attributes AlwaysFireWeapon
+				}
 			}
 		}
 		
